@@ -1,0 +1,27 @@
+[
+	{
+		"file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/DrawingCanvas.cpp",
+		"command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.171.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/DrawingCanvas.h",
+		"command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.171.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tutorial_Canvas.Build.cs",
+		"command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.171.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tutorial_Canvas.cpp",
+		"command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.171.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tutorial_Canvas.h",
+		"command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.171.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	}
+]
