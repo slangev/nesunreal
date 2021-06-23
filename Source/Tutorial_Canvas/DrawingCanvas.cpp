@@ -12,7 +12,7 @@ UDrawingCanvas::~UDrawingCanvas()
 
 void UDrawingCanvas::Tick(const int32 pixelsH) {
 	//UE_LOG(LogTemp, Warning, TEXT("I just started running"));
-	RenderStatic();
+	RenderLines();
 }
 
 void UDrawingCanvas::InitializeCanvas(const int32 pixelsH, const int32 pixelsV)
@@ -26,11 +26,11 @@ void UDrawingCanvas::InitializeCanvas(const int32 pixelsH, const int32 pixelsV)
 	dynamicCanvas->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
 #endif
 	dynamicCanvas->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	dynamicCanvas->SRGB = 1;
+	dynamicCanvas->SRGB = 0;
 	dynamicCanvas->AddToRoot();
 	dynamicCanvas->Filter = TextureFilter::TF_Nearest;
 	dynamicCanvas->UpdateResource();
-
+	
 	echoUpdateTextureRegion = std::unique_ptr<FUpdateTextureRegion2D>(new FUpdateTextureRegion2D(0, 0, 0, 0, canvasWidth, canvasHeight));
 
 
@@ -57,6 +57,20 @@ void UDrawingCanvas::ClearCanvas()
 void UDrawingCanvas::RenderLine() {
 	uint8* canvasPixelPtr = canvasPixelData.get();
 	for (int i = 0; i < canvasWidth; ++i)
+	{
+		if(i % 2 == 0) {
+			setPixelColor(canvasPixelPtr, 255, 255, 255, 255); //white
+		} else {
+			setPixelColor(canvasPixelPtr, 0, 0, 0, 255); //black
+		}
+		canvasPixelPtr += bytesPerPixel;
+	}
+	UpdateCanvas();
+}
+
+void UDrawingCanvas::RenderLines() {
+	uint8* canvasPixelPtr = canvasPixelData.get();
+	for (int i = 0; i < canvasWidth * canvasHeight; ++i)
 	{
 		if(i % 2 == 0) {
 			setPixelColor(canvasPixelPtr, 255, 255, 255, 255); //white

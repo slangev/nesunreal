@@ -28,6 +28,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = DrawingTools)
 		void RenderLine();
 	UFUNCTION(BlueprintCallable, Category = DrawingTools)
+		void RenderLines();
+	UFUNCTION(BlueprintCallable, Category = DrawingTools)
 		void RenderDot();
 	UFUNCTION(BlueprintCallable, Category = DrawingTools)
 		void RenderStatic();
