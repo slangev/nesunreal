@@ -12,8 +12,7 @@ UDrawingCanvas::~UDrawingCanvas()
 
 void UDrawingCanvas::Tick(const int32 pixelsH) {
 	//UE_LOG(LogTemp, Warning, TEXT("I just started running"));
-	//RenderStaticByMatrix();
-	RenderLines();
+	RenderStaticByMatrix();
 }
 
 void UDrawingCanvas::InitializeCanvas(const int32 pixelsH, const int32 pixelsV)

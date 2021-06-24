@@ -10,7 +10,12 @@
 		}
 	],
 	"settings": {
-		"typescript.tsc.autoDetect": "off"
+		"typescript.tsc.autoDetect": "off",
+		"C_Cpp.default.forcedInclude": [
+			"${default}",
+			"/Users/sl/UE4_T-Canvas/Intermediate/Build/Mac/x86_64/UE4Editor/Development/Tutorial_Canvas/Definitions.Tutorial_Canvas.h",
+			"/Users/sl/UE4_T-Canvas/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/Engine/SharedPCH.Engine.h"
+		]
 	},
 	"extensions": {
 		"recommendations": [
