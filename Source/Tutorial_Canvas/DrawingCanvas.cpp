@@ -12,6 +12,7 @@ UDrawingCanvas::~UDrawingCanvas()
 
 void UDrawingCanvas::Tick(const int32 pixelsH) {
 	//UE_LOG(LogTemp, Warning, TEXT("I just started running"));
+	//RenderStaticByMatrix();
 	RenderLines();
 }
 
@@ -26,102 +27,72 @@ void UDrawingCanvas::InitializeCanvas(const int32 pixelsH, const int32 pixelsV)
 	dynamicCanvas->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
 #endif
 	dynamicCanvas->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	dynamicCanvas->SRGB = 0;
+	dynamicCanvas->SRGB = false;
 	dynamicCanvas->AddToRoot();
 	dynamicCanvas->Filter = TextureFilter::TF_Nearest;
 	dynamicCanvas->UpdateResource();
-	
-	echoUpdateTextureRegion = std::unique_ptr<FUpdateTextureRegion2D>(new FUpdateTextureRegion2D(0, 0, 0, 0, canvasWidth, canvasHeight));
-
 
 	// buffers initialization
 	bytesPerPixel = 4; // r g b a
-	bufferPitch = canvasWidth * bytesPerPixel;
-	bufferSize = canvasWidth * canvasHeight * bytesPerPixel;
-	canvasPixelData = std::unique_ptr<uint8[]>(new uint8[bufferSize]);
 
-	ClearCanvas();
+	RenderStaticByMatrix();
 }
 
-void UDrawingCanvas::ClearCanvas()
-{
-	uint8* canvasPixelPtr = canvasPixelData.get();
-	for (int i = 0; i < canvasWidth * canvasHeight; ++i)
-	{
-		setPixelColor(canvasPixelPtr, 255, 255, 255, 255); //white
-		canvasPixelPtr += bytesPerPixel;
-	}
-	UpdateCanvas();
-}
+void UDrawingCanvas::RenderStaticByMatrix() {
+	FTexture2DMipMap* MyMipMap = &dynamicCanvas->PlatformData->Mips[0];
+	FByteBulkData* RawImageData = &MyMipMap->BulkData;
+	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 
-void UDrawingCanvas::RenderLine() {
-	uint8* canvasPixelPtr = canvasPixelData.get();
-	for (int i = 0; i < canvasWidth; ++i)
+	for(int32 X = 0; X < MyMipMap->SizeX; X++)
 	{
-		if(i % 2 == 0) {
-			setPixelColor(canvasPixelPtr, 255, 255, 255, 255); //white
-		} else {
-			setPixelColor(canvasPixelPtr, 0, 0, 0, 255); //black
+		for (int32 Y = 0; Y < MyMipMap->SizeY; Y++)
+		{
+			FColor pixel;
+			if(FMath::RandRange(0,2) == 0) {
+				 pixel.A = 255;
+				 pixel.R = 255;
+				 pixel.G = 255;
+				 pixel.B = 255;
+			} else {
+				 pixel.A = 255;
+				 pixel.R = 0;
+				 pixel.G = 0;
+				 pixel.B = 0;
+			}
+			FormatedImageData[Y * MyMipMap->SizeX + X] = pixel;
 		}
-		canvasPixelPtr += bytesPerPixel;
 	}
-	UpdateCanvas();
+
+	dynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	dynamicCanvas->UpdateResource();
 }
+
 
 void UDrawingCanvas::RenderLines() {
-	uint8* canvasPixelPtr = canvasPixelData.get();
-	for (int i = 0; i < canvasWidth * canvasHeight; ++i)
+	FTexture2DMipMap* MyMipMap = &dynamicCanvas->PlatformData->Mips[0];
+	FByteBulkData* RawImageData = &MyMipMap->BulkData;
+	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
+
+	for(int32 X = 0; X < MyMipMap->SizeX; X++)
 	{
-		if(i % 2 == 0) {
-			setPixelColor(canvasPixelPtr, 255, 255, 255, 255); //white
-		} else {
-			setPixelColor(canvasPixelPtr, 0, 0, 0, 255); //black
+		for (int32 Y = 0; Y < MyMipMap->SizeY; Y++)
+		{
+			FColor pixel;
+			if(X % 2 == 0) {
+				 pixel.A = 255;
+				 pixel.R = 255;
+				 pixel.G = 255;
+				 pixel.B = 255;
+			} else {
+				 pixel.A = 255;
+				 pixel.R = 0;
+				 pixel.G = 0;
+				 pixel.B = 0;
+			}
+			FormatedImageData[Y * MyMipMap->SizeX + X] = pixel;
 		}
-		canvasPixelPtr += bytesPerPixel;
 	}
-	UpdateCanvas();
-}
 
-void UDrawingCanvas::RenderStatic() {
-	uint8* canvasPixelPtr = canvasPixelData.get();
-	for (int i = 0; i < canvasWidth * canvasHeight; ++i)
-	{
-		if(FMath::RandRange(0,2) == 0) {
-			setPixelColor(canvasPixelPtr, 255, 255, 255, 255); //white
-		} else {
-			setPixelColor(canvasPixelPtr, 0, 0, 0, 255); //black
-		}
-		canvasPixelPtr += bytesPerPixel;
-	}
-	UpdateCanvas();
-}
-
-void UDrawingCanvas::RenderDot() {
-	uint8* canvasPixelPtr = canvasPixelData.get();
-	for (int i = 0; i < 1; ++i)
-	{
-		if(i % 2 == 0) {
-			setPixelColor(canvasPixelPtr, 255, 0, 0, 255); //red
-		} else {
-			setPixelColor(canvasPixelPtr, 0, 255, 0, 255); //green
-		}
-		canvasPixelPtr += bytesPerPixel;
-	}
-	UpdateCanvas();
-}
-
-void UDrawingCanvas::UpdateCanvas()
-{
-	if (echoUpdateTextureRegion)
-	{
-		dynamicCanvas->UpdateTextureRegions((int32)0, (uint32)1, echoUpdateTextureRegion.get(), (uint32)bufferPitch, (uint32)bytesPerPixel, canvasPixelData.get());
-	}
-}
-
-void UDrawingCanvas::setPixelColor(uint8*& pointer, uint8 red, uint8 green, uint8 blue, uint8 alpha)
-{
-	*pointer = blue; //b
-	*(pointer + 1) = green; //g
-	*(pointer + 2) = red; //r
-	*(pointer + 3) = alpha; //a
+	dynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	dynamicCanvas->UpdateResource();
 }

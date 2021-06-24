@@ -20,19 +20,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = DrawingTools)
 		void InitializeCanvas(const int32 pixelsH, const int32 pixelsV);
 	UFUNCTION(BlueprintCallable, Category = DrawingTools)
-		void UpdateCanvas();
-	UFUNCTION(BlueprintCallable, Category = DrawingTools)
-		void ClearCanvas();
-	UFUNCTION(BlueprintCallable, Category = DrawingTools)
 		void Tick(const int32 pixelsH);
 	UFUNCTION(BlueprintCallable, Category = DrawingTools)
-		void RenderLine();
+		void RenderStaticByMatrix();
 	UFUNCTION(BlueprintCallable, Category = DrawingTools)
 		void RenderLines();
-	UFUNCTION(BlueprintCallable, Category = DrawingTools)
-		void RenderDot();
-	UFUNCTION(BlueprintCallable, Category = DrawingTools)
-		void RenderStatic();
 
 	UDrawingCanvas();
 	~UDrawingCanvas();
@@ -40,13 +32,7 @@ public:
 private:
 
 	// canvas
-	std::unique_ptr<uint8[]> canvasPixelData;
 	int canvasWidth;
 	int canvasHeight;
 	int bytesPerPixel;
-	int bufferPitch;
-	int bufferSize;
-
-	std::unique_ptr<FUpdateTextureRegion2D> echoUpdateTextureRegion;
-	void setPixelColor(uint8*& pointer, uint8 red, uint8 green, uint8 blue, uint8 alpha);
 };

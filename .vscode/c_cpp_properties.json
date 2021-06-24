@@ -7,8 +7,7 @@
                 "/System/Library/Frameworks",
                 "/Library/Frameworks"
             ],
-            "compileCommands": "/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas.json",
-            "cppStandard": "c++14"
+            "compileCommands": "/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas.json"
         },
         {
             "name": "Mac",
@@ -17,8 +16,7 @@
                 "/System/Library/Frameworks",
                 "/Library/Frameworks"
             ],
-            "compileCommands": "/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default.json",
-            "cppStandard": "c++14"
+            "compileCommands": "/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default.json"
         }
     ],
     "version": 4
