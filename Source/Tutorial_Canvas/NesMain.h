@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "NesPPU.h"
+#include <memory>
 #include "NesMain.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNesMain, Log, All);
@@ -17,7 +18,11 @@ class TUTORIAL_CANVAS_API UNesMain : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UNesMain();
-	NesPPU *ppu;
+	uint64 MAXCYCLES = 29781;
+	UPROPERTY(EditAnywhere,Meta = (Bitmask))
+	FString pathToRom;
+	std::unique_ptr<NesPPU> ppu;
+	void Log(FString);
 
 
 protected:

@@ -15,19 +15,23 @@ UNesMain::UNesMain()
 	// ...
 }
 
+void UNesMain::Log(FString msg) {
+	UE_LOG(LogNesMain, Log, TEXT("%s"), *msg);
+}
+
 
 // Called when the game starts
 void UNesMain::BeginPlay()
 {
 	Super::BeginPlay();
-	ppu = new NesPPU(256,240,4);
+	ppu = std::unique_ptr<NesPPU>(new NesPPU(256, 240, 4));
 	AActor *a = GetOwner();
 	UStaticMeshComponent* mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(mesh) {
-    	UE_LOG(LogNesMain, Log, TEXT("found mesh"));
 		UMaterialInstanceDynamic * mat = mesh->CreateDynamicMaterialInstance(0, ((UMaterialInterface*)nullptr),FName(TEXT("Dynamic Mat")));
 		mat->SetTextureParameterValue(FName(TEXT("TextureInput")),ppu->GetScreen());
 	}
+	Log(pathToRom);
 }
 
 
@@ -36,6 +40,14 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	uint64 cyclesThisUpdate = 0 ; 
+    while (cyclesThisUpdate < MAXCYCLES) {
+		//gbJoyPad.HandleKeyEvents();
+		//uint cycles = nesCPU.Tick();
+		cyclesThisUpdate+=4;
+		/*gbGraphic.UpdateGraphics(cycles);
+		gbAudio.UpdateAudioTimer(cycles);*/
+	}
 	ppu->RenderStaticByMatrix();
 }
 

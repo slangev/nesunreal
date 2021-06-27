@@ -40,7 +40,7 @@ NesPPU::NesPPU(int canvasWidth, int canvasHeight, int bytesPerPixel) {
 	ClearScreen();
 }
 
-NesPPU::~NesPPU()
+NesPPU::~NesPPU() 
 {
 }
 
