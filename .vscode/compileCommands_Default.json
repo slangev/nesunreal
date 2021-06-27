@@ -10,12 +10,22 @@
         "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
     },
     {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/MyClass.cpp",
+        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/NesMain.cpp",
         "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
         "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
     },
     {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/MyClass.h",
+        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/NesMain.h",
+        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tests/FMyAwesomeTestLD.cpp",
+        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tests/FMyAwesomeTestST.cpp",
         "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
         "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
     },
@@ -35,7 +45,12 @@
         "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
     },
     {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/FMyAwesomeTest.cpp",
+        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/NesPPU.cpp",
+        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/NesPPU.h",
         "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
         "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
     }
