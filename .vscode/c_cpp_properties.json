@@ -7,7 +7,7 @@
                 "/System/Library/Frameworks",
                 "/Library/Frameworks"
             ],
-            "compileCommands": "/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas.json",
+            "compileCommands": "/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas.json",
             "cppStandard": "c++14"
         },
         {
@@ -17,7 +17,7 @@
                 "/System/Library/Frameworks",
                 "/Library/Frameworks"
             ],
-            "compileCommands": "/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Default.json",
+            "compileCommands": "/Users/sl/nesunreal/.vscode/compileCommands_Default.json",
             "cppStandard": "c++14"
         }
     ],

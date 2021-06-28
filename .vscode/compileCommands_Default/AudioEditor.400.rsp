@@ -1,5 +1,5 @@
 -include "/Users/sl/Unreal/UE_4.26/Engine/Intermediate/Build/Mac/x86_64/UE4Editor/Development/AudioEditor/Definitions.AudioEditor.h"
--include "/Users/sl/UE4_T-Canvas/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/UnrealEd/SharedPCH.UnrealEd.ShadowErrors.h"
+-include "/Users/sl/nesunreal/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/UnrealEd/SharedPCH.UnrealEd.ShadowErrors.h"
 -I"/Users/sl/Unreal/UE_4.26/Engine/Source"
 -I"/Users/sl/Unreal/UE_4.26/Engine/Source/Editor/AudioEditor/Private"
 -I"/Users/sl/Unreal/UE_4.26/Engine/Intermediate/Build/Mac/x86_64/UE4Editor/Inc/AudioMixer"

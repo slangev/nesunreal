@@ -1,57 +1,67 @@
 [
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/DrawingCanvas.cpp",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/DrawingCanvas.h",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/NesMain.cpp",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/NesMain.h",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tests/FMyAwesomeTestLD.cpp",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tests/FMyAwesomeTestST.cpp",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tutorial_Canvas.Build.cs",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tutorial_Canvas.cpp",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/Tutorial_Canvas.h",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/NesPPU.h",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    },
-    {
-        "file": "/Users/sl/UE4_T-Canvas/Source/Tutorial_Canvas/NesPPU.cpp",
-        "command": "cl.exe @\"/Users/sl/UE4_T-Canvas/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
-        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
-    }
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesCart.cpp",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesCart.h",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesCPU.cpp",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesCPU.h",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesMain.cpp",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesMain.h",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesPPU.cpp",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesPPU.h",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Tests/FMyAwesomeTestLD.cpp",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Tests/FMyAwesomeTestST.cpp",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Tutorial_Canvas.Build.cs",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Tutorial_Canvas.cpp",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	},
+	{
+		"file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Tutorial_Canvas.h",
+		"command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Tutorial_Canvas/Tutorial_Canvas.175.rsp\"",
+		"directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+	}
 ]

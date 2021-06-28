@@ -32,7 +32,22 @@ void UNesMain::BeginPlay()
 		mat->SetTextureParameterValue(FName(TEXT("TextureInput")),ppu->GetScreen());
 	}
 	Log(pathToRom);
+	TArray<uint8> romData;
+	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*pathToRom))
+	{
+		FString str = pathToRom+"File does not exist!";
+					UE_LOG(LogTemp, Warning, TEXT("%s,  file does not exist!"), *str);
+	}
+	/* projectDir = FPaths::GameDir();
+     projectDir += "Content/Data/Icosahedron_Data.obj";*/
+	bool result = FFileHelper::LoadFileToArray(romData,*pathToRom);
+	Log(FString::FromInt(romData.Num()));
+	for(auto s : romData) {
+		Log(FString::FromInt(s));
+	}
 }
+
+
 
 
 // Called every frame

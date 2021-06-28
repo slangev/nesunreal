@@ -6,6 +6,12 @@
 #include "Components/ActorComponent.h"
 #include "NesPPU.h"
 #include <memory>
+/*#include <stdint.h>
+#include <iostream>
+#include <stdio.h>
+#include <stdint.h>
+#include <fstream>*/
+#include "Containers/UnrealString.h"
 #include "NesMain.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNesMain, Log, All);

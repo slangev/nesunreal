@@ -9,7 +9,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Debug",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -26,7 +26,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Debug",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -46,7 +46,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Debug",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex",
 				"-clean"
 			],
@@ -64,7 +64,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"DebugGame",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -81,7 +81,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"DebugGame",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -101,7 +101,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"DebugGame",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex",
 				"-clean"
 			],
@@ -119,7 +119,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Development",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -136,7 +136,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Development",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -156,7 +156,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Development",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex",
 				"-clean"
 			],
@@ -174,7 +174,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Shipping",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -191,7 +191,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Shipping",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -211,7 +211,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Shipping",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex",
 				"-clean"
 			],
@@ -229,7 +229,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Test",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -246,7 +246,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Test",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -266,7 +266,7 @@
 				"Tutorial_Canvas",
 				"Mac",
 				"Test",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex",
 				"-clean"
 			],
@@ -284,7 +284,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"Debug",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -301,7 +301,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"Debug",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -321,7 +321,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"Debug",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex",
 				"-clean"
 			],
@@ -339,7 +339,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"DebugGame",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -356,7 +356,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"DebugGame",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -376,7 +376,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"DebugGame",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex",
 				"-clean"
 			],
@@ -394,7 +394,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"Development",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -411,7 +411,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"Development",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex"
 			],
 			"problemMatcher": "$msCompile",
@@ -431,7 +431,7 @@
 				"Tutorial_CanvasEditor",
 				"Mac",
 				"Development",
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-waitmutex",
 				"-clean"
 			],

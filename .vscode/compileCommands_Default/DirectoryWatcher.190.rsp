@@ -1,5 +1,5 @@
 -include "/Users/sl/Unreal/UE_4.26/Engine/Intermediate/Build/Mac/x86_64/UE4Editor/Development/DirectoryWatcher/Definitions.DirectoryWatcher.h"
--include "/Users/sl/UE4_T-Canvas/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/Core/SharedPCH.Core.ShadowErrors.h"
+-include "/Users/sl/nesunreal/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/Core/SharedPCH.Core.ShadowErrors.h"
 -I"/Users/sl/Unreal/UE_4.26/Engine/Source"
 -I"/Users/sl/Unreal/UE_4.26/Engine/Source/Developer/DirectoryWatcher/Private"
 -I"/Users/sl/Unreal/UE_4.26/Engine/Intermediate/Build/Mac/x86_64/UE4Editor/Inc/Core"

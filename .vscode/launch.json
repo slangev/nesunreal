@@ -5,7 +5,7 @@
 			"name": "Tutorial_Canvas (Debug)",
 			"request": "launch",
 			"preLaunchTask": "Tutorial_Canvas Mac Debug Build",
-			"program": "/Users/sl/UE4_T-Canvas/Binaries/Mac/UE4-Mac-Debug.app/Contents/MacOS/UE4-Mac-Debug",
+			"program": "/Users/sl/nesunreal/Binaries/Mac/UE4-Mac-Debug.app/Contents/MacOS/UE4-Mac-Debug",
 			"args": [
 			],
 			"cwd": "/Users/sl/Unreal/UE_4.26",
@@ -15,7 +15,7 @@
 			"name": "Tutorial_Canvas (DebugGame)",
 			"request": "launch",
 			"preLaunchTask": "Tutorial_Canvas Mac DebugGame Build",
-			"program": "/Users/sl/UE4_T-Canvas/Binaries/Mac/UE4-Mac-DebugGame.app/Contents/MacOS/UE4-Mac-DebugGame",
+			"program": "/Users/sl/nesunreal/Binaries/Mac/UE4-Mac-DebugGame.app/Contents/MacOS/UE4-Mac-DebugGame",
 			"args": [
 			],
 			"cwd": "/Users/sl/Unreal/UE_4.26",
@@ -25,7 +25,7 @@
 			"name": "Tutorial_Canvas (Development)",
 			"request": "launch",
 			"preLaunchTask": "Tutorial_Canvas Mac Development Build",
-			"program": "/Users/sl/UE4_T-Canvas/Binaries/Mac/UE4.app/Contents/MacOS/UE4",
+			"program": "/Users/sl/nesunreal/Binaries/Mac/UE4.app/Contents/MacOS/UE4",
 			"args": [
 			],
 			"cwd": "/Users/sl/Unreal/UE_4.26",
@@ -35,7 +35,7 @@
 			"name": "Tutorial_Canvas (Shipping)",
 			"request": "launch",
 			"preLaunchTask": "Tutorial_Canvas Mac Shipping Build",
-			"program": "/Users/sl/UE4_T-Canvas/Binaries/Mac/UE4-Mac-Shipping.app/Contents/MacOS/UE4-Mac-Shipping",
+			"program": "/Users/sl/nesunreal/Binaries/Mac/UE4-Mac-Shipping.app/Contents/MacOS/UE4-Mac-Shipping",
 			"args": [
 			],
 			"cwd": "/Users/sl/Unreal/UE_4.26",
@@ -45,7 +45,7 @@
 			"name": "Tutorial_Canvas (Test)",
 			"request": "launch",
 			"preLaunchTask": "Tutorial_Canvas Mac Test Build",
-			"program": "/Users/sl/UE4_T-Canvas/Binaries/Mac/UE4-Mac-Test.app/Contents/MacOS/UE4-Mac-Test",
+			"program": "/Users/sl/nesunreal/Binaries/Mac/UE4-Mac-Test.app/Contents/MacOS/UE4-Mac-Test",
 			"args": [
 			],
 			"cwd": "/Users/sl/Unreal/UE_4.26",
@@ -57,7 +57,7 @@
 			"preLaunchTask": "Tutorial_CanvasEditor Mac Debug Build",
 			"program": "/Users/sl/Unreal/UE_4.26/Engine/Binaries/Mac/UE4Editor-Mac-Debug.app/Contents/MacOS/UE4Editor-Mac-Debug",
 			"args": [
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject"
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject"
 			],
 			"cwd": "/Users/sl/Unreal/UE_4.26",
 			"type": "lldb"
@@ -68,7 +68,7 @@
 			"preLaunchTask": "Tutorial_CanvasEditor Mac DebugGame Build",
 			"program": "/Users/sl/Unreal/UE_4.26/Engine/Binaries/Mac/UE4Editor-Mac-DebugGame.app/Contents/MacOS/UE4Editor-Mac-DebugGame",
 			"args": [
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject"
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject"
 			],
 			"cwd": "/Users/sl/Unreal/UE_4.26",
 			"type": "lldb"
@@ -79,7 +79,7 @@
 			"preLaunchTask": "Tutorial_CanvasEditor Mac Development Build",
 			"program": "/Users/sl/Unreal/UE_4.26/Engine/Binaries/Mac/UE4Editor.app/Contents/MacOS/UE4Editor",
 			"args": [
-				"/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject"
+				"/Users/sl/nesunreal/Tutorial_Canvas.uproject"
 			],
 			"cwd": "/Users/sl/Unreal/UE_4.26",
 			"type": "lldb"
@@ -93,7 +93,7 @@
 			"args": [
 				"-projectfiles",
 				"-vscode",
-				"-project=/Users/sl/UE4_T-Canvas/Tutorial_Canvas.uproject",
+				"-project=/Users/sl/nesunreal/Tutorial_Canvas.uproject",
 				"-game",
 				"-engine"
 			],
