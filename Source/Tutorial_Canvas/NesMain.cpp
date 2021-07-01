@@ -2,6 +2,7 @@
 
 
 #include "NesMain.h"
+#include <iomanip>
 
 DEFINE_LOG_CATEGORY(LogNesMain);
 
@@ -24,26 +25,31 @@ void UNesMain::Log(FString msg) {
 void UNesMain::BeginPlay()
 {
 	Super::BeginPlay();
-	ppu = std::unique_ptr<NesPPU>(new NesPPU(256, 240, 4));
+	ppu = std::make_unique<NesPPU>(256, 240, 4);
+	cart = std::make_unique<NesCart>();
 	AActor *a = GetOwner();
 	UStaticMeshComponent* mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(mesh) {
 		UMaterialInstanceDynamic * mat = mesh->CreateDynamicMaterialInstance(0, ((UMaterialInterface*)nullptr),FName(TEXT("Dynamic Mat")));
 		mat->SetTextureParameterValue(FName(TEXT("TextureInput")),ppu->GetScreen());
 	}
+
 	Log(pathToRom);
 	TArray<uint8> romData;
 	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*pathToRom))
 	{
 		FString str = pathToRom+"File does not exist!";
-					UE_LOG(LogTemp, Warning, TEXT("%s,  file does not exist!"), *str);
+		UE_LOG(LogTemp, Warning, TEXT("%s,  file does not exist!"), *str);
 	}
-	/* projectDir = FPaths::GameDir();
-     projectDir += "Content/Data/Icosahedron_Data.obj";*/
-	bool result = FFileHelper::LoadFileToArray(romData,*pathToRom);
+	FString projectDir = FPaths::ProjectDir();
+    projectDir += pathToRom;
+	bool result = FFileHelper::LoadFileToArray(romData,*projectDir);
 	Log(FString::FromInt(romData.Num()));
-	for(auto s : romData) {
-		Log(FString::FromInt(s));
+
+	for(uint8 s : romData) {
+		
+		//Log(FString::FromInt(s));
+		UE_LOG(LogNesMain, Log, TEXT("%X"), s);
 	}
 }
 

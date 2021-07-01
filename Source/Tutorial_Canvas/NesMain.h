@@ -5,12 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "NesPPU.h"
+#include "NesCart.h"
 #include <memory>
-/*#include <stdint.h>
-#include <iostream>
-#include <stdio.h>
-#include <stdint.h>
-#include <fstream>*/
 #include "Containers/UnrealString.h"
 #include "NesMain.generated.h"
 
@@ -28,6 +24,7 @@ public:
 	UPROPERTY(EditAnywhere,Meta = (Bitmask))
 	FString pathToRom;
 	std::unique_ptr<NesPPU> ppu;
+	std::unique_ptr<NesCart> cart;
 	void Log(FString);
 
 
