@@ -29,7 +29,7 @@ void UNesMain::BeginPlay()
 	m_mmu = make_shared<NesMMU>();
 	m_cpu = make_unique<NesCPU>();
 	m_mmu->AttachCart(make_unique<NesCart>(pathToRom));
-	m_cpu->AttachMemory(m_mmu);
+	m_cpu->AttachMemory(m_mmu, 0xC000);
 	AActor *a = GetOwner();
 	UStaticMeshComponent* mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(mesh) {

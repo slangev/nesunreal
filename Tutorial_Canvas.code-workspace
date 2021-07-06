@@ -17,7 +17,11 @@
 			"/Users/sl/nesunreal/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/Engine/SharedPCH.Engine.h"
 		],
 		"files.associations": {
-			"memory": "cpp"
+			"memory": "cpp",
+			"cstddef": "cpp",
+			"filesystem": "cpp",
+			"stdexcept": "cpp",
+			"string": "cpp"
 		}
 	},
 	"extensions": {
