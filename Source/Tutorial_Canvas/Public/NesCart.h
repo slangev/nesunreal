@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include <memory>
 #include <vector>
+#include "NesHeader.h"
 #include "NesCartController.h"
 #include "NesNoMapper.h"
-#include "NesHeader.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNesCart, Log, All);
 using namespace std;
@@ -20,16 +20,16 @@ public:
 	NesCart();
 	NesCart(FString pathToRom);
 	~NesCart();
-	void loadRom(FString pathToRom);
-
-
-	
+	uint8 Read(unsigned short address);
+	void Write(unsigned short address, uint8 data);
 
 private:
+	void loadRom(FString pathToRom);
 	void printRomData();
+	void Log(string msg);
 	unique_ptr<NesCartController> mbc;
 	unique_ptr<NesHeader> header;
-	vector<uint8> romMemory;
-	vector<uint8> ramMemory;
-	vector<uint8> vRomMemory;
+	shared_ptr<vector<uint8>> romMemory;
+	shared_ptr<vector<uint8>> ramMemory;
+	shared_ptr<vector<uint8>> vRomMemory;
 };

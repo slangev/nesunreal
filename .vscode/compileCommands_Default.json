@@ -103,5 +103,95 @@
         "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/NesHeader.cpp",
         "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
         "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesPPU.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesPRegister.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesCart.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesMain.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesCartController.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesMMU.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesHeader.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesCPU.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesNoMapper.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesPRegister.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesPPU.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesCPU.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesMain.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesCartController.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesHeader.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesCart.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesNoMapper.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesMMU.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
     }
 ]

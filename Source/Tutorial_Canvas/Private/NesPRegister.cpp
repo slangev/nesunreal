@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "NesCPU.h"
+#include "NesPRegister.h"
 
-NesCPU::NesCPU()
+NesPRegister::NesPRegister()
 {
 }
 
-NesCPU::~NesCPU()
+NesPRegister::~NesPRegister()
 {
 }
