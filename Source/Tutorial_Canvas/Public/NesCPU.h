@@ -19,7 +19,7 @@ public:
 	NesCPU();
 	~NesCPU();
 	void AttachMemory(shared_ptr<NesMMU> mmu, unsigned short PC);
-    uint8 Tick();
+    uint Tick();
 	
 private:
 	shared_ptr<NesMMU> m_mmu;
@@ -32,6 +32,7 @@ private:
     uint totalCycles = 0;
     uint lineNumber = 1;
 
-    static const int cycleCount[];
+    static const uint cycleCount[];
     void printNesTestLogLine(uint8 opcode);
+    uint handleInstructions(uint8 opcode);
 };

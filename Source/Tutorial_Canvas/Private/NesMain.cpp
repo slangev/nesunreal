@@ -46,10 +46,10 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	uint64 cyclesThisUpdate = 0 ; 
+	uint cyclesThisUpdate = 0 ; 
     while (cyclesThisUpdate < MAXCYCLES) {
 		//gbJoyPad.HandleKeyEvents();
-		uint8 cycles = m_cpu->Tick();
+		uint cycles = m_cpu->Tick();
 		cyclesThisUpdate+=cycles;
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/

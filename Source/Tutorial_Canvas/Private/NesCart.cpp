@@ -49,7 +49,7 @@ void NesCart::loadRom(FString pathToRom) {
     }
 	header->numberOfPROROMS = romData[4];
     int romMemorySize = 0x4000 * header->numberOfPROROMS; //16KB of banks
-	for(int i = 0x10; i < romMemorySize; i++) {
+	for(int i = 0x10; i < romMemorySize+0x10; i++) {
 		romMemory->push_back(romData[i]);
 	}
 
@@ -71,6 +71,7 @@ void NesCart::loadRom(FString pathToRom) {
 	switch(header->mapper) {
 		case 0:
 			mbc = make_unique<NesNoMapper>(romMemory,ramMemory,vRomMemory);
+			Log(to_string(romMemory->size()));
 			break;
 		default:
 			break;

@@ -5,6 +5,7 @@
 
 NesMMU::NesMMU()
 {
+    m_cpuRam = make_unique<vector<uint8>>(m_memorySize,0);
 }
 
 NesMMU::~NesMMU()
@@ -38,7 +39,7 @@ void NesMMU::Write(unsigned short address, uint8 data) {
 }
 
 uint8 NesMMU::Read(unsigned short address) {
-//CPU RAM
+    //CPU RAM
     if(address >= 0x0000 && address < 0x2000) {
         //Zero Page
         if(address >= 0x0000 && address < 0x0100) {

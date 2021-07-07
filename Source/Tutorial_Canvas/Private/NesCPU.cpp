@@ -6,7 +6,7 @@
 DEFINE_LOG_CATEGORY(LogNesCPU);
 
 
-const int NesCPU::cycleCount[] = {
+const uint NesCPU::cycleCount[] = {
     7,6,0,8,3,3,5,5,3,2,2,2,4,4,6,6,
     2,5,0,8,4,4,6,6,2,4,2,7,4,4,7,7,
     6,6,0,8,3,3,5,5,4,2,2,2,4,4,6,6,
@@ -48,7 +48,7 @@ void NesCPU::printNesTestLogLine(uint8 opcode) {
     stringstream streamY;
     stringstream streamP;
     stringstream streamSP;
-    streamPC << setfill ('0') << setw(sizeof(unsigned short)*2) << hex << PC;
+    streamPC << setfill ('0') << setw(sizeof(unsigned short)*2) << hex << PC-1;
     streamOPcode << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)opcode;
     streamA << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)A;
     streamX << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)X;
@@ -70,12 +70,234 @@ void NesCPU::printNesTestLogLine(uint8 opcode) {
     UE_LOG(LogNesCPU, Log, TEXT("%s"), *ueresult);
 }
 
-uint8 NesCPU::Tick() {
-    return 4;
+void LogOpcode(FString msg, uint8 opcode) {
+    string result = "";
+    stringstream streamOPcode;
+    streamOPcode << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)opcode;
+    result += streamOPcode.str();
+    FString ueresult(result.c_str());
+    ueresult = ueresult.ToUpper();
+    UE_LOG(LogNesCPU, Log, TEXT("%s %s"),*msg, *ueresult);
+}
+
+uint NesCPU::Tick() {
+    uint8 opcode = m_mmu->Read(PC++ & 0xFFFF);
+    printNesTestLogLine(opcode);
+    return handleInstructions(opcode);
+}
+
+
+uint NesCPU::handleInstructions(uint8 opcode) {
+        uint lastCycleCount = cycleCount[opcode];
+        switch(opcode) {
+            /*case 0x01:
+                ORA(opcode);
+                break;
+            case 0x08:
+                PHP(opcode);
+                break;
+            case 0x09:
+                ORA(opcode);
+                break;
+            case 0x0A:
+                A = ASL(opcode,A);
+                break;
+            case 0x10:
+                lastCycleCount += BRANCH(opcode,p.ReadFlag(PRegister.NFlag) == 0);
+                break;
+            case 0x18:
+                CLC(opcode);
+                break;
+            case 0x20:
+                JSR(opcode);
+                break;
+            case 0x21:
+                AND(opcode);
+                break;
+            case 0x24:
+                BIT(opcode);
+                break;
+            case 0x28:
+                PLP(opcode);
+                break;
+            case 0x29:
+                AND(opcode);
+                break;
+            case 0x2A:
+                A = ROL(opcode,A);
+                break;
+            case 0x30:
+                lastCycleCount += BRANCH(opcode,p.ReadFlag(PRegister.NFlag) == 1);
+                break;
+            case 0x38:
+                SEC(opcode);
+                break;
+            case 0x40:
+                RTI(opcode);
+                break;
+            case 0x41:
+                EOR(opcode);
+                break;
+            case 0x48:
+                PHA(opcode);
+                break;
+            case 0x49:
+                EOR(opcode);
+                break;
+            case 0x4A:
+                A = LSR(opcode,A);
+                break;
+            case 0x4C:
+                JMP(opcode);
+                break;
+            case 0x50:
+                lastCycleCount += BRANCH(opcode,p.ReadFlag(PRegister.VFlag) == 0);
+                break;
+            case 0x60:
+                RTS(opcode);
+                break;
+            case 0x61:
+                ADC(opcode);
+                break;
+            case 0x68:
+                PLA(opcode);
+                break;
+            case 0x69:
+                ADC(opcode);
+                break;
+            case 0x6A:
+                A = ROR(opcode,A);
+                break;
+            case 0x70:
+                lastCycleCount += BRANCH(opcode,p.ReadFlag(PRegister.VFlag) == 1);
+                break;
+            case 0x78:
+                SEI(opcode);
+                break;
+            case 0x81:
+                STORE(opcode,X);
+                break;
+            case 0x85:
+                STORE(opcode,A);
+                break;
+            case 0x86:
+                STORE(opcode,X);
+                break;
+            case 0x88:
+                Y = DEC(opcode,Y);
+                break;
+            case 0x8A:
+                A = TRANSFER(opcode,X);
+                break;
+            case 0x8D:
+                STORE(opcode,A);
+                break;
+            case 0x8E:
+                STORE(opcode,X);
+                break;
+            case 0x90:
+                //BCC
+                lastCycleCount += BRANCH(opcode,p.ReadFlag(PRegister.CFlag) == 0);
+                break;
+            case 0x98:
+                A = TRANSFER(opcode,Y);
+                break;
+            case 0x9A:
+                SP = TRANSFER(opcode,X);
+                break;
+            case 0xA0:
+                Y = LD(opcode);
+                break;
+            case 0xA1:
+                A = LD(opcode);
+                break;
+            case 0xA2:
+                X = LD(opcode);
+                break;
+            case 0xA4:
+                Y = LD(opcode);
+                break;
+            case 0xA5:
+                A = LD(opcode);
+                break;
+            case 0xA8:
+                Y = TRANSFER(opcode,A);
+                break;
+            case 0xA9:
+                A = LD(opcode);
+                break;
+            case 0xAA:
+                X = TRANSFER(opcode,A);
+                break;
+            case 0xAD:
+                A = LD(opcode);
+                break;
+            case 0xAE:
+                X = LD(opcode);
+                break;
+            case 0xB0:
+                //BCS
+                lastCycleCount += BRANCH(opcode,p.ReadFlag(PRegister.CFlag) == 1);
+                break;
+            case 0xB8:
+                CLV(opcode);
+                break;
+            case 0xBA:
+                X = TRANSFER(opcode,SP);
+                break;
+            case 0xC0:
+                CP(opcode,Y);
+                break;
+            case 0xC1:
+                CMP(opcode);
+                break;
+            case 0xC8:
+                Y = INC(opcode,Y);
+                break;
+            case 0xC9:
+                CMP(opcode);
+                break;
+            case 0xCA:
+                X = DEC(opcode,X);
+                break;
+            case 0xD0:
+                //BNE
+                lastCycleCount += BRANCH(opcode,p.ReadFlag(PRegister.ZFlag) == 0);
+                break;
+            case 0xD8:
+                CLD(opcode);
+                break;
+            case 0xE0:
+                CP(opcode,X);
+                break;
+            case 0xE1:
+                SBC(opcode);
+                break;
+            case 0xE9:
+                SBC(opcode);
+                break;
+            case 0xEA:
+                NOP(opcode);
+                break;
+            case 0xE8:
+                X = INC(opcode,X);
+                break;
+            case 0xF0:
+                //BEQ
+                lastCycleCount += BRANCH(opcode,p.ReadFlag(PRegister.ZFlag) == 1);
+                break;
+            case 0xF8:
+                SED(opcode);
+                break;*/
+            default:
+                LogOpcode("Unknown opcode: ", opcode);
+                break;
+        }
+        totalCycles += lastCycleCount;
+        return lastCycleCount; 
 }
 
 void NesCPU::AttachMemory(shared_ptr<NesMMU> mmu, unsigned short startPC) {
     this->m_mmu = mmu;
     this->PC = (startPC == 0) ? ((m_mmu->Read(0xFFFD) << 8) | m_mmu->Read(0xFFFC)) : startPC;
-    printNesTestLogLine(0x25);
 }
