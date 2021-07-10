@@ -193,5 +193,15 @@
         "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesMMU.h",
         "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
         "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Private/NesTestCart.cpp",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
+    },
+    {
+        "file": "/Users/sl/nesunreal/Source/Tutorial_Canvas/Public/NesTestCart.h",
+        "command": "cl.exe @\"/Users/sl/nesunreal/.vscode/compileCommands_Default/Tutorial_Canvas.175.rsp\"",
+        "directory": "/Users/sl/Unreal/UE_4.26/Engine/Source"
     }
 ]

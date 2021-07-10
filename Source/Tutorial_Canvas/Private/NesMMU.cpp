@@ -16,6 +16,10 @@ void NesMMU::AttachCart(unique_ptr<NesCart> cart) {
     this->m_cart = std::move(cart);
 }
 
+/*void NesMMU::AttachCart(shared_ptr<NesCart> cart) {
+    this->m_cart = cart;
+}*/
+
 void NesMMU::Write(unsigned short address, uint8 data) {
     //CPU RAM
     if(address >= 0x0000 && address < 0x2000) {

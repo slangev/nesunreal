@@ -8,6 +8,7 @@
 #include "NesHeader.h"
 #include "NesCartController.h"
 #include "NesNoMapper.h"
+#include "NesTestCart.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNesCart, Log, All);
 using namespace std;
@@ -18,6 +19,7 @@ class TUTORIAL_CANVAS_API NesCart
 {
 public:
 	NesCart();
+	NesCart(vector<uint8>);
 	NesCart(FString pathToRom);
 	~NesCart();
 	uint8 Read(unsigned short address);

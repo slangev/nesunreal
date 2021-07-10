@@ -9,6 +9,10 @@ NesCart::NesCart()
     mbc = make_unique<NesNoMapper>();
 }
 
+NesCart::NesCart(vector<uint8> rom) {
+	mbc = make_unique<NesTestCart>(rom);
+}
+
 NesCart::NesCart(FString pathToRom) {
     loadRom(*pathToRom);
 }

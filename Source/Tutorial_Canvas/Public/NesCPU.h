@@ -20,16 +20,15 @@ public:
 	~NesCPU();
 	void AttachMemory(shared_ptr<NesMMU> mmu, unsigned short PC);
     uint Tick();
-    
-	
-private:
-	shared_ptr<NesMMU> m_mmu;
     unique_ptr<NesPRegister> P;
     unsigned short PC;
     uint8 SP;
     uint8 A;
     uint8 X;
     uint8 Y;
+    
+private:
+	shared_ptr<NesMMU> m_mmu;
     uint totalCycles = 0;
     uint lineNumber = 1;
 
@@ -42,6 +41,8 @@ private:
     void JMP(uint8 opcode);
     void CP(uint8 opcode, uint8 reg);
     uint8 LD(uint8 opcode);
+    uint8 INC(uint8 opcode, uint8 reg);
+    uint8 DEC(uint8 opcode, uint8 reg);
     void STORE(uint8 opcode, uint8 reg);
     void RTS(uint8 opcode);
     void RTI(uint8 opcode);
@@ -51,6 +52,21 @@ private:
     void ADC(uint8 opcode);
     void ORA(uint8 opcode);
     void PHP(uint8 opcode);
+    void PLA(uint8 opcode);
+    void CMP(uint8 opcode);
+    void SBC(uint8 opcode);
+    void NOP(uint8 opcode);
+    void JSR(uint8 opcode);
+    void BIT(uint8 opcode);
+    uint BRANCH(uint8 opcode, bool cc);
+    uint8 TRANSFER(uint8 opcode, uint8 reg);
+    void SEC(uint8 opcode);
+    void SEI(uint8 opcode);
+    void SED(uint8 opcode);
+    void CLC(uint8 opcode);
+    void CLD(uint8 opcode);
+    void CLV(uint8 opcode);
+    void EOR(uint8 opcode);
     uint8 ROL(uint8 opcode, uint8 reg);
     uint8 LSR(uint8 opcode, uint8 reg);
     uint8 ASL(uint8 opcode, uint8 reg);

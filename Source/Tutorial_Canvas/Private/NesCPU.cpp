@@ -102,21 +102,21 @@ uint NesCPU::handleInstructions(uint8 opcode) {
             case 0x0A:
                 A = ASL(opcode,A);
                 break;
-            /*case 0x10:
+            case 0x10:
                 lastCycleCount += BRANCH(opcode,P->ReadFlag(P->NFlag) == 0);
-                break;*/
-            /*case 0x18:
+                break;
+            case 0x18:
                 CLC(opcode);
-                break;*/
-            /*case 0x20:
+                break;
+            case 0x20:
                 JSR(opcode);
-                break;*/
+                break;
             case 0x21:
                 AND(opcode);
                 break;
-            /*case 0x24:
+            case 0x24:
                 BIT(opcode);
-                break;*/
+                break;
             case 0x28:
                 PLP(opcode);
                 break;
@@ -126,31 +126,31 @@ uint NesCPU::handleInstructions(uint8 opcode) {
             case 0x2A:
                 A = ROL(opcode,A);
                 break;
-            /*case 0x30:
+            case 0x30:
                 lastCycleCount += BRANCH(opcode,P->ReadFlag(P->NFlag) == 1);
-                break;*/
-            /*case 0x38:
+                break;
+            case 0x38:
                 SEC(opcode);
-                break;*/
+                break;
             case 0x40:
                 RTI(opcode);
                 break;
-            /*case 0x41:
+            case 0x41:
                 EOR(opcode);
-                break;*/
+                break;
             case 0x48:
                 PHA(opcode);
                 break;
-            /*case 0x49:
+            case 0x49:
                 EOR(opcode);
-                break;*/
+                break;
             case 0x4A:
                 A = LSR(opcode,A);
                 break;
             case 0x4C:
                 JMP(opcode);
                 break;
-            /*case 0x50:
+            case 0x50:
                 lastCycleCount += BRANCH(opcode,P->ReadFlag(P->VFlag) == 0);
                 break;
             case 0x60:
@@ -173,7 +173,7 @@ uint NesCPU::handleInstructions(uint8 opcode) {
                 break;
             case 0x78:
                 SEI(opcode);
-                break;*/
+                break;
             case 0x81:
                 STORE(opcode,X);
                 break;
@@ -183,19 +183,19 @@ uint NesCPU::handleInstructions(uint8 opcode) {
             case 0x86:
                 STORE(opcode,X);
                 break;
-            /*case 0x88:
+            case 0x88:
                 Y = DEC(opcode,Y);
-                break;*/
-            /*case 0x8A:
+                break;
+            case 0x8A:
                 A = TRANSFER(opcode,X);
-                break;*/
+                break;
             case 0x8D:
                 STORE(opcode,A);
                 break;
             case 0x8E:
                 STORE(opcode,X);
                 break;
-            /*case 0x90:
+            case 0x90:
                 //BCC
                 lastCycleCount += BRANCH(opcode,P->ReadFlag(P->CFlag) == 0);
                 break;
@@ -288,9 +288,9 @@ uint NesCPU::handleInstructions(uint8 opcode) {
                 break;
             case 0xF8:
                 SED(opcode);
-                break;*/
+                break;
             default:
-                //LogOpcode("Unknown opcode: ", opcode);
+                LogOpcode("Unknown opcode: ", opcode);
                 break;
         }
         totalCycles += lastCycleCount;
@@ -306,6 +306,8 @@ unsigned short NesCPU::combineBytePairIntoUShort(uint8 lsb, uint8 msb) {
     unsigned short result = ((msb << 8) | lsb);
     return result;
 }
+
+
 
 // Item1 = MSB and Item 2 = LSB
 void NesCPU::separateWordToBytes(ushort word, uint8 result[]) {
@@ -346,6 +348,17 @@ void NesCPU::JMP(uint8 opcode) {
         uint8 msb = m_mmu->Read(PC++);
         PC = combineBytePairIntoUShort(lsb,msb);
     }
+}
+
+void NesCPU::JSR(uint8 opcode) {
+    uint8 lowByte = m_mmu->Read(PC++);
+    uint8 highByte = m_mmu->Read(PC++);    
+    unsigned short addr = combineBytePairIntoUShort(lowByte,highByte);
+    uint8 result[2];
+    separateWordToBytes((unsigned short)(PC-1), result);
+    m_mmu->Write(SP--|0x100,result[0]);
+    m_mmu->Write(SP--|0x100,result[1]);
+    PC = addr;
 }
 
 //The RTS instruction is used at the end of a subroutine to return to the calling routine. It pulls the program counter from the stack.
@@ -422,6 +435,22 @@ void NesCPU::CP(uint8 opcode, uint8 reg) {
             (reg >= readByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
             (getBit(7,(uint8)(reg - readByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
             break;
+    }
+}
+
+void NesCPU::BIT(uint8 opcode) {
+    //Zero-page
+    if(opcode == 0x24) {
+        uint8 memoryLocation = m_mmu->Read(PC++);
+        uint8 readByte = m_mmu->Read(memoryLocation & 0xFF);
+        uint8 result = (uint8)(A & readByte);
+        if(result == 0) {
+            P->SetFlag(P->ZFlag);
+        }
+        uint8 NflagByte = getBit(P->NFlag,readByte);
+        uint8 VflagByte = getBit(P->VFlag,readByte);
+        (NflagByte == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+        (VflagByte == 1) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
     }
 }
 
@@ -549,9 +578,151 @@ void NesCPU::ORA(uint8 opcode) {
     (getBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
 
+void NesCPU::EOR(uint8 opcode) {
+        uint8 readByte = 0x00;
+        switch(opcode) {
+            case 0x41:{
+                unsigned short address = getIndirectAddress(X);
+                readByte = m_mmu->Read(address);
+                break;
+            }  
+            case 0x49:
+                readByte = m_mmu->Read(PC++);
+                break;
+        }
+        A = (uint8)(A ^ readByte);
+        (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+        (getBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    }
+
 //https://wiki.nesdev.com/w/index.php/Status_flags
 void NesCPU::PHP(uint8 opcode) {
     uint8 copyP = P->pStateWithBFlag();
     copyP = (uint8)(copyP | 0x30);
     m_mmu->Write(SP--|0x100,copyP);
+}
+
+uint NesCPU::BRANCH(uint8 opcode, bool cc) {
+    int8 sb = (uint8)(m_mmu->Read(PC++));
+    //int8 sb = unchecked((sbyte)(b));
+    if(cc) {
+        uint8 prevPage = (uint8)((PC & 0xFF00) >> 8);
+        PC = (unsigned short)(PC + sb);
+        uint8 currPage = (uint8)((PC & 0xFF00) >> 8); 
+        return (uint)((currPage != prevPage) ? 2 : 1); // Taken branch and page crossed equals 2. If we take a branch and don't cross pages then return 1.
+    }
+    return 0;
+}
+
+void NesCPU::SBC(uint8 opcode) {
+    uint8 readByte = 0x00;
+    unsigned short diff = 0x000;
+    switch(opcode) {
+        case 0xE1:{
+            unsigned short address = getIndirectAddress(X);
+            readByte = m_mmu->Read(address);
+            break;
+        }
+        case 0xE9:
+            readByte = m_mmu->Read(PC++);
+            break;
+    }
+    diff = (unsigned short)(A - readByte - (1 - P->ReadFlag(P->CFlag)));
+    ((uint8)(diff) == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (diff <= 0xFF) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    (getBit(7,(uint8)(diff)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (((A ^ diff) & (~readByte ^ diff) & 0x80) != 0) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
+    A = (uint8)(diff);
+}
+
+void NesCPU::PLA(uint8 opcode) {
+    A = m_mmu->Read(++SP|0x100);
+    (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (getBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+}
+
+void NesCPU::SEC(uint8 opcode) {
+    P->SetFlag(P->CFlag);
+}
+
+void NesCPU::SEI(uint8 opcode) {
+    P->SetFlag(P->IFlag);
+}
+
+void NesCPU::SED(uint8 opcode) {
+    P->SetFlag(P->DFlag);
+}
+
+void NesCPU::CLC(uint8 opcode) {
+    P->ResetFlag(P->CFlag);
+}
+
+void NesCPU::CLD(uint8 opcode) {
+    P->ResetFlag(P->DFlag);
+}
+
+void NesCPU::CLV(uint8 opcode) {
+    P->ResetFlag(P->VFlag);
+}
+
+
+uint8 NesCPU::TRANSFER(uint8 opcode, uint8 reg) {
+    switch(opcode) {
+        case 0x9A: 
+            return reg;
+        default:
+            (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+            (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+            return reg;
+    }
+}
+
+void NesCPU::CMP(uint8 opcode) {
+    uint8 readByte = 0x00;
+    switch(opcode) {
+        case 0xC1: {
+            unsigned short address = getIndirectAddress(X);
+            readByte = m_mmu->Read(address);
+            break;
+        }
+        case 0xC9:
+            readByte = m_mmu->Read(PC++);
+            break;
+    }
+    (A == readByte) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (A >= readByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    (getBit(7,(uint8)(A-readByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+}
+
+uint8 NesCPU::INC(uint8 opcode, uint8 reg) {
+    switch(opcode) {
+        case 0xC8:
+        case 0xE8:{
+            reg +=1;
+            (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+            (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+            return reg;
+        }
+        default:
+            //Debug.LogError("Bad INC operation");
+            return 0xFF;
+    }
+}
+
+uint8 NesCPU::DEC(uint8 opcode, uint8 reg) {
+    switch(opcode) {
+        case 0x88:
+        case 0xCA:
+            reg -=1;
+            (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+            (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+            return reg;
+        default:
+            //Debug.LogError("Bad INC operation");
+            return 0xFF;
+    }
+}
+
+void NesCPU::NOP(uint8 opcode) {
+    //NO OPERATION.
 }
