@@ -20,7 +20,7 @@ vector<uint8> rom;
 void Setup() {
 	cpu = make_unique<NesCPU>();
 	mmu = make_shared<NesMMU>();
-    cpu->AttachMemory(mmu,0x8000); //Set PC to 0x8000*/
+    cpu->AttachMemory(mmu,0x8000); //Set PC to 0x8000
 	rom.clear();
 }
 
