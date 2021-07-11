@@ -177,6 +177,9 @@ uint NesCPU::handleInstructions(uint8 opcode) {
             case 0x81:
                 STORE(opcode,X);
                 break;
+            case 0x84:
+                STORE(opcode,Y);
+                break;
             case 0x85:
                 STORE(opcode,A);
                 break;
@@ -463,6 +466,7 @@ void NesCPU::STORE(uint8 opcode, uint8 reg) {
             break;
         } 
         // Zero-page
+        case 0x84:
         case 0x85:
         case 0x86: {
             uint8 lsb = m_mmu->Read(PC++);

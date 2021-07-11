@@ -15,15 +15,7 @@
 			"${default}",
 			"/Users/sl/nesunreal/Intermediate/Build/Mac/x86_64/UE4Editor/Development/Tutorial_Canvas/Definitions.Tutorial_Canvas.h",
 			"/Users/sl/nesunreal/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/Engine/SharedPCH.Engine.h"
-		],
-		"files.associations": {
-			"memory": "cpp",
-			"cstddef": "cpp",
-			"filesystem": "cpp",
-			"stdexcept": "cpp",
-			"string": "cpp",
-			"__locale": "cpp"
-		}
+		]
 	},
 	"extensions": {
 		"recommendations": [
