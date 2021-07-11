@@ -310,8 +310,6 @@ unsigned short NesCPU::combineBytePairIntoUShort(uint8 lsb, uint8 msb) {
     return result;
 }
 
-
-
 // Item1 = MSB and Item 2 = LSB
 void NesCPU::separateWordToBytes(ushort word, uint8 result[]) {
     result[0] = ((word & 0xFF00) >> 8);
