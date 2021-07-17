@@ -28,6 +28,7 @@ const uint NesCPU::cycleCount[] = {
 NesCPU::NesCPU()
 {
     P = make_unique<NesPRegister>();
+    PC = 0x8000;
     A = 0;
     X = 0;
     Y = 0;
@@ -39,258 +40,264 @@ NesCPU::~NesCPU()
 {
 }
 
-void NesCPU::printNesTestLogLine(uint8 opcode) {
-    string result = to_string(lineNumber++) + " ";
-    stringstream streamPC;
-    stringstream streamOPcode;
-    stringstream streamA;
-    stringstream streamX;
-    stringstream streamY;
-    stringstream streamP;
-    stringstream streamSP;
-    streamPC << setfill ('0') << setw(sizeof(unsigned short)*2) << hex << PC-1;
-    streamOPcode << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)opcode;
-    streamA << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)A;
-    streamX << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)X;
-    streamY << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)Y;
-    streamP << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)P->pState();
-    streamSP << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)SP;
+void NesCPU::PrintNesTestLogLine(uint8 Opcode) {
+    string Result = to_string(lineNumber++) + " ";
+    stringstream StreamPC;
+    stringstream StreamOpCode;
+    stringstream StreamA;
+    stringstream StreamX;
+    stringstream StreamY;
+    stringstream StreamP;
+    stringstream StreamSP;
+    StreamPC << setfill ('0') << setw(sizeof(unsigned short)*2) << hex << PC-1;
+    StreamOpCode << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Opcode);
+    StreamA << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(A);
+    StreamX << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(X);
+    StreamY << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Y);
+    StreamP << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(P->pState());
+    StreamSP << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(SP);
 
-    result += streamPC.str() + "  ";
-    result += streamOPcode.str() + "                       A:";
-    result += streamA.str() + " X:";
-    result += streamX.str() + " Y:";
-    result += streamY.str() + " P:";
-    result += streamP.str() + " SP:";
-    result += streamSP.str() + " CYC:";
-    result += to_string(totalCycles);
+    Result += StreamPC.str() + "  ";
+    Result += StreamOpCode.str() + "                       A:";
+    Result += StreamA.str() + " X:";
+    Result += StreamX.str() + " Y:";
+    Result += StreamY.str() + " P:";
+    Result += StreamP.str() + " SP:";
+    Result += StreamSP.str() + " CYC:";
+    Result += to_string(totalCycles);
 
-    FString ueresult(result.c_str());
-    ueresult = ueresult.ToUpper();
-    UE_LOG(LogNesCPU, Log, TEXT("%s"), *ueresult);
+    FString DebugResult(Result.c_str());
+    DebugResult = DebugResult.ToUpper();
+    UE_LOG(LogNesCPU, Log, TEXT("%s"), *DebugResult);
 }
 
 void LogOpcode(FString msg, uint8 opcode) {
-    string result = "";
-    stringstream streamOPcode;
-    streamOPcode << setfill ('0') << setw(sizeof(uint8)*2) << hex << (uint)opcode;
-    result += streamOPcode.str();
-    FString ueresult(result.c_str());
-    ueresult = ueresult.ToUpper();
-    UE_LOG(LogNesCPU, Log, TEXT("%s %s"),*msg, *ueresult);
+    string Result = "";
+    stringstream StreamOpCode;
+    StreamOpCode << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(opcode);
+    Result += StreamOpCode.str();
+    FString DebugResult(Result.c_str());
+    DebugResult = DebugResult.ToUpper();
+    UE_LOG(LogNesCPU, Log, TEXT("%s %s"),*msg, *DebugResult);
 }
 
 uint NesCPU::Tick() {
-    uint8 opcode = m_mmu->Read(PC++ & 0xFFFF);
-    printNesTestLogLine(opcode);
-    return handleInstructions(opcode);
+    uint8 const opcode = m_mmu->Read(PC++ & 0xFFFF);
+    PrintNesTestLogLine(opcode);
+    return HandleInstructions(opcode);
 }
 
 
-uint NesCPU::handleInstructions(uint8 opcode) {
+uint NesCPU::HandleInstructions(uint8 opcode) {
         uint lastCycleCount = cycleCount[opcode];
         switch(opcode) {
             case 0x01:
-                ORA(opcode);
+                Ora(opcode);
+                break;
+            case 0x05:
+                Ora(opcode);
                 break;
             case 0x08:
-                PHP(opcode);
+                Php(opcode);
                 break;
             case 0x09:
-                ORA(opcode);
+                Ora(opcode);
                 break;
             case 0x0A:
-                A = ASL(opcode,A);
+                A = Asl(opcode,A);
                 break;
             case 0x10:
-                lastCycleCount += BRANCH(opcode,P->ReadFlag(P->NFlag) == 0);
+                lastCycleCount += Branch(opcode,P->ReadFlag(P->NFlag) == 0);
                 break;
             case 0x18:
-                CLC(opcode);
+                Clc(opcode);
                 break;
             case 0x20:
-                JSR(opcode);
+                Jsr(opcode);
                 break;
             case 0x21:
-                AND(opcode);
+                And(opcode);
                 break;
             case 0x24:
-                BIT(opcode);
+                Bit(opcode);
                 break;
             case 0x28:
-                PLP(opcode);
+                Plp(opcode);
                 break;
             case 0x29:
-                AND(opcode);
+                And(opcode);
                 break;
             case 0x2A:
-                A = ROL(opcode,A);
+                A = Rol(opcode,A);
                 break;
             case 0x30:
-                lastCycleCount += BRANCH(opcode,P->ReadFlag(P->NFlag) == 1);
+                lastCycleCount += Branch(opcode,P->ReadFlag(P->NFlag) == 1);
                 break;
             case 0x38:
-                SEC(opcode);
+                Sec(opcode);
                 break;
             case 0x40:
-                RTI(opcode);
+                Rti(opcode);
                 break;
             case 0x41:
-                EOR(opcode);
+                Eor(opcode);
                 break;
             case 0x48:
-                PHA(opcode);
+                Pha(opcode);
                 break;
             case 0x49:
-                EOR(opcode);
+                Eor(opcode);
                 break;
             case 0x4A:
-                A = LSR(opcode,A);
+                A = Lsr(opcode,A);
                 break;
             case 0x4C:
-                JMP(opcode);
+                Jmp(opcode);
                 break;
             case 0x50:
-                lastCycleCount += BRANCH(opcode,P->ReadFlag(P->VFlag) == 0);
+                lastCycleCount += Branch(opcode,P->ReadFlag(P->VFlag) == 0);
                 break;
             case 0x60:
-                RTS(opcode);
+                Rts(opcode);
                 break;
             case 0x61:
-                ADC(opcode);
+                Adc(opcode);
                 break;
             case 0x68:
-                PLA(opcode);
+                Pla(opcode);
                 break;
             case 0x69:
-                ADC(opcode);
+                Adc(opcode);
                 break;
             case 0x6A:
-                A = ROR(opcode,A);
+                A = Ror(opcode,A);
                 break;
             case 0x70:
-                lastCycleCount += BRANCH(opcode,P->ReadFlag(P->VFlag) == 1);
+                lastCycleCount += Branch(opcode,P->ReadFlag(P->VFlag) == 1);
                 break;
             case 0x78:
-                SEI(opcode);
+                Sei(opcode);
                 break;
             case 0x81:
-                STORE(opcode,X);
+                Store(opcode,X);
                 break;
             case 0x84:
-                STORE(opcode,Y);
+                Store(opcode,Y);
                 break;
             case 0x85:
-                STORE(opcode,A);
+                Store(opcode,A);
                 break;
             case 0x86:
-                STORE(opcode,X);
+                Store(opcode,X);
                 break;
             case 0x88:
-                Y = DEC(opcode,Y);
+                Y = Dec(opcode,Y);
                 break;
             case 0x8A:
-                A = TRANSFER(opcode,X);
+                A = Transfer(opcode,X);
                 break;
             case 0x8D:
-                STORE(opcode,A);
+                Store(opcode,A);
                 break;
             case 0x8E:
-                STORE(opcode,X);
+                Store(opcode,X);
                 break;
             case 0x90:
                 //BCC
-                lastCycleCount += BRANCH(opcode,P->ReadFlag(P->CFlag) == 0);
+                lastCycleCount += Branch(opcode,P->ReadFlag(P->CFlag) == 0);
                 break;
             case 0x98:
-                A = TRANSFER(opcode,Y);
+                A = Transfer(opcode,Y);
                 break;
             case 0x9A:
-                SP = TRANSFER(opcode,X);
+                SP = Transfer(opcode,X);
                 break;
             case 0xA0:
-                Y = LD(opcode);
+                Y = Ld(opcode);
                 break;
             case 0xA1:
-                A = LD(opcode);
+                A = Ld(opcode);
                 break;
             case 0xA2:
-                X = LD(opcode);
+                X = Ld(opcode);
                 break;
             case 0xA4:
-                Y = LD(opcode);
+                Y = Ld(opcode);
                 break;
             case 0xA5:
-                A = LD(opcode);
+                A = Ld(opcode);
+                break;
+            case 0xA6:
+                X = Ld(opcode);
                 break;
             case 0xA8:
-                Y = TRANSFER(opcode,A);
+                Y = Transfer(opcode,A);
                 break;
             case 0xA9:
-                A = LD(opcode);
+                A = Ld(opcode);
                 break;
             case 0xAA:
-                X = TRANSFER(opcode,A);
+                X = Transfer(opcode,A);
                 break;
             case 0xAD:
-                A = LD(opcode);
+                A = Ld(opcode);
                 break;
             case 0xAE:
-                X = LD(opcode);
+                X = Ld(opcode);
                 break;
             case 0xB0:
                 //BCS
-                lastCycleCount += BRANCH(opcode,P->ReadFlag(P->CFlag) == 1);
+                lastCycleCount += Branch(opcode,P->ReadFlag(P->CFlag) == 1);
                 break;
             case 0xB8:
-                CLV(opcode);
+                Clv(opcode);
                 break;
             case 0xBA:
-                X = TRANSFER(opcode,SP);
+                X = Transfer(opcode,SP);
                 break;
             case 0xC0:
-                CP(opcode,Y);
+                Cp(opcode,Y);
                 break;
             case 0xC1:
-                CMP(opcode);
+                Cmp(opcode);
                 break;
             case 0xC8:
-                Y = INC(opcode,Y);
+                Y = Inc(opcode,Y);
                 break;
             case 0xC9:
-                CMP(opcode);
+                Cmp(opcode);
                 break;
             case 0xCA:
-                X = DEC(opcode,X);
+                X = Dec(opcode,X);
                 break;
             case 0xD0:
                 //BNE
-                lastCycleCount += BRANCH(opcode,P->ReadFlag(P->ZFlag) == 0);
+                lastCycleCount += Branch(opcode,P->ReadFlag(P->ZFlag) == 0);
                 break;
             case 0xD8:
-                CLD(opcode);
+                Cld(opcode);
                 break;
             case 0xE0:
-                CP(opcode,X);
+                Cp(opcode,X);
                 break;
             case 0xE1:
-                SBC(opcode);
+                Sbc(opcode);
                 break;
             case 0xE9:
-                SBC(opcode);
+                Sbc(opcode);
                 break;
             case 0xEA:
-                NOP(opcode);
+                Nop(opcode);
                 break;
             case 0xE8:
-                X = INC(opcode,X);
+                X = Inc(opcode,X);
                 break;
             case 0xF0:
                 //BEQ
-                lastCycleCount += BRANCH(opcode,P->ReadFlag(P->ZFlag) == 1);
+                lastCycleCount += Branch(opcode,P->ReadFlag(P->ZFlag) == 1);
                 break;
             case 0xF8:
-                SED(opcode);
+                Sed(opcode);
                 break;
             default:
                 LogOpcode("Unknown opcode: ", opcode);
@@ -305,405 +312,427 @@ void NesCPU::AttachMemory(shared_ptr<NesMMU> mmu, unsigned short startPC) {
     this->PC = (startPC == 0) ? ((m_mmu->Read(0xFFFD) << 8) | m_mmu->Read(0xFFFC)) : startPC;
 }
 
-unsigned short NesCPU::combineBytePairIntoUShort(uint8 lsb, uint8 msb) {
-    unsigned short result = ((msb << 8) | lsb);
-    return result;
+unsigned short NesCPU::CombineBytePairIntoUShort(uint8 lsb, uint8 msb) {
+    const unsigned short Result = ((msb << 8) | lsb);
+    return Result;
 }
 
 // Item1 = MSB and Item 2 = LSB
-void NesCPU::separateWordToBytes(ushort word, uint8 result[]) {
-    result[0] = ((word & 0xFF00) >> 8);
-    result[1] = (word & 0x00FF);
+void NesCPU::SeparateWordToBytes(const ushort Word, uint8 Result[]) {
+    Result[0] = ((Word & 0xFF00) >> 8);
+    Result[1] = (Word & 0x00FF);
 }
 
-uint8 NesCPU::getBit(uint8 pos, uint8 reg) {
-    uint8 result = (uint8)((reg & (1 << pos)));
-    result = (uint8)(result >> pos); 
-    return result;
+uint8 NesCPU::GetBit(const uint8 Pos, const uint8 Reg) {
+    uint8 Result = static_cast<uint8>((Reg & (1 << Pos)));
+    Result = static_cast<uint8>(Result >> Pos); 
+    return Result;
 }
 
-uint8 NesCPU::setBit(uint8 pos, uint8 r) {
-    uint8 result = (uint8)(r | (1 << pos));
-    return result;
+uint8 NesCPU::SetBit(const uint8 Pos, const uint8 Reg) {
+    const uint8 Result = static_cast<uint8>(Reg | (1 << Pos));
+    return Result;
 }
 
-uint8 NesCPU::resetBit(uint8 pos, uint8 r) {
-    uint8 result = (uint8)((r  & ~(1 << pos)));
-    return result;
+uint8 NesCPU::ResetBit(const uint8 Pos, const uint8 Reg) {
+    const uint8 Result = static_cast<uint8>((Reg & ~(1 << Pos)));
+    return Result;
 }
 
 // The 6502 only supported Indirect Addressing using X,Y registers
-unsigned short NesCPU::getIndirectAddress(uint8 reg) {
-    uint8 lowerByte = m_mmu->Read(PC++);
-    lowerByte += reg;
-    uint8 addressLsb = m_mmu->Read(lowerByte); // Read the lsb of our target address.
-    uint8 addressMsb = m_mmu->Read(lowerByte+1); // Read the msb of our target address.
-    unsigned short address = combineBytePairIntoUShort(addressLsb,addressMsb);
-    return address;
+unsigned short NesCPU::GetIndirectAddress(const uint8 Reg) {
+    uint8 LowerByte = m_mmu->Read(PC++);
+    LowerByte += Reg;
+    const uint8 AddressLsb = m_mmu->Read(LowerByte); // Read the lsb of our target address.
+    const uint8 AddressMsb = m_mmu->Read(LowerByte+1); // Read the msb of our target address.
+    const unsigned short Address = CombineBytePairIntoUShort(AddressLsb,AddressMsb);
+    return Address;
 }
 
-void NesCPU::JMP(uint8 opcode) {
+void NesCPU::Jmp(const uint8 Opcode) {
     //Absolute address mode
-    if(opcode == 0x4C) {
-        uint8 lsb = m_mmu->Read(PC++);
-        uint8 msb = m_mmu->Read(PC++);
-        PC = combineBytePairIntoUShort(lsb,msb);
+    if(Opcode == 0x4C) {
+        const uint8 Lsb = m_mmu->Read(PC++);
+        const uint8 Msb = m_mmu->Read(PC++);
+        PC = CombineBytePairIntoUShort(Lsb,Msb);
     }
 }
 
-void NesCPU::JSR(uint8 opcode) {
-    uint8 lowByte = m_mmu->Read(PC++);
-    uint8 highByte = m_mmu->Read(PC++);    
-    unsigned short addr = combineBytePairIntoUShort(lowByte,highByte);
-    uint8 result[2];
-    separateWordToBytes((unsigned short)(PC-1), result);
-    m_mmu->Write(SP--|0x100,result[0]);
-    m_mmu->Write(SP--|0x100,result[1]);
-    PC = addr;
+void NesCPU::Jsr(uint8 Opcode) {
+    const uint8 LowByte = m_mmu->Read(PC++);
+    const uint8 HighByte = m_mmu->Read(PC++);
+    const unsigned short Address = CombineBytePairIntoUShort(LowByte,HighByte);
+    uint8 Result[2];
+    SeparateWordToBytes(static_cast<unsigned short>(PC - 1), Result);
+    m_mmu->Write(SP--|0x100,Result[0]);
+    m_mmu->Write(SP--|0x100,Result[1]);
+    PC = Address;
 }
 
 //The RTS instruction is used at the end of a subroutine to return to the calling routine. It pulls the program counter from the stack.
-void NesCPU::RTS(uint8 opcode) {
-    uint8 lowByte = m_mmu->Read(++SP|0x100);
-    uint8 highByte = m_mmu->Read(++SP|0x100);
-    unsigned short addr = combineBytePairIntoUShort(lowByte,highByte);
-    PC = (unsigned)(addr+1);
+void NesCPU::Rts(uint8 Opcode) {
+    const uint8 LowByte = m_mmu->Read(++SP|0x100);
+    const uint8 HighByte = m_mmu->Read(++SP|0x100);
+    const unsigned short Address = CombineBytePairIntoUShort(LowByte,HighByte);
+    PC = static_cast<unsigned>(Address + 1);
 }
 
-void NesCPU::PHA(uint8 opcode) {
+void NesCPU::Pha(uint8 Opcode) {
     m_mmu->Write(SP--|0x100,A);
 }
 
-void NesCPU::PLP(uint8 opcode) {
-    uint8 readByte = m_mmu->Read(++SP|0x100);
-    uint8 currPState = P->pStateWithBFlag();
-    P->pSetState(readByte);
-    (getBit(5,currPState) == 1) ? P->SetFlag(P->XFlag) : P->ResetFlag(P->XFlag);
-    (getBit(4,currPState) == 1) ? P->SetFlag(P->BFlag) : P->ResetFlag(P->BFlag);
+void NesCPU::Plp(uint8 Opcode) {
+    const uint8 ReadByte = m_mmu->Read(++SP|0x100);
+    const uint8 CurrPState = P->pStateWithBFlag();
+    P->pSetState(ReadByte);
+    (GetBit(5,CurrPState) == 1) ? P->SetFlag(P->XFlag) : P->ResetFlag(P->XFlag);
+    (GetBit(4,CurrPState) == 1) ? P->SetFlag(P->BFlag) : P->ResetFlag(P->BFlag);
 }
 
-void NesCPU::RTI(uint8 opcode) {
-    PLP(opcode); 
-    RTS(opcode); 
+void NesCPU::Rti(const uint8 Opcode) {
+    Plp(Opcode); 
+    Rts(Opcode); 
     PC -=1;      
 }
 
-uint8 NesCPU::LD(uint8 opcode) {
-    uint8 readByte = 0;
-    unsigned short address = 0;
-    switch(opcode) {
+uint8 NesCPU::Ld(const uint8 Opcode) {
+    uint8 ReadByte;
+    switch(Opcode) {
+        unsigned short Address;
         //Immediate page
         case 0xA0:
         case 0xA2:
-        case 0xA9:
-            readByte = m_mmu->Read(PC++);
-            break;
+        case 0xA9: {
+                ReadByte = m_mmu->Read(PC++);
+                break;
+            }
         //Zero Page
         case 0xA4:
         case 0xA5:
-            address = m_mmu->Read(PC++);
-            readByte = m_mmu->Read(address);
-            break;
+        case 0xA6: {
+                Address = m_mmu->Read(PC++);
+                ReadByte = m_mmu->Read(Address & 0xFF);
+                break;
+            }
         //Absolute
         case 0xAD:
         case 0xAE: {
-            uint8 lowerByte = m_mmu->Read(PC++);
-            uint8 upperByte = m_mmu->Read(PC++);
-            address = combineBytePairIntoUShort(lowerByte,upperByte);
-            readByte = m_mmu->Read(address);
+            const uint8 LowerByte = m_mmu->Read(PC++);
+            const uint8 UpperByte = m_mmu->Read(PC++);
+            Address = CombineBytePairIntoUShort(LowerByte,UpperByte);
+            ReadByte = m_mmu->Read(Address);
             break;
         }
         //Indirect,X
-        case 0xA1:
-            address = getIndirectAddress(X);
-            readByte = m_mmu->Read(address);
-            break;
+        case 0xA1: {
+                Address = GetIndirectAddress(X);
+                ReadByte = m_mmu->Read(Address);
+                break;
+            }
         default:
             //Debug.LogError("Bad LD operation");
             return 0xFF;
     }
-    (readByte == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (getBit(7,readByte) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-    return readByte;
+    (ReadByte == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,ReadByte) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    return ReadByte;
 }
 
-void NesCPU::CP(uint8 opcode, uint8 reg) {
-    switch(opcode) {
+void NesCPU::Cp(const uint8 Opcode, const uint8 Reg) {
+    switch(Opcode) {
         case 0xC0:
         case 0xE0:
-            uint8 readByte = m_mmu->Read(PC++);
-            (reg == readByte) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-            (reg >= readByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-            (getBit(7,(uint8)(reg - readByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-            break;
+            {
+                const uint8 ReadByte = m_mmu->Read(PC++);
+                (Reg == ReadByte) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+                (Reg >= ReadByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+                (GetBit(7,static_cast<uint8>(Reg - ReadByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+                break;
+            }
+        default:
+            {
+                
+            }
     }
 }
 
-void NesCPU::BIT(uint8 opcode) {
+void NesCPU::Bit(const uint8 Opcode) {
     //Zero-page
-    if(opcode == 0x24) {
-        uint8 memoryLocation = m_mmu->Read(PC++);
-        uint8 readByte = m_mmu->Read(memoryLocation & 0xFF);
-        uint8 result = (uint8)(A & readByte);
-        if(result == 0) {
+    if(Opcode == 0x24) {
+        const uint8 MemoryLocation = m_mmu->Read(PC++);
+        const uint8 ReadByte = m_mmu->Read(MemoryLocation & 0xFF);
+        if(const uint8 Result = static_cast<uint8>(A & ReadByte); Result == 0) {
             P->SetFlag(P->ZFlag);
         }
-        uint8 NflagByte = getBit(P->NFlag,readByte);
-        uint8 VflagByte = getBit(P->VFlag,readByte);
-        (NflagByte == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-        (VflagByte == 1) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
+        const uint8 NFlagByte = GetBit(P->NFlag,ReadByte);
+        const uint8 VFlagByte = GetBit(P->VFlag,ReadByte);
+        (NFlagByte == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+        (VFlagByte == 1) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
     }
 }
 
-void NesCPU::STORE(uint8 opcode, uint8 reg) {
-    switch(opcode) {
+void NesCPU::Store(const uint8 Opcode, const uint8 Reg) {
+    switch(Opcode) {
         // Indirect X
         case 0x81:{
-            unsigned short address = getIndirectAddress(X);
-            m_mmu->Write(address,A);
+            const unsigned short Address = GetIndirectAddress(X);
+            m_mmu->Write(Address,A);
             break;
         } 
         // Zero-page
         case 0x84:
         case 0x85:
         case 0x86: {
-            uint8 lsb = m_mmu->Read(PC++);
-            m_mmu->Write(lsb & 0xFF,reg);
+            const uint8 Lsb = m_mmu->Read(PC++);
+            m_mmu->Write(Lsb & 0xFF,Reg);
             break;
         }
         // Absolute
         case 0x8D:
         case 0x8E:{
-            uint8 lsb = m_mmu->Read(PC++);
-            uint8 msb = m_mmu->Read(PC++);
-            unsigned short address = combineBytePairIntoUShort(lsb,msb);
-            m_mmu->Write(address,reg);
+            const uint8 Lsb = m_mmu->Read(PC++);
+            const uint8 Msb = m_mmu->Read(PC++);
+            const unsigned short Address = CombineBytePairIntoUShort(Lsb,Msb);
+            m_mmu->Write(Address,Reg);
         }
         break;
+    default: ;
     }
 }
 
-void NesCPU::AND(uint8 opcode) {
-    uint8 readByte = 0x00;
-    switch(opcode) {
+void NesCPU::And(const uint8 Opcode) {
+    uint8 ReadByte = 0x00;
+    switch(Opcode) {
         //Indirect X
         case 0x21:{
-            ushort address = getIndirectAddress(X);
-            readByte = m_mmu->Read(address);
+            const ushort Address = GetIndirectAddress(X);
+            ReadByte = m_mmu->Read(Address);
             break;
         } 
         case 0x29: {
-            readByte = m_mmu->Read(PC++);
+            ReadByte = m_mmu->Read(PC++);
             break;
-        } 
+        }
+    default: ;
     }
-    A = (uint8)(A & readByte);
+    A = static_cast<uint8>(A & ReadByte);
     (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (getBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (GetBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    
 }
 
-uint8 NesCPU::LSR(uint8 opcode, uint8 reg) {
-    uint8 oldBit = getBit(0,reg);
-    reg = (uint8)(reg >> 1);
-    (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-    (oldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-    return reg;
+uint8 NesCPU::Lsr(uint8 Opcode, uint8 Reg) const {
+    const uint8 OldBit = GetBit(0,Reg);
+    Reg = static_cast<uint8>(Reg >> 1);
+    (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (OldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    return Reg;
 }
 
-uint8 NesCPU::ASL(uint8 opcode, uint8 reg) {
-    uint8 oldBit = getBit(7,reg);
-    reg = (uint8)(reg << 1);
-    (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-    (oldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-    return reg;
+uint8 NesCPU::Asl(uint8 Opcode, uint8 Reg) const {
+    const uint8 OldBit = GetBit(7,Reg);
+    Reg = static_cast<uint8>(Reg << 1);
+    (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (OldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    return Reg;
 }
 
-uint8 NesCPU::ROR(uint8 opcode, uint8 reg) {
-    uint8 oldBit = getBit(0,reg);
-    reg = (uint8)(reg >> 1);
-    reg = (P->ReadFlag(P->CFlag) == 1) ? setBit(7,reg) : resetBit(7,reg);
-    (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-    (oldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-    return reg;
+uint8 NesCPU::Ror(uint8 Opcode, uint8 Reg) const {
+    const uint8 OldBit = GetBit(0,Reg);
+    Reg = static_cast<uint8>(Reg >> 1);
+    Reg = (P->ReadFlag(P->CFlag) == 1) ? SetBit(7,Reg) : ResetBit(7,Reg);
+    (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (OldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    return Reg;
 }
 
-uint8 NesCPU::ROL(uint8 opcode, uint8 reg) {
-    uint8 oldBit = getBit(7,reg);
-    reg = (uint8)(reg << 1);
-    reg = (P->ReadFlag(P->CFlag) == 1) ? setBit(0,reg) : resetBit(0,reg);
-    (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-    (oldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-    return reg;
+uint8 NesCPU::Rol(uint8 Opcode, uint8 Reg) const {
+    const uint8 OldBit = GetBit(7,Reg);
+    Reg = static_cast<uint8>(Reg << 1);
+    Reg = (P->ReadFlag(P->CFlag) == 1) ? SetBit(0,Reg) : ResetBit(0,Reg);
+    (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (OldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    return Reg;
 }
 
-void NesCPU::ADC(uint8 opcode) {
-    uint8 readByte = 0x00;
-    ushort sum = 0x0000;
+void NesCPU::Adc(uint8 opcode) {
+    uint8 ReadByte = 0x00;
     switch(opcode) {
         case 0x61:{
-            ushort address = getIndirectAddress(X);
-            readByte = m_mmu->Read(address);
+            const unsigned short Address = GetIndirectAddress(X);
+            ReadByte = m_mmu->Read(Address);
             break;
         }
         case 0x69:{
-            readByte = m_mmu->Read(PC++);
-            break;
-        }  
-    }
-    sum = (ushort)(A + readByte + P->ReadFlag(P->CFlag));
-    ((uint8)(sum) == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (sum > 0xFF) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-    (getBit(7,(uint8)(sum)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-    (((A ^ sum) & (readByte ^ sum) & 0x80) != 0) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
-    A = (uint8)(sum);
-}
-
-void NesCPU::ORA(uint8 opcode) {
-    uint8 readByte = 0x00;
-    switch(opcode) {
-        case 0x01: {
-            unsigned short address = getIndirectAddress(X);
-            readByte = m_mmu->Read(address);
+            ReadByte = m_mmu->Read(PC++);
             break;
         }
-        case 0x09: {
-            readByte = m_mmu->Read(PC++);
-            break;
-        }  
+    default: ;
     }
-    A = (uint8)(A | readByte);
-    (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (getBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    const unsigned short Sum = static_cast<ushort>(A + ReadByte + P->ReadFlag(P->CFlag));
+    (static_cast<uint8>(Sum) == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (Sum > 0xFF) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    (GetBit(7,static_cast<uint8>(Sum)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (((A ^ Sum) & (ReadByte ^ Sum) & 0x80) != 0) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
+    A = static_cast<uint8>(Sum);
 }
 
-void NesCPU::EOR(uint8 opcode) {
-        uint8 readByte = 0x00;
+void NesCPU::Ora(uint8 opcode) {
+    uint8 ReadByte = 0x00;
+    switch(opcode) {
+        //(Indirect,X)
+        case 0x01: {
+            const unsigned short Address = GetIndirectAddress(X);
+            ReadByte = m_mmu->Read(Address);
+            break;
+        }
+        //Zero Page
+        case 0x05: {
+            const unsigned short Address = m_mmu->Read(PC++);
+            ReadByte = m_mmu->Read(Address & 0xFF);
+            break;
+        }
+        //Immediate
+        case 0x09: {
+            ReadByte = m_mmu->Read(PC++);
+            break;
+        }
+    default: ;
+    }
+    A = static_cast<uint8>(A | ReadByte);
+    (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+}
+
+void NesCPU::Eor(uint8 opcode) {
+        uint8 ReadByte = 0x00;
         switch(opcode) {
             case 0x41:{
-                unsigned short address = getIndirectAddress(X);
-                readByte = m_mmu->Read(address);
+                const unsigned short Address = GetIndirectAddress(X);
+                ReadByte = m_mmu->Read(Address);
                 break;
             }  
             case 0x49:
-                readByte = m_mmu->Read(PC++);
+                ReadByte = m_mmu->Read(PC++);
                 break;
+            default: ;
         }
-        A = (uint8)(A ^ readByte);
+        A = static_cast<uint8>(A ^ ReadByte);
         (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-        (getBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+        (GetBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
     }
 
 //https://wiki.nesdev.com/w/index.php/Status_flags
-void NesCPU::PHP(uint8 opcode) {
-    uint8 copyP = P->pStateWithBFlag();
-    copyP = (uint8)(copyP | 0x30);
-    m_mmu->Write(SP--|0x100,copyP);
+void NesCPU::Php(uint8 Opcode) {
+    uint8 CopyP = P->pStateWithBFlag();
+    CopyP = static_cast<uint8>(CopyP | 0x30);
+    m_mmu->Write(SP--|0x100,CopyP);
 }
 
-uint NesCPU::BRANCH(uint8 opcode, bool cc) {
-    int8 sb = (uint8)(m_mmu->Read(PC++));
-    //int8 sb = unchecked((sbyte)(b));
-    if(cc) {
-        uint8 prevPage = (uint8)((PC & 0xFF00) >> 8);
-        PC = (unsigned short)(PC + sb);
-        uint8 currPage = (uint8)((PC & 0xFF00) >> 8); 
-        return (uint)((currPage != prevPage) ? 2 : 1); // Taken branch and page crossed equals 2. If we take a branch and don't cross pages then return 1.
+uint NesCPU::Branch(uint8 Opcode, const bool bCC) {
+    const int8 SB = static_cast<int8>(m_mmu->Read(PC++));
+    if(bCC) {
+        const uint8 PrevPage = static_cast<uint8>((PC & 0xFF00) >> 8);
+        PC = static_cast<unsigned short>(PC + SB);
+        const uint8 currPage = static_cast<uint8>((PC & 0xFF00) >> 8); 
+        return static_cast<uint>((currPage != PrevPage) ? 2 : 1); // Taken branch and page crossed equals 2. If we take a branch and don't cross pages then return 1.
     }
     return 0;
 }
 
-void NesCPU::SBC(uint8 opcode) {
-    uint8 readByte = 0x00;
-    unsigned short diff = 0x000;
-    switch(opcode) {
+void NesCPU::Sbc(const uint8 Opcode) {
+    uint8 ReadByte = 0x00;
+    switch(Opcode) {
         case 0xE1:{
-            unsigned short address = getIndirectAddress(X);
-            readByte = m_mmu->Read(address);
+            const unsigned short Address = GetIndirectAddress(X);
+            ReadByte = m_mmu->Read(Address);
             break;
         }
         case 0xE9:
-            readByte = m_mmu->Read(PC++);
+            ReadByte = m_mmu->Read(PC++);
             break;
+        default: ;
     }
-    diff = (unsigned short)(A - readByte - (1 - P->ReadFlag(P->CFlag)));
-    ((uint8)(diff) == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (diff <= 0xFF) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-    (getBit(7,(uint8)(diff)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-    (((A ^ diff) & (~readByte ^ diff) & 0x80) != 0) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
-    A = (uint8)(diff);
+    const unsigned short Diff = static_cast<unsigned short>(A - ReadByte - (1 - P->ReadFlag(P->CFlag)));
+    (static_cast<uint8>(Diff) == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (Diff <= 0xFF) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    (GetBit(7,static_cast<uint8>(Diff)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (((A ^ Diff) & (~ReadByte ^ Diff) & 0x80) != 0) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
+    A = static_cast<uint8>(Diff);
 }
 
-void NesCPU::PLA(uint8 opcode) {
+void NesCPU::Pla(uint8 Opcode) {
     A = m_mmu->Read(++SP|0x100);
     (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (getBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (GetBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
 
-void NesCPU::SEC(uint8 opcode) {
+void NesCPU::Sec(uint8 Opcode) const {
     P->SetFlag(P->CFlag);
 }
 
-void NesCPU::SEI(uint8 opcode) {
+void NesCPU::Sei(uint8 Opcode) const {
     P->SetFlag(P->IFlag);
 }
 
-void NesCPU::SED(uint8 opcode) {
+void NesCPU::Sed(uint8 Opcode) const {
     P->SetFlag(P->DFlag);
 }
 
-void NesCPU::CLC(uint8 opcode) {
+void NesCPU::Clc(uint8 Opcode) const {
     P->ResetFlag(P->CFlag);
 }
 
-void NesCPU::CLD(uint8 opcode) {
+void NesCPU::Cld(uint8 Opcode) const {
     P->ResetFlag(P->DFlag);
 }
 
-void NesCPU::CLV(uint8 opcode) {
+void NesCPU::Clv(uint8 Opcode) const {
     P->ResetFlag(P->VFlag);
 }
 
 
-uint8 NesCPU::TRANSFER(uint8 opcode, uint8 reg) {
-    switch(opcode) {
+uint8 NesCPU::Transfer(const uint8 Opcode, const uint8 Reg) const {
+    switch(Opcode) {
         case 0x9A: 
-            return reg;
+            return Reg;
         default:
-            (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-            (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-            return reg;
+            (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+            (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+            return Reg;
     }
 }
 
-void NesCPU::CMP(uint8 opcode) {
-    uint8 readByte = 0x00;
-    switch(opcode) {
+void NesCPU::Cmp(const uint8 Opcode) {
+    uint8 ReadByte = 0x00;
+    switch(Opcode) {
         case 0xC1: {
-            unsigned short address = getIndirectAddress(X);
-            readByte = m_mmu->Read(address);
+            const unsigned short Address = GetIndirectAddress(X);
+            ReadByte = m_mmu->Read(Address);
             break;
         }
         case 0xC9:
-            readByte = m_mmu->Read(PC++);
+            ReadByte = m_mmu->Read(PC++);
             break;
+        default: ;
     }
-    (A == readByte) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (A >= readByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-    (getBit(7,(uint8)(A-readByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (A == ReadByte) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (A >= ReadByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    (GetBit(7,static_cast<uint8>(A - ReadByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
 
-uint8 NesCPU::INC(uint8 opcode, uint8 reg) {
-    switch(opcode) {
+uint8 NesCPU::Inc(const uint8 Opcode, uint8 Reg) const {
+    switch(Opcode) {
         case 0xC8:
         case 0xE8:{
-            reg +=1;
-            (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-            (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-            return reg;
+            Reg +=1;
+            (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+            (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+            return Reg;
         }
         default:
             //Debug.LogError("Bad INC operation");
@@ -711,20 +740,20 @@ uint8 NesCPU::INC(uint8 opcode, uint8 reg) {
     }
 }
 
-uint8 NesCPU::DEC(uint8 opcode, uint8 reg) {
-    switch(opcode) {
+uint8 NesCPU::Dec(const uint8 Opcode, uint8 Reg) const {
+    switch(Opcode) {
         case 0x88:
         case 0xCA:
-            reg -=1;
-            (reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-            (getBit(7,reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-            return reg;
+            Reg -=1;
+            (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+            (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+            return Reg;
         default:
             //Debug.LogError("Bad INC operation");
             return 0xFF;
     }
 }
 
-void NesCPU::NOP(uint8 opcode) {
+void NesCPU::Nop(uint8 Opcode) {
     //NO OPERATION.
 }

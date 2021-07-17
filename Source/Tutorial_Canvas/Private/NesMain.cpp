@@ -32,9 +32,11 @@ void UNesMain::BeginPlay()
 	m_cpu->AttachMemory(m_mmu, 0xC000);
 	AActor *a = GetOwner();
 	UStaticMeshComponent* mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
-	if(mesh) {
-		UMaterialInstanceDynamic * mat = mesh->CreateDynamicMaterialInstance(0, ((UMaterialInterface*)nullptr),FName(TEXT("Dynamic Mat")));
-		mat->SetTextureParameterValue(FName(TEXT("TextureInput")),m_ppu->GetScreen());
+	if(mesh)
+	{
+		UMaterialInstanceDynamic* mat = mesh->CreateDynamicMaterialInstance(
+			0, ((UMaterialInterface*)nullptr), FName(TEXT("Dynamic Mat")));
+		mat->SetTextureParameterValue(FName(TEXT("TextureInput")), m_ppu->GetScreen());
 	}
 }
 

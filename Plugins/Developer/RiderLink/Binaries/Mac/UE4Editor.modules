@@ -1,0 +1,11 @@
+{
+	"BuildId": "14830424",
+	"Modules": 
+	{
+		"RD": "UE4Editor-RD.dylib",
+		"RiderBlueprintExtension": "UE4Editor-RiderBlueprintExtension.dylib",
+		"RiderGameControlExtension": "UE4Editor-RiderGameControlExtension.dylib",
+		"RiderLink": "UE4Editor-RiderLink.dylib",
+		"RiderLoggingExtension": "UE4Editor-RiderLoggingExtension.dylib"
+	}
+}
