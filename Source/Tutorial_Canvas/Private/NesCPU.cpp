@@ -82,229 +82,235 @@ void LogOpcode(FString msg, uint8 opcode) {
 }
 
 uint NesCPU::Tick() {
-    uint8 const opcode = m_mmu->Read(PC++ & 0xFFFF);
-    PrintNesTestLogLine(opcode);
-    return HandleInstructions(opcode);
+    uint8 const Opcode = m_mmu->Read(PC++ & 0xFFFF);
+    PrintNesTestLogLine(Opcode);
+    return HandleInstructions(Opcode);
 }
 
 
-uint NesCPU::HandleInstructions(uint8 opcode) {
-        uint lastCycleCount = cycleCount[opcode];
-        switch(opcode) {
+uint NesCPU::HandleInstructions(const uint8 Opcode) {
+        uint LastCycleCount = cycleCount[Opcode];
+        switch(Opcode) {
             case 0x01:
-                Ora(opcode);
+                Ora(Opcode);
                 break;
             case 0x05:
-                Ora(opcode);
+                Ora(Opcode);
                 break;
             case 0x08:
-                Php(opcode);
+                Php(Opcode);
                 break;
             case 0x09:
-                Ora(opcode);
+                Ora(Opcode);
                 break;
             case 0x0A:
-                A = Asl(opcode,A);
+                A = Asl(Opcode,A);
                 break;
             case 0x10:
-                lastCycleCount += Branch(opcode,P->ReadFlag(P->NFlag) == 0);
+                LastCycleCount += Branch(Opcode,P->ReadFlag(P->NFlag) == 0);
                 break;
             case 0x18:
-                Clc(opcode);
+                Clc(Opcode);
                 break;
             case 0x20:
-                Jsr(opcode);
+                Jsr(Opcode);
                 break;
             case 0x21:
-                And(opcode);
+                And(Opcode);
                 break;
             case 0x24:
-                Bit(opcode);
+                Bit(Opcode);
+                break;
+            case 0x25:
+                And(Opcode);
                 break;
             case 0x28:
-                Plp(opcode);
+                Plp(Opcode);
                 break;
             case 0x29:
-                And(opcode);
+                And(Opcode);
                 break;
             case 0x2A:
-                A = Rol(opcode,A);
+                A = Rol(Opcode,A);
                 break;
             case 0x30:
-                lastCycleCount += Branch(opcode,P->ReadFlag(P->NFlag) == 1);
+                LastCycleCount += Branch(Opcode,P->ReadFlag(P->NFlag) == 1);
                 break;
             case 0x38:
-                Sec(opcode);
+                Sec(Opcode);
                 break;
             case 0x40:
-                Rti(opcode);
+                Rti(Opcode);
                 break;
             case 0x41:
-                Eor(opcode);
+                Eor(Opcode);
+                break;
+            case 0x45:
+                Eor(Opcode);
                 break;
             case 0x48:
-                Pha(opcode);
+                Pha(Opcode);
                 break;
             case 0x49:
-                Eor(opcode);
+                Eor(Opcode);
                 break;
             case 0x4A:
-                A = Lsr(opcode,A);
+                A = Lsr(Opcode,A);
                 break;
             case 0x4C:
-                Jmp(opcode);
+                Jmp(Opcode);
                 break;
             case 0x50:
-                lastCycleCount += Branch(opcode,P->ReadFlag(P->VFlag) == 0);
+                LastCycleCount += Branch(Opcode,P->ReadFlag(P->VFlag) == 0);
                 break;
             case 0x60:
-                Rts(opcode);
+                Rts(Opcode);
                 break;
             case 0x61:
-                Adc(opcode);
+                Adc(Opcode);
                 break;
             case 0x68:
-                Pla(opcode);
+                Pla(Opcode);
                 break;
             case 0x69:
-                Adc(opcode);
+                Adc(Opcode);
                 break;
             case 0x6A:
-                A = Ror(opcode,A);
+                A = Ror(Opcode,A);
                 break;
             case 0x70:
-                lastCycleCount += Branch(opcode,P->ReadFlag(P->VFlag) == 1);
+                LastCycleCount += Branch(Opcode,P->ReadFlag(P->VFlag) == 1);
                 break;
             case 0x78:
-                Sei(opcode);
+                Sei(Opcode);
                 break;
             case 0x81:
-                Store(opcode,X);
+                Store(Opcode,X);
                 break;
             case 0x84:
-                Store(opcode,Y);
+                Store(Opcode,Y);
                 break;
             case 0x85:
-                Store(opcode,A);
+                Store(Opcode,A);
                 break;
             case 0x86:
-                Store(opcode,X);
+                Store(Opcode,X);
                 break;
             case 0x88:
-                Y = Dec(opcode,Y);
+                Y = Dec(Opcode,Y);
                 break;
             case 0x8A:
-                A = Transfer(opcode,X);
+                A = Transfer(Opcode,X);
                 break;
             case 0x8D:
-                Store(opcode,A);
+                Store(Opcode,A);
                 break;
             case 0x8E:
-                Store(opcode,X);
+                Store(Opcode,X);
                 break;
             case 0x90:
                 //BCC
-                lastCycleCount += Branch(opcode,P->ReadFlag(P->CFlag) == 0);
+                LastCycleCount += Branch(Opcode,P->ReadFlag(P->CFlag) == 0);
                 break;
             case 0x98:
-                A = Transfer(opcode,Y);
+                A = Transfer(Opcode,Y);
                 break;
             case 0x9A:
-                SP = Transfer(opcode,X);
+                SP = Transfer(Opcode,X);
                 break;
             case 0xA0:
-                Y = Ld(opcode);
+                Y = Ld(Opcode);
                 break;
             case 0xA1:
-                A = Ld(opcode);
+                A = Ld(Opcode);
                 break;
             case 0xA2:
-                X = Ld(opcode);
+                X = Ld(Opcode);
                 break;
             case 0xA4:
-                Y = Ld(opcode);
+                Y = Ld(Opcode);
                 break;
             case 0xA5:
-                A = Ld(opcode);
+                A = Ld(Opcode);
                 break;
             case 0xA6:
-                X = Ld(opcode);
+                X = Ld(Opcode);
                 break;
             case 0xA8:
-                Y = Transfer(opcode,A);
+                Y = Transfer(Opcode,A);
                 break;
             case 0xA9:
-                A = Ld(opcode);
+                A = Ld(Opcode);
                 break;
             case 0xAA:
-                X = Transfer(opcode,A);
+                X = Transfer(Opcode,A);
                 break;
             case 0xAD:
-                A = Ld(opcode);
+                A = Ld(Opcode);
                 break;
             case 0xAE:
-                X = Ld(opcode);
+                X = Ld(Opcode);
                 break;
             case 0xB0:
                 //BCS
-                lastCycleCount += Branch(opcode,P->ReadFlag(P->CFlag) == 1);
+                LastCycleCount += Branch(Opcode,P->ReadFlag(P->CFlag) == 1);
                 break;
             case 0xB8:
-                Clv(opcode);
+                Clv(Opcode);
                 break;
             case 0xBA:
-                X = Transfer(opcode,SP);
+                X = Transfer(Opcode,SP);
                 break;
             case 0xC0:
-                Cp(opcode,Y);
+                Cp(Opcode,Y);
                 break;
             case 0xC1:
-                Cmp(opcode);
+                Cmp(Opcode);
                 break;
             case 0xC8:
-                Y = Inc(opcode,Y);
+                Y = Inc(Opcode,Y);
                 break;
             case 0xC9:
-                Cmp(opcode);
+                Cmp(Opcode);
                 break;
             case 0xCA:
-                X = Dec(opcode,X);
+                X = Dec(Opcode,X);
                 break;
             case 0xD0:
                 //BNE
-                lastCycleCount += Branch(opcode,P->ReadFlag(P->ZFlag) == 0);
+                LastCycleCount += Branch(Opcode,P->ReadFlag(P->ZFlag) == 0);
                 break;
             case 0xD8:
-                Cld(opcode);
+                Cld(Opcode);
                 break;
             case 0xE0:
-                Cp(opcode,X);
+                Cp(Opcode,X);
                 break;
             case 0xE1:
-                Sbc(opcode);
+                Sbc(Opcode);
                 break;
             case 0xE9:
-                Sbc(opcode);
+                Sbc(Opcode);
                 break;
             case 0xEA:
-                Nop(opcode);
+                Nop(Opcode);
                 break;
             case 0xE8:
-                X = Inc(opcode,X);
+                X = Inc(Opcode,X);
                 break;
             case 0xF0:
                 //BEQ
-                lastCycleCount += Branch(opcode,P->ReadFlag(P->ZFlag) == 1);
+                LastCycleCount += Branch(Opcode,P->ReadFlag(P->ZFlag) == 1);
                 break;
             case 0xF8:
-                Sed(opcode);
+                Sed(Opcode);
                 break;
             default:
-                LogOpcode("Unknown opcode: ", opcode);
+                LogOpcode("Unknown opcode: ", Opcode);
                 break;
         }
-        totalCycles += lastCycleCount;
-        return lastCycleCount; 
+        totalCycles += LastCycleCount;
+        return LastCycleCount; 
 }
 
 void NesCPU::AttachMemory(shared_ptr<NesMMU> mmu, unsigned short startPC) {
@@ -461,7 +467,9 @@ void NesCPU::Bit(const uint8 Opcode) {
     if(Opcode == 0x24) {
         const uint8 MemoryLocation = m_mmu->Read(PC++);
         const uint8 ReadByte = m_mmu->Read(MemoryLocation & 0xFF);
-        if(const uint8 Result = static_cast<uint8>(A & ReadByte); Result == 0) {
+        // ReSharper disable once CppTooWideScope
+        const uint8 Result = static_cast<uint8>(A & ReadByte);
+        if(Result == 0) {
             P->SetFlag(P->ZFlag);
         }
         const uint8 NFlagByte = GetBit(P->NFlag,ReadByte);
@@ -504,12 +512,20 @@ void NesCPU::And(const uint8 Opcode) {
     uint8 ReadByte = 0x00;
     switch(Opcode) {
         //Indirect X
-        case 0x21:{
+        case 0x21:
+        {
             const ushort Address = GetIndirectAddress(X);
             ReadByte = m_mmu->Read(Address);
             break;
-        } 
-        case 0x29: {
+        }
+        case 0x25:
+        {
+            const uint8 Address = m_mmu->Read(PC++);
+            ReadByte = m_mmu->Read(Address & 0xFF);
+            break;
+        }
+        case 0x29:
+        {
             ReadByte = m_mmu->Read(PC++);
             break;
         }
@@ -518,7 +534,6 @@ void NesCPU::And(const uint8 Opcode) {
     A = static_cast<uint8>(A & ReadByte);
     (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
     (GetBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-    
 }
 
 uint8 NesCPU::Lsr(uint8 Opcode, uint8 Reg) const {
@@ -615,7 +630,13 @@ void NesCPU::Eor(uint8 opcode) {
                 const unsigned short Address = GetIndirectAddress(X);
                 ReadByte = m_mmu->Read(Address);
                 break;
-            }  
+            }
+            case 0x45:
+            {
+                const unsigned short Address = m_mmu->Read(PC++);
+                ReadByte = m_mmu->Read(Address & 0xFF);
+                break;
+            }
             case 0x49:
                 ReadByte = m_mmu->Read(PC++);
                 break;

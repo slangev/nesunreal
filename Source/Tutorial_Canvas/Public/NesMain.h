@@ -29,7 +29,7 @@ public:
 	std::unique_ptr<NesCart> m_cart;
 	std::shared_ptr<NesMMU> m_mmu;
 	std::unique_ptr<NesCPU> m_cpu;
-	void Log(FString);
+	static void Log(FString);
 
 
 protected:

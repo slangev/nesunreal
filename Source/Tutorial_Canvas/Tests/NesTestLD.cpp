@@ -35,8 +35,8 @@ bool NesImmediateLDXSetZFlag::RunTest(const FString& Parameters)
 	mmu->AttachCart(move(cart));
 	cpu->X = 0x1; 
 	TestEqual(TEXT("PC needs to be 0x8000"), cpu->PC, 0x8000);
-	uint8 cycle = cpu->Tick();
-	TestEqual(TEXT("Cycle needs to be 2"), cycle, 2);
+	const uint8 Cycle = cpu->Tick();
+	TestEqual(TEXT("Cycle needs to be 2"), Cycle, 2);
 	TestEqual(TEXT("X needs to be 0"), cpu->X, 0);
 	TestEqual(TEXT("PC needs to be 0x8002"), cpu->PC, 0x8002);
 	TestEqual(TEXT("P needs to be 0x36"), cpu->P->pStateWithBFlag(), 0x36);

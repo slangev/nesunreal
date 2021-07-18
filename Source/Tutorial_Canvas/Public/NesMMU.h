@@ -17,7 +17,7 @@ public:
 	~NesMMU();
 	void AttachCart(unique_ptr<NesCart> cart);
 	//void AttachCart(shared_ptr<NesCart> cart);
-	uint8 Read(unsigned short address);
+	uint8 Read(unsigned short Address) const;
 	void Write(unsigned short address, uint8 data);
 private:
 	unique_ptr<vector<uint8>> m_cpuRam;

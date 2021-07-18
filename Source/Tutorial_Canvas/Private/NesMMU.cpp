@@ -42,32 +42,32 @@ void NesMMU::Write(unsigned short address, uint8 data) {
     }*/
 }
 
-uint8 NesMMU::Read(unsigned short address) {
+uint8 NesMMU::Read(const unsigned short Address) const {
     //CPU RAM
-    if(address >= 0x0000 && address < 0x2000) {
+    if(Address >= 0x0000 && Address < 0x2000) {
         //Zero Page
-        if(address >= 0x0000 && address < 0x0100) {
-            return m_cpuRam->at(address);
+        if(Address >= 0x0000 && Address < 0x0100) {
+            return m_cpuRam->at(Address);
         //Stack
-        } else if(address >= 0x0100 && address < 0x0200) {
-            return m_cpuRam->at(address);
+        } else if(Address >= 0x0100 && Address < 0x0200) {
+            return m_cpuRam->at(Address);
         //Ram
-        } else if(address >= 0x200 && address < 0x0800) {
-            return m_cpuRam->at(address);
+        } else if(Address >= 0x200 && Address < 0x0800) {
+            return m_cpuRam->at(Address);
         //Mirrors 
         } else {
-            return m_cpuRam->at(address & 0x7FF);
+            return m_cpuRam->at(Address & 0x7FF);
         }
     }
     /*if (address >= 0x0000 && address <= 0x1FFF){
         return cpuRam[address & 0x7FF];
     }*/ 
     // Cart Ram
-    else if (address >= 0x6000 && address <= 0x7FFF){
-        return m_cart->Read(address - 0x6000);
+    else if (Address >= 0x6000 && Address <= 0x7FFF){
+        return m_cart->Read(Address - 0x6000);
     // Cart Rom
-    } else if (address >= 0x8000 && address <= 0x10000){
-        return m_cart->Read(address - 0x8000);
+    } else if (Address >= 0x8000 && Address <= 0x10000){
+        return m_cart->Read(Address - 0x8000);
     }
     return 0xFF;
 }

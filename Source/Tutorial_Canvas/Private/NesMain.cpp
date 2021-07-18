@@ -31,11 +31,11 @@ void UNesMain::BeginPlay()
 	m_mmu->AttachCart(make_unique<NesCart>(pathToRom));
 	m_cpu->AttachMemory(m_mmu, 0xC000);
 	AActor *a = GetOwner();
-	UStaticMeshComponent* mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
-	if(mesh)
+	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
+	if(Mesh)
 	{
-		UMaterialInstanceDynamic* mat = mesh->CreateDynamicMaterialInstance(
-			0, ((UMaterialInterface*)nullptr), FName(TEXT("Dynamic Mat")));
+		UMaterialInstanceDynamic* mat = Mesh->CreateDynamicMaterialInstance(
+			0, static_cast<UMaterialInterface*>(nullptr), FName(TEXT("Dynamic Mat")));
 		mat->SetTextureParameterValue(FName(TEXT("TextureInput")), m_ppu->GetScreen());
 	}
 }
@@ -48,11 +48,11 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	uint cyclesThisUpdate = 0 ; 
-    while (cyclesThisUpdate < MAXCYCLES) {
+	uint CyclesThisUpdate = 0 ; 
+    while (CyclesThisUpdate < MAXCYCLES) {
 		//gbJoyPad.HandleKeyEvents();
-		uint cycles = m_cpu->Tick();
-		cyclesThisUpdate+=cycles;
+		const uint Cycles = m_cpu->Tick();
+		CyclesThisUpdate+=Cycles;
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/
 	}
