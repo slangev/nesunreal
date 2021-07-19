@@ -7,8 +7,8 @@ public class Tutorial_CanvasTarget : TargetRules
 {
 	public Tutorial_CanvasTarget(TargetInfo Target) : base(Target)
 	{
+		DefaultBuildSettings = BuildSettingsVersion.V2;
 		Type = TargetType.Game;
-
 		ExtraModuleNames.AddRange( new string[] { "Tutorial_Canvas" } );
 	}
 }

@@ -49,7 +49,7 @@ private:
     void Plp(uint8 Opcode);
     void Pha(uint8 Opcode);
     void And(uint8 Opcode);
-    void Adc(uint8 opcode);
+    void Adc(uint8 Opcode);
     void Ora(uint8 opcode);
     void Php(uint8 Opcode);
     void Pla(uint8 Opcode);

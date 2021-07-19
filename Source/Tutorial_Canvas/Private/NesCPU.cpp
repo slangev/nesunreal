@@ -169,6 +169,9 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x61:
                 Adc(Opcode);
                 break;
+            case 0x65:
+                Adc(Opcode);
+                break;
             case 0x68:
                 Pla(Opcode);
                 break;
@@ -267,6 +270,9 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xC1:
                 Cmp(Opcode);
                 break;
+            case 0xC5:
+                Cmp(Opcode);
+                break;
             case 0xC8:
                 Y = Inc(Opcode,Y);
                 break;
@@ -287,6 +293,9 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                 Cp(Opcode,X);
                 break;
             case 0xE1:
+                Sbc(Opcode);
+                break;
+            case 0xE5:
                 Sbc(Opcode);
                 break;
             case 0xE9:
@@ -574,14 +583,20 @@ uint8 NesCPU::Rol(uint8 Opcode, uint8 Reg) const {
     return Reg;
 }
 
-void NesCPU::Adc(uint8 opcode) {
+void NesCPU::Adc(const uint8 Opcode) {
     uint8 ReadByte = 0x00;
-    switch(opcode) {
+    switch(Opcode) {
         case 0x61:{
             const unsigned short Address = GetIndirectAddress(X);
             ReadByte = m_mmu->Read(Address);
             break;
         }
+        case 0x65:
+            {
+                const unsigned short Address = m_mmu->Read(PC++);
+                ReadByte = m_mmu->Read(Address & 0xFF);
+                break;
+            }
         case 0x69:{
             ReadByte = m_mmu->Read(PC++);
             break;
@@ -659,8 +674,8 @@ uint NesCPU::Branch(uint8 Opcode, const bool bCC) {
     if(bCC) {
         const uint8 PrevPage = static_cast<uint8>((PC & 0xFF00) >> 8);
         PC = static_cast<unsigned short>(PC + SB);
-        const uint8 currPage = static_cast<uint8>((PC & 0xFF00) >> 8); 
-        return static_cast<uint>((currPage != PrevPage) ? 2 : 1); // Taken branch and page crossed equals 2. If we take a branch and don't cross pages then return 1.
+        const uint8 CurrPage = static_cast<uint8>((PC & 0xFF00) >> 8); 
+        return static_cast<uint>((CurrPage != PrevPage) ? 2 : 1); // Taken branch and page crossed equals 2. If we take a branch and don't cross pages then return 1.
     }
     return 0;
 }
@@ -673,6 +688,12 @@ void NesCPU::Sbc(const uint8 Opcode) {
             ReadByte = m_mmu->Read(Address);
             break;
         }
+        case 0xE5:
+            {
+                const unsigned short Address = m_mmu->Read(PC++);
+                ReadByte = m_mmu->Read(Address & 0xFF);
+                break;
+            }
         case 0xE9:
             ReadByte = m_mmu->Read(PC++);
             break;
@@ -736,6 +757,12 @@ void NesCPU::Cmp(const uint8 Opcode) {
             ReadByte = m_mmu->Read(Address);
             break;
         }
+        case 0xC5:
+            {
+                const unsigned short Address = m_mmu->Read(PC++);
+                ReadByte = m_mmu->Read(Address & 0xFF);
+                break;
+            }
         case 0xC9:
             ReadByte = m_mmu->Read(PC++);
             break;
