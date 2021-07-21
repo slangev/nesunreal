@@ -1208,7 +1208,7 @@
   /Users/sl/Unreal/UE_4.26/Engine/Source/Runtime/Core/Public/HAL/Platform.h \
   /Users/sl/Unreal/UE_4.26/Engine/Source/Runtime/Core/Public/CoreTypes.h \
   /Users/sl/Unreal/UE_4.26/Engine/Source/Editor/UnrealEd/Public/UnrealEdSharedPCH.h \
-  /Users/sl/nesunreal/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/UnrealEd/SharedPCH.UnrealEd.RTTI.h \
+  /Users/sl/nesunreal/Intermediate/Build/Mac/x86_64/Tutorial_CanvasEditor/Development/UnrealEd/SharedPCH.UnrealEd.RTTI.ShadowErrors.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stddef.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__config \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include/stddef.h \

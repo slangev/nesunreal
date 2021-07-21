@@ -68,7 +68,7 @@ private:
     void Clv(uint8 Opcode) const;
     void Eor(uint8 opcode);
     uint8 Rol(uint8 Opcode, uint8 Reg) const;
-    uint8 Lsr(uint8 Opcode, uint8 Reg) const;
+    uint8 Lsr(uint8 Opcode, uint8 Data) const;
     uint8 Asl(uint8 Opcode, uint8 Reg) const;
     uint8 Ror(uint8 Opcode, uint8 Reg) const;
 	static uint8 GetBit(uint8 Pos, uint8 Reg);

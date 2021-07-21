@@ -7,8 +7,8 @@ public class Tutorial_CanvasEditorTarget : TargetRules
 {
 	public Tutorial_CanvasEditorTarget(TargetInfo Target) : base(Target)
 	{
+		DefaultBuildSettings = BuildSettingsVersion.V2;
 		Type = TargetType.Editor;
-
 		ExtraModuleNames.AddRange( new string[] { "Tutorial_Canvas" } );
 	}
 }

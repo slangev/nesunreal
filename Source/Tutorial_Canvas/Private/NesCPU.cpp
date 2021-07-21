@@ -97,6 +97,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x05:
                 Ora(Opcode);
                 break;
+            case 0x06:
+                {
+                    const unsigned short Address = m_mmu->Read(PC++);
+                    m_mmu->Write(Address, Asl(Opcode,m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
             case 0x08:
                 Php(Opcode);
                 break;
@@ -124,6 +130,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x25:
                 And(Opcode);
                 break;
+            case 0x26:
+                {
+                    const unsigned short Address = m_mmu->Read(PC++);
+                    m_mmu->Write(Address, Rol(Opcode,m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
             case 0x28:
                 Plp(Opcode);
                 break;
@@ -148,6 +160,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x45:
                 Eor(Opcode);
                 break;
+            case 0x46:
+                {
+                    const unsigned short Address = m_mmu->Read(PC++);
+                    m_mmu->Write(Address, Lsr(Opcode,m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
             case 0x48:
                 Pha(Opcode);
                 break;
@@ -172,6 +190,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x65:
                 Adc(Opcode);
                 break;
+            case 0x66:
+                {
+                    const unsigned short Address = m_mmu->Read(PC++);
+                    m_mmu->Write(Address, Ror(Opcode,m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
             case 0x68:
                 Pla(Opcode);
                 break;
@@ -270,9 +294,18 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xC1:
                 Cmp(Opcode);
                 break;
+            case 0xC4:
+                Cp(Opcode,Y);
+                break;
             case 0xC5:
                 Cmp(Opcode);
                 break;
+            case 0xC6:
+                {
+                    const unsigned short Address = m_mmu->Read(PC++);
+                    m_mmu->Write(Address, Dec(Opcode, m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
             case 0xC8:
                 Y = Inc(Opcode,Y);
                 break;
@@ -295,6 +328,9 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xE1:
                 Sbc(Opcode);
                 break;
+            case 0xE4:
+                Cp(Opcode,X);
+                break;
             case 0xE5:
                 Sbc(Opcode);
                 break;
@@ -304,6 +340,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xEA:
                 Nop(Opcode);
                 break;
+            case 0xE6:
+                {
+                    const unsigned short Address = m_mmu->Read(PC++);
+                    m_mmu->Write(Address, Inc(Opcode, m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
             case 0xE8:
                 X = Inc(Opcode,X);
                 break;
@@ -454,14 +496,20 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
 }
 
 void NesCPU::Cp(const uint8 Opcode, const uint8 Reg) {
+    uint8 ReadByte = 0;
     switch(Opcode) {
         case 0xC0:
         case 0xE0:
             {
-                const uint8 ReadByte = m_mmu->Read(PC++);
-                (Reg == ReadByte) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-                (Reg >= ReadByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-                (GetBit(7,static_cast<uint8>(Reg - ReadByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+                ReadByte = m_mmu->Read(PC++); 
+                break;
+            }
+        // Zero page
+        case 0xC4:
+        case 0xE4:
+            {
+                const uint8 Address = m_mmu->Read(PC++);
+                ReadByte = m_mmu->Read(Address & 0xFF);
                 break;
             }
         default:
@@ -469,6 +517,9 @@ void NesCPU::Cp(const uint8 Opcode, const uint8 Reg) {
                 
             }
     }
+    (Reg == ReadByte) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (Reg >= ReadByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    (GetBit(7,static_cast<uint8>(Reg - ReadByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
 
 void NesCPU::Bit(const uint8 Opcode) {
@@ -500,8 +551,8 @@ void NesCPU::Store(const uint8 Opcode, const uint8 Reg) {
         case 0x84:
         case 0x85:
         case 0x86: {
-            const uint8 Lsb = m_mmu->Read(PC++);
-            m_mmu->Write(Lsb & 0xFF,Reg);
+            const uint8 Address = m_mmu->Read(PC++);
+            m_mmu->Write(Address & 0xFF,Reg);
             break;
         }
         // Absolute
@@ -545,13 +596,13 @@ void NesCPU::And(const uint8 Opcode) {
     (GetBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
 
-uint8 NesCPU::Lsr(uint8 Opcode, uint8 Reg) const {
-    const uint8 OldBit = GetBit(0,Reg);
-    Reg = static_cast<uint8>(Reg >> 1);
-    (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-    (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+uint8 NesCPU::Lsr(const uint8 Opcode, uint8 Data) const {
+    const uint8 OldBit = GetBit(0,Data);
+    Data = static_cast<uint8>(Data >> 1);
+    (Data == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,Data) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
     (OldBit == 1) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
-    return Reg;
+    return Data;
 }
 
 uint8 NesCPU::Asl(uint8 Opcode, uint8 Reg) const {
@@ -774,32 +825,17 @@ void NesCPU::Cmp(const uint8 Opcode) {
 }
 
 uint8 NesCPU::Inc(const uint8 Opcode, uint8 Reg) const {
-    switch(Opcode) {
-        case 0xC8:
-        case 0xE8:{
-            Reg +=1;
-            (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-            (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-            return Reg;
-        }
-        default:
-            //Debug.LogError("Bad INC operation");
-            return 0xFF;
-    }
+    Reg +=1;
+    (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    return Reg;
 }
 
 uint8 NesCPU::Dec(const uint8 Opcode, uint8 Reg) const {
-    switch(Opcode) {
-        case 0x88:
-        case 0xCA:
-            Reg -=1;
-            (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
-            (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
-            return Reg;
-        default:
-            //Debug.LogError("Bad INC operation");
-            return 0xFF;
-    }
+    Reg -=1;
+    (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    return Reg;
 }
 
 void NesCPU::Nop(uint8 Opcode) {
