@@ -8,16 +8,16 @@
 #include "NesMMU.h"
 #include "NesCart.h"
 
-BEGIN_DEFINE_SPEC(FNesTestEOR, "Nes.EOR",
+BEGIN_DEFINE_SPEC(FNesTestAdc, "Nes.ADC",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<NesCPU> CPU;
 shared_ptr<NesMMU> mmu;
 unique_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
-END_DEFINE_SPEC(FNesTestEOR)
+END_DEFINE_SPEC(FNesTestAdc)
 
-void FNesTestEOR::Define()
+void FNesTestAdc::Define()
 {
 	BeforeEach([this]()
 	{
@@ -29,40 +29,22 @@ void FNesTestEOR::Define()
 		cart = make_unique<NesCart>(rom);
 	});
 
-	Describe("FNesTestEOR", [this]()
-	{
-		It("A = 0xF5 P = E4", [this]()
-		{
-			cart->Write(0, 0x45);
-			cart->Write(1, 0x78);
-			mmu->Write(0x78, 0xAA);
-			mmu->AttachCart(move(cart));
-			CPU->A = 0x5F;
-			CPU->P->pSetState(0x64);
-			const uint8 Cycle = CPU->Tick();
-			TestEqual(TEXT("Cycle needs to be 3"), Cycle, 3);
-			TestEqual(TEXT("PC needs to be 0x8002"), CPU->PC, 0x8002);
-			TestEqual(TEXT("A needs to be 0xF5"), CPU->A, 0xF5);
-			TestEqual(TEXT("P needs to be 0xE4"), CPU->P->pStateWithBFlag(), 0xE4);
-		});
-	});
-
-	Describe("FNesTestEORAbsolute", [this]()
+	Describe("FNesTestADCAbsolute", [this]()
 	{
 		It("A = 0x5F P = 64", [this]()
 		{
-			cart->Write(0, 0x4D);
+			cart->Write(0, 0x6D);
 			cart->Write(1, 0x78);
 			cart->Write(2, 0x06);
-			mmu->Write(0x0678, 0xAA);
+			mmu->Write(0x0678, 0x69);
 			mmu->AttachCart(move(cart));
-			CPU->A = 0x5F;
-			CPU->P->pSetState(0x64);
+			CPU->A = 0x00;
+			CPU->P->pSetState(0x66);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 4);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
-			TestEqual(TEXT("A"), CPU->A, 0xF5);
-			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE4);
+			TestEqual(TEXT("A"), CPU->A, 0x69);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x24);
 		});
 	});
 }

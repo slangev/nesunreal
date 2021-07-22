@@ -8,16 +8,16 @@
 #include "NesMMU.h"
 #include "NesCart.h"
 
-BEGIN_DEFINE_SPEC(FNesTestLsr, "Nes.LSR",
+BEGIN_DEFINE_SPEC(FNesTestCmp, "Nes.CMP",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<NesCPU> CPU;
 shared_ptr<NesMMU> mmu;
 unique_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
-END_DEFINE_SPEC(FNesTestLsr)
+END_DEFINE_SPEC(FNesTestCmp)
 
-void FNesTestLsr::Define()
+void FNesTestCmp::Define()
 {
 	BeforeEach([this]()
 	{
@@ -29,41 +29,59 @@ void FNesTestLsr::Define()
 		cart = make_unique<NesCart>(rom);
 	});
 
-	Describe("FNesTestLsr", [this]()
+	Describe("FNesTestCMPAbsolute", [this]()
 	{
-		It("Lsr at 0x78 = 1 should equal 0", [this]()
+		It("A = 0x5F P = 64", [this]()
 		{
-			cart->Write(0, 0x46);
+			cart->Write(0, 0xCD);
 			cart->Write(1, 0x78);
-			mmu->Write(0x78, 0x01);
+			cart->Write(2, 0x06);
+			mmu->Write(0x0678, 0x40);
 			mmu->AttachCart(move(cart));
-			CPU->A = 0x01;
+			CPU->A = 0x40;
 			CPU->P->pSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
-			TestEqual(TEXT("Cycle"), Cycle, 5);
-			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
-			TestEqual(TEXT("A"), CPU->A, 0x01);
-			TestEqual(TEXT("Memory at 0x78"), mmu->Read(0x78), 0x00);
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0x40);
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
 		});
 	});
 
-	Describe("FNesTestLsrAbsolute", [this]()
+	Describe("FNesTestCPXAbsolute", [this]()
 	{
-		It("Lsr at 0x0678 = 1 should equal 0", [this]()
+		It("X = 0x5F P = 64", [this]()
 		{
-			cart->Write(0, 0x4E);
+			cart->Write(0, 0xEC);
 			cart->Write(1, 0x78);
 			cart->Write(2, 0x06);
-			mmu->Write(0x0678, 0x01);
+			mmu->Write(0x0678, 0x40);
 			mmu->AttachCart(move(cart));
-			CPU->A = 0x01;
+			CPU->X = 0x40;
 			CPU->P->pSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
-			TestEqual(TEXT("Cycle"), Cycle, 6);
+			TestEqual(TEXT("Cycle"), Cycle, 4);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
-			TestEqual(TEXT("A"), CPU->A, 0x01);
-			TestEqual(TEXT("Memory at 0x0678"), mmu->Read(0x0678), 0x00);
+			TestEqual(TEXT("X"), CPU->X, 0x40);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
+		});
+	});
+	
+	Describe("FNesTestCPYAbsolute", [this]()
+	{
+		It("Y = 0x5F P = 64", [this]()
+		{
+			cart->Write(0, 0xCC);
+			cart->Write(1, 0x78);
+			cart->Write(2, 0x06);
+			mmu->Write(0x0678, 0x40);
+			mmu->AttachCart(move(cart));
+			CPU->Y = 0x40;
+			CPU->P->pSetState(0x65);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("X"), CPU->Y, 0x40);
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
 		});
 	});

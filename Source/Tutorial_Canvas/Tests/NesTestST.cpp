@@ -37,8 +37,8 @@ void NesTestST::Define()
 			mmu->AttachCart(move(cart));
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
             cpu->X = 0x1;
-            uint8 cycle = cpu->Tick();
-            TestEqual(TEXT("Cycle needs to be 3"), 3, cycle);
+			const uint8 Cycle = cpu->Tick();
+            TestEqual(TEXT("Cycle needs to be 3"), 3, Cycle);
             TestEqual(TEXT("PC needs to be 0x8002"), 0x8002, cpu->PC);
             TestEqual(TEXT("X needs to be 1"), 0x1, cpu->X);
             TestEqual(TEXT("mmu at 0x0011 should contain value 0x1"), 0x1, mmu->Read(0x0011));
@@ -54,13 +54,34 @@ void NesTestST::Define()
 			mmu->AttachCart(move(cart));
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
             cpu->Y = 0x1;
-            uint8 cycle = cpu->Tick();
-            TestEqual(TEXT("Cycle needs to be 3"), 3, cycle);
+			const uint8 Cycle = cpu->Tick();
+            TestEqual(TEXT("Cycle needs to be 3"), 3, Cycle);
             TestEqual(TEXT("PC needs to be 0x8002"), 0x8002, cpu->PC);
             TestEqual(TEXT("Y needs to be 1"), 0x1, cpu->Y);
             TestEqual(TEXT("mmu at 0x0011 should contain value 0x1"), 0x1, mmu->Read(0x0011));
         });
     });
+
+	Describe("NesAbsoluteSTY", [this]()
+	{
+		It("mmu at 0x0678 should contain value 0x46 from Y=0x46", [this]()
+		{
+			cart->Write(0,0x8C);
+			cart->Write(1,0x78);
+			cart->Write(2,0x06);
+			mmu->Write(0x0678,0x55);
+			mmu->AttachCart(move(cart));
+			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
+			cpu->Y = 0x46;
+			cpu->P->pSetState(0xE5);
+			const uint8 Cycle = cpu->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), cpu->PC, 0x8003);
+			TestEqual(TEXT("Y"), cpu->Y, 0x46);
+			TestEqual(TEXT("P"), cpu->P->pState(), 0xE5);
+			TestEqual(TEXT("mmu at 0x0678"), mmu->Read(0x0678), cpu->Y);
+		});
+	});
 
 	Describe("NesAbsoluteSTX", [this]()
     {
@@ -72,8 +93,8 @@ void NesTestST::Define()
 			mmu->AttachCart(move(cart));
             TestEqual(TEXT(""),0x0,mmu->Read(0x07FF));
             cpu->X = 0xFB;
-            uint8 cycle = cpu->Tick();
-            TestEqual(TEXT(""),4, cycle);
+			const uint8 Cycle = cpu->Tick();
+            TestEqual(TEXT(""),4, Cycle);
             TestEqual(TEXT(""),0x8003, cpu->PC);
             TestEqual(TEXT(""),0xFB,cpu->X);
             TestEqual(TEXT(""),cpu->X,mmu->Read(0x07FF));

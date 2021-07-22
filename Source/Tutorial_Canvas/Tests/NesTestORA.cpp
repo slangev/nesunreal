@@ -46,4 +46,23 @@ void FNesTestOra::Define()
 			TestEqual(TEXT("P needs to be 0xE4"), CPU->P->pStateWithBFlag(), 0xE4);
 		});
 	});
+
+	Describe("FNesTestOraAbsolute", [this]()
+	{
+		It("A = 0x55 P = 64", [this]()
+		{
+			cart->Write(0, 0x0D);
+			cart->Write(1, 0x78);
+			cart->Write(2, 0x06);
+			mmu->Write(0x0678, 0xAA);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x55;
+			CPU->P->pSetState(0x64);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0xFF);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE4);
+		});
+	});
 }
