@@ -13,7 +13,7 @@
 
 # Rider for Unreal Engine
 .idea
-
+Plugins/
 
 # Compiled Object files
 *.slo
