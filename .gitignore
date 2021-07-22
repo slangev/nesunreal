@@ -10,6 +10,11 @@
 
 # Visual Studio Code
 .vscode
+
+# Rider for Unreal Engine
+.idea
+
+
 # Compiled Object files
 *.slo
 *.lo
