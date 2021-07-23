@@ -108,4 +108,25 @@ void FNesTestLd::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x65);
 		});
 	});
+
+	Describe("FNesTestLdaIndirectY", [this]()
+	{
+		It("A = 0x89 P = 0x27", [this]()
+		{
+			cart->Write(0, 0xB1);
+			cart->Write(1, 0x89);
+			mmu->AttachCart(move(cart));
+			mmu->Write(0x89,0x00);
+			mmu->Write(0x8A,0x03);
+			mmu->Write(0x0300, 0x89);
+			CPU->A = 0x00;
+			CPU->Y = 0x00;
+			CPU->P->pSetState(0x27);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 5);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0x89);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xA5);
+		});
+	});
 }

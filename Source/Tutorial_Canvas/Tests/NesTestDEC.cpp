@@ -29,7 +29,7 @@ void FNesTestDec::Define()
 		cart = make_unique<NesCart>(rom);
 	});
 
-	Describe("FNesTestInc", [this]()
+	Describe("FNesTestDec", [this]()
 	{
 		It("Inc at 0x78 = 0xFF should equal 0x00", [this]()
 		{
@@ -45,6 +45,26 @@ void FNesTestDec::Define()
 			TestEqual(TEXT("A"), CPU->A, 0x00);
 			TestEqual(TEXT("Memory at 0x78"), mmu->Read(0x78), 0xFF);
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+		});
+	});
+	
+	Describe("FNesTestDecAbsolute", [this]()
+	{
+		It("A = 0x00 P = 0xE7", [this]()
+		{
+			cart->Write(0, 0xCE);
+			cart->Write(1, 0x78);
+			cart->Write(2, 0x06);
+			mmu->Write(0x0678, 0x00);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x00;
+			CPU->P->pSetState(0xE7);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 6);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0x00);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+			TestEqual(TEXT("Memory at 0x0678"), mmu->Read(0x0678), 0xFF);
 		});
 	});
 }

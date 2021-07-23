@@ -47,4 +47,24 @@ void FNesTestRor::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
 		});
 	});
+
+	Describe("FNesTestRorAbsolute", [this]()
+	{
+		It("A = 0x01 P = 0x65", [this]()
+		{
+			cart->Write(0, 0x6E);
+			cart->Write(1, 0x78);
+			cart->Write(2, 0x06);
+			mmu->Write(0x0678, 0x01);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x01;
+			CPU->P->pSetState(0x65);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 6);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0x01);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+			TestEqual(TEXT("Memory at 0x0678"), mmu->Read(0x0678), 0x80);
+		});
+	});
 }
