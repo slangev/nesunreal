@@ -16,25 +16,22 @@ void NesMMU::AttachCart(unique_ptr<NesCart> cart) {
     this->m_cart = std::move(cart);
 }
 
-/*void NesMMU::AttachCart(shared_ptr<NesCart> cart) {
-    this->m_cart = cart;
-}*/
-
-void NesMMU::Write(unsigned short address, uint8 data) {
+void NesMMU::Write(const unsigned short Address, const uint8 Data) const
+{
     //CPU RAM
-    if(address >= 0x0000 && address < 0x2000) {
+    if(Address >= 0x0000 && Address < 0x2000) {
         //Zero Page
-        if(address >= 0x0000 && address < 0x0100) {
-            m_cpuRam->at(address) = data;
+        if(Address >= 0x0000 && Address < 0x0100) {
+            m_cpuRam->at(Address) = Data;
         //Stack
-        } else if(address >= 0x0100 && address < 0x0200) {
-            m_cpuRam->at(address) = data;
+        } else if(Address >= 0x0100 && Address < 0x0200) {
+            m_cpuRam->at(Address) = Data;
         //Ram
-        } else if(address >= 0x200 && address < 0x0800) {
-            m_cpuRam->at(address) = data;
+        } else if(Address >= 0x200 && Address < 0x0800) {
+            m_cpuRam->at(Address) = Data;
         //Mirrors 
         } else {
-            m_cpuRam->at(address & 0x7FF) = data;
+            m_cpuRam->at(Address & 0x7FF) = Data;
         }
     }
     /*if (address >= 0x0000 && address <= 0x1FFF) {

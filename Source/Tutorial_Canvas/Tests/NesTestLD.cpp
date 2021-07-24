@@ -109,6 +109,46 @@ void FNesTestLd::Define()
 		});
 	});
 
+	Describe("FNesTestLdZeroPage", [this]()
+	{
+		It("LDA at 0x0000 = 0x00 should equal 0x00", [this]()
+		{
+			cart->Write(0, 0xA5);
+			cart->Write(1, 0x00);
+			mmu->Write(0x0000, 0x00);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0xA3;
+			CPU->P->pSetState(0x67);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 3);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0x00);
+			TestEqual(TEXT("Memory at 0x0000"), mmu->Read(0x0000), 0x00);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
+		});
+	});
+
+	Describe("FNesTestLdaIndirectX", [this]()
+	{
+		It("A = 0x5C P = 0x27", [this]()
+		{
+			cart->Write(0, 0xA1);
+			cart->Write(1, 0xFF);
+			mmu->AttachCart(move(cart));
+			mmu->Write(0xFF,0x00);
+			mmu->Write(0x00,0x04);
+			mmu->Write(0x0400, 0x5D);
+			CPU->A = 0x5C;
+			CPU->X = 0x00;
+			CPU->P->pSetState(0x27);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 6);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0x5D);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x25);
+		});
+	});
+
 	Describe("FNesTestLdaIndirectY", [this]()
 	{
 		It("A = 0x89 P = 0x27", [this]()
@@ -127,6 +167,27 @@ void FNesTestLd::Define()
 			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
 			TestEqual(TEXT("A"), CPU->A, 0x89);
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xA5);
+		});
+	});
+
+	Describe("FNesTestLdaIndirectYCrossPage", [this]()
+	{
+		It("A = 0x89 P = 0x65", [this]()
+		{
+			cart->Write(0, 0xB1);
+			cart->Write(1, 0x97);
+			mmu->AttachCart(move(cart));
+			mmu->Write(0x97,0xFF);
+			mmu->Write(0x98,0xFF);
+			mmu->Write(0x0033, 0xA3);
+			CPU->A = 0x00;
+			CPU->Y = 0x34;
+			CPU->P->pSetState(0x65);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 6);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0xA3);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
 		});
 	});
 }

@@ -18,7 +18,7 @@ public:
 	void AttachCart(unique_ptr<NesCart> cart);
 	//void AttachCart(shared_ptr<NesCart> cart);
 	uint8 Read(unsigned short Address) const;
-	void Write(unsigned short address, uint8 data);
+	void Write(unsigned short Address, uint8 Data) const;
 private:
 	unique_ptr<vector<uint8>> m_cpuRam;
 	unique_ptr<vector<uint8>> m_ppuRam;

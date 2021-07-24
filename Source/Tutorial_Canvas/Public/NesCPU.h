@@ -38,9 +38,10 @@ private:
 	static void SeparateWordToBytes(ushort Word, uint8 Result[]);
 	static unsigned short CombineBytePairIntoUShort(uint8 lsb, uint8 msb);
     unsigned short GetIndirectAddress(uint8 Reg);
-    void Jmp(uint8 Opcode);
+	unsigned short GetIndirectIndexed(const uint8 Reg, uint &LastCycleCount);	
+	void Jmp(uint8 Opcode);
     void Cp(uint8 Opcode, uint8 Reg);
-    uint8 Ld(uint8 Opcode);
+	uint8 Ld(const uint8 Opcode, uint &LastCycleCount);
     uint8 Inc(uint8 Opcode, uint8 Reg) const;
     uint8 Dec(uint8 Opcode, uint8 Reg) const;
     void Store(uint8 Opcode, uint8 Reg);
@@ -50,7 +51,7 @@ private:
     void Pha(uint8 Opcode);
     void And(uint8 Opcode);
     void Adc(uint8 Opcode);
-    void Ora(uint8 opcode);
+    void Ora(uint8 Opcode);
     void Php(uint8 Opcode);
     void Pla(uint8 Opcode);
     void Cmp(uint8 Opcode);
@@ -66,7 +67,7 @@ private:
     void Clc(uint8 Opcode) const;
     void Cld(uint8 Opcode) const;
     void Clv(uint8 Opcode) const;
-    void Eor(uint8 opcode);
+    void Eor(uint8 Opcode);
     uint8 Rol(uint8 Opcode, uint8 Reg) const;
     uint8 Lsr(uint8 Opcode, uint8 Data) const;
     uint8 Asl(uint8 Opcode, uint8 Reg) const;
