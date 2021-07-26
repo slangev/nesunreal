@@ -8,16 +8,16 @@
 #include "NesMMU.h"
 #include "NesCart.h"
 
-BEGIN_DEFINE_SPEC(FNesTestAdc, "Nes.ADC",
+BEGIN_DEFINE_SPEC(FNesTestJmp, "Nes.JMP",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<NesCPU> CPU;
 shared_ptr<NesMMU> mmu;
 unique_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
-END_DEFINE_SPEC(FNesTestAdc)
+END_DEFINE_SPEC(FNesTestJmp)
 
-void FNesTestAdc::Define()
+void FNesTestJmp::Define()
 {
 	BeforeEach([this]()
 	{
@@ -29,43 +29,41 @@ void FNesTestAdc::Define()
 		cart = make_unique<NesCart>(rom);
 	});
 
-	Describe("FNesTestADCAbsolute", [this]()
+	Describe("FNesTestJMPAbsolute", [this]()
 	{
-		It("A = 0x5F P = 64", [this]()
+		It("A = 0x00 P = 0x24 PC = 0xC5F5", [this]()
 		{
-			cart->Write(0, 0x6D);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
-			mmu->Write(0x0678, 0x69);
+			cart->Write(0, 0x4C);
+			cart->Write(1, 0xF5);
+			cart->Write(2, 0xC5);
 			mmu->AttachCart(move(cart));
 			CPU->A = 0x00;
-			CPU->P->pSetState(0x66);
+			CPU->P->pSetState(0x24);
 			const uint8 Cycle = CPU->Tick();
-			TestEqual(TEXT("Cycle"), Cycle, 4);
-			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
-			TestEqual(TEXT("A"), CPU->A, 0x69);
+			TestEqual(TEXT("Cycle"), Cycle, 3);
+			TestEqual(TEXT("PC"), CPU->PC, 0xC5F5);
+			TestEqual(TEXT("A"), CPU->A, 0x00);
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x24);
 		});
 	});
 
-	Describe("FNesTestADCIndirectY", [this]()
+	Describe("FNesTestJMPIndirectY", [this]()
 	{
-		It("A = 0x71 P = 0x66", [this]()
+		It("A = 0xDB P = 0xE5 PC = 0xDB7E", [this]()
 		{
-			cart->Write(0, 0x71);
-			cart->Write(1, 0x33);
+			cart->Write(0, 0x6C);
+			cart->Write(1, 0x00);
+			cart->Write(2, 0x02);
 			mmu->AttachCart(move(cart));
-			mmu->Write(0x33,0x00);
-			mmu->Write(0x34,0x04);
-			mmu->Write(0x0400, 0x69);
-			CPU->A = 0x00;
-			CPU->Y = 0x00;
-			CPU->P->pSetState(0x66);
+			mmu->Write(0x0200,0x7E);
+			mmu->Write(0x0201,0xDB);
+			CPU->A = 0xDB;
+			CPU->P->pSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 5);
-			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
-			TestEqual(TEXT("A"), CPU->A, 0x69);
-			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x24);
+			TestEqual(TEXT("PC"), CPU->PC, 0xDB7E);
+			TestEqual(TEXT("A"), CPU->A, 0xDB);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
 		});
 	});
 }

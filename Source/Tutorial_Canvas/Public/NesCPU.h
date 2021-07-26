@@ -26,22 +26,23 @@ public:
     uint8 A;
     uint8 X;
     uint8 Y;
+	uint LastCycleCount = 0;
     
 private:
 	shared_ptr<NesMMU> m_mmu;
-    uint totalCycles = 0;
-    uint lineNumber = 1;
+    uint TotalCycles = 0;
+    uint LineNumber = 1;
 
     static const uint cycleCount[];
     void PrintNesTestLogLine(uint8 Opcode);
     uint HandleInstructions(uint8 Opcode);
 	static void SeparateWordToBytes(ushort Word, uint8 Result[]);
-	static unsigned short CombineBytePairIntoUShort(uint8 lsb, uint8 msb);
-    unsigned short GetIndirectAddress(uint8 Reg);
-	unsigned short GetIndirectIndexed(const uint8 Reg, uint &LastCycleCount);	
+	static unsigned short CombineBytePairIntoUShort(uint8 Lsb, uint8 Msb);
+    unsigned short GetIndirectAddress(const uint8 Reg);
+	unsigned short GetIndirectIndexed(const uint8 Reg);	
 	void Jmp(uint8 Opcode);
     void Cp(uint8 Opcode, uint8 Reg);
-	uint8 Ld(const uint8 Opcode, uint &LastCycleCount);
+	uint8 Ld(const uint8 Opcode);
     uint8 Inc(uint8 Opcode, uint8 Reg) const;
     uint8 Dec(uint8 Opcode, uint8 Reg) const;
     void Store(uint8 Opcode, uint8 Reg);

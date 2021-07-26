@@ -9,7 +9,7 @@
 #include "NesCart.h"
 
 BEGIN_DEFINE_SPEC(NesTestST, "Nes.ST", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
-	unique_ptr<NesCPU> cpu;
+	unique_ptr<NesCPU> CPU;
 	shared_ptr<NesMMU> mmu;
 	unique_ptr<NesCart> cart;
 	uint m_memorySize = 0x4000;
@@ -20,9 +20,9 @@ void NesTestST::Define()
 {
 	BeforeEach([this]()
 	{
-		cpu = make_unique<NesCPU>();
+		CPU = make_unique<NesCPU>();
 		mmu = make_shared<NesMMU>();
-		cpu->AttachMemory(mmu,0x8000); //Set PC to 0x8000
+		CPU->AttachMemory(mmu,0x8000); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000,0);
 		cart = make_unique<NesCart>(rom);
@@ -36,11 +36,11 @@ void NesTestST::Define()
             cart->Write(1,0x11);
 			mmu->AttachCart(move(cart));
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
-            cpu->X = 0x1;
-			const uint8 Cycle = cpu->Tick();
+            CPU->X = 0x1;
+			const uint8 Cycle = CPU->Tick();
             TestEqual(TEXT("Cycle needs to be 3"), 3, Cycle);
-            TestEqual(TEXT("PC needs to be 0x8002"), 0x8002, cpu->PC);
-            TestEqual(TEXT("X needs to be 1"), 0x1, cpu->X);
+            TestEqual(TEXT("PC needs to be 0x8002"), 0x8002, CPU->PC);
+            TestEqual(TEXT("X needs to be 1"), 0x1, CPU->X);
             TestEqual(TEXT("mmu at 0x0011 should contain value 0x1"), 0x1, mmu->Read(0x0011));
         });
     });
@@ -53,11 +53,11 @@ void NesTestST::Define()
             cart->Write(1,0x11);
 			mmu->AttachCart(move(cart));
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
-            cpu->Y = 0x1;
-			const uint8 Cycle = cpu->Tick();
+            CPU->Y = 0x1;
+			const uint8 Cycle = CPU->Tick();
             TestEqual(TEXT("Cycle needs to be 3"), 3, Cycle);
-            TestEqual(TEXT("PC needs to be 0x8002"), 0x8002, cpu->PC);
-            TestEqual(TEXT("Y needs to be 1"), 0x1, cpu->Y);
+            TestEqual(TEXT("PC needs to be 0x8002"), 0x8002, CPU->PC);
+            TestEqual(TEXT("Y needs to be 1"), 0x1, CPU->Y);
             TestEqual(TEXT("mmu at 0x0011 should contain value 0x1"), 0x1, mmu->Read(0x0011));
         });
     });
@@ -72,14 +72,14 @@ void NesTestST::Define()
 			mmu->Write(0x0678,0x55);
 			mmu->AttachCart(move(cart));
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
-			cpu->Y = 0x46;
-			cpu->P->pSetState(0xE5);
-			const uint8 Cycle = cpu->Tick();
+			CPU->Y = 0x46;
+			CPU->P->pSetState(0xE5);
+			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 4);
-			TestEqual(TEXT("PC"), cpu->PC, 0x8003);
-			TestEqual(TEXT("Y"), cpu->Y, 0x46);
-			TestEqual(TEXT("P"), cpu->P->pState(), 0xE5);
-			TestEqual(TEXT("mmu at 0x0678"), mmu->Read(0x0678), cpu->Y);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("Y"), CPU->Y, 0x46);
+			TestEqual(TEXT("P"), CPU->P->pState(), 0xE5);
+			TestEqual(TEXT("mmu at 0x0678"), mmu->Read(0x0678), CPU->Y);
 		});
 	});
 
@@ -92,12 +92,34 @@ void NesTestST::Define()
             cart->Write(2,0x07);
 			mmu->AttachCart(move(cart));
             TestEqual(TEXT(""),0x0,mmu->Read(0x07FF));
-            cpu->X = 0xFB;
-			const uint8 Cycle = cpu->Tick();
+            CPU->X = 0xFB;
+			const uint8 Cycle = CPU->Tick();
             TestEqual(TEXT(""),4, Cycle);
-            TestEqual(TEXT(""),0x8003, cpu->PC);
-            TestEqual(TEXT(""),0xFB,cpu->X);
-            TestEqual(TEXT(""),cpu->X,mmu->Read(0x07FF));
+            TestEqual(TEXT(""),0x8003, CPU->PC);
+            TestEqual(TEXT(""),0xFB,CPU->X);
+            TestEqual(TEXT(""),CPU->X,mmu->Read(0x07FF));
         });
     });
+
+	Describe("FNesTestSTAIndirectY", [this]()
+	{
+		It("A = 0x87 P = 0xE5", [this]()
+		{
+			cart->Write(0, 0x91);
+			cart->Write(1, 0x33);
+			mmu->AttachCart(move(cart));
+			mmu->Write(0x33,0x00);
+			mmu->Write(0x34,0x04);
+			mmu->Write(0x0400, 0x7F);
+			CPU->A = 0x87;
+			CPU->Y = 0x00;
+			CPU->P->pSetState(0xE5);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 6);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0x87);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+			TestEqual(TEXT("mmu at 0x0400"),CPU->A,mmu->Read(0x0400));
+		});
+	});
 }
