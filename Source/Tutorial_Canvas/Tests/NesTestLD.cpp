@@ -128,6 +128,26 @@ void FNesTestLd::Define()
 		});
 	});
 
+	Describe("FNesTestLdAbsoluteY", [this]()
+	{
+		It("LDA at 0x0033 = 0xA3 should equal 0xA3", [this]()
+		{
+			cart->Write(0, 0xB9);
+			cart->Write(1, 0xFF);
+			cart->Write(2, 0xFF);
+			mmu->Write(0x0033, 0xA3);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0xFF;
+			CPU->Y = 0x34;
+			CPU->P->pSetState(0x65);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 5);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0xA3);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+		});
+	});
+
 	Describe("FNesTestLdaIndirectX", [this]()
 	{
 		It("A = 0x5C P = 0x27", [this]()

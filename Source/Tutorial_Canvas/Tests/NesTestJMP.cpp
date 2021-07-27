@@ -47,7 +47,7 @@ void FNesTestJmp::Define()
 		});
 	});
 
-	Describe("FNesTestJMPIndirectY", [this]()
+	Describe("FNesTestJMPIndirect", [this]()
 	{
 		It("A = 0xDB P = 0xE5 PC = 0xDB7E", [this]()
 		{

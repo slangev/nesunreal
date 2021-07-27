@@ -68,4 +68,24 @@ void FNesTestAdc::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x24);
 		});
 	});
+
+	Describe("FNesTestAdcAbsoluteY", [this]()
+	{
+		It("Adc Y at 0x0033 = 0x69 should equal 0x69", [this]()
+		{
+			cart->Write(0, 0x79);
+			cart->Write(1, 0xFF);
+			cart->Write(2, 0xFF);
+			mmu->Write(0x0033, 0x69);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x00;
+			CPU->Y = 0x34;
+			CPU->P->pSetState(0x66);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 5);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0x69);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x24);
+		});
+	});
 }

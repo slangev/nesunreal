@@ -39,7 +39,8 @@ private:
 	static void SeparateWordToBytes(ushort Word, uint8 Result[]);
 	static unsigned short CombineBytePairIntoUShort(uint8 Lsb, uint8 Msb);
     unsigned short GetIndirectAddress(const uint8 Reg);
-	unsigned short GetIndirectIndexed(const uint8 Reg);	
+	unsigned short GetIndirectIndexed(const uint8 Reg);
+	inline uint8 GetAbsoluteRead(const uint8 Reg);
 	void Jmp(uint8 Opcode);
     void Cp(uint8 Opcode, uint8 Reg);
 	uint8 Ld(const uint8 Opcode);

@@ -86,4 +86,24 @@ void FNesTestEOR::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE4);
 		});
 	});
+
+	Describe("FNesTestEorAbsoluteY", [this]()
+	{
+		It("EOR Y at 0x0033 = 0xAA should equal 0xF5", [this]()
+		{
+			cart->Write(0, 0x59);
+			cart->Write(1, 0xFF);
+			cart->Write(2, 0xFF);
+			mmu->Write(0x0033, 0xAA);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x5F;
+			CPU->Y = 0x34;
+			CPU->P->pSetState(0x64);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 5);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0xF5);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE4);
+		});
+	});
 }
