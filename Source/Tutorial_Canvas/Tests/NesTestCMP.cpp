@@ -106,4 +106,24 @@ void FNesTestCmp::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
 		});
 	});
+
+	Describe("FNesTestCMPAbsoluteY", [this]()
+	{
+		It("CMP Y at 0x0033 = 0x40 should equal 0x40", [this]()
+		{
+			cart->Write(0, 0xD9);
+			cart->Write(1, 0xFF);
+			cart->Write(2, 0xFF);
+			mmu->Write(0x0033, 0x40);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x40;
+			CPU->Y = 0x34;
+			CPU->P->pSetState(0x65);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 5);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0x40);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
+		});
+	});
 }

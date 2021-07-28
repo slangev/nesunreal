@@ -41,6 +41,7 @@ private:
     unsigned short GetIndirectAddress(const uint8 Reg);
 	unsigned short GetIndirectIndexed(const uint8 Reg);
 	inline uint8 GetAbsoluteRead(const uint8 Reg);
+	inline unsigned short GetAbsoluteAddress(const uint8 Reg);
 	void Jmp(uint8 Opcode);
     void Cp(uint8 Opcode, uint8 Reg);
 	uint8 Ld(const uint8 Opcode);

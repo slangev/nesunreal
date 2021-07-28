@@ -122,4 +122,25 @@ void NesTestST::Define()
 			TestEqual(TEXT("mmu at 0x0400"),CPU->A,mmu->Read(0x0400));
 		});
 	});
+
+	Describe("FNesTestSTAAbsoluteY", [this]()
+	{
+		It("STA at 0x0033 = 0xAA should equal 0xFF", [this]()
+		{
+			cart->Write(0, 0x99);
+			cart->Write(1, 0xFF);
+			cart->Write(2, 0xFF);
+			mmu->Write(0x0033, 0x7F);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x87;
+			CPU->Y = 0x34;
+			CPU->P->pSetState(0xE5);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 6);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0x87);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+			TestEqual(TEXT("mmu at 0x0033"),CPU->A,mmu->Read(0x0033));
+		});
+	});
 }

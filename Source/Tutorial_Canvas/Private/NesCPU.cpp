@@ -331,6 +331,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x9A:
                 SP = Transfer(Opcode,X);
                 break;
+            case 0x99:
+                {
+                    Store(Opcode,A);
+                    break; 
+                }
             case 0xA0:
                 Y = Ld(Opcode);
                 break;
@@ -376,6 +381,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xB1:
                 {
                     A = Ld(Opcode);
+                    break;
+                }
+            case 0xB4:
+                {
+                    Y = Ld(Opcode);
                     break;
                 }
             case 0xB8:
@@ -440,6 +450,9 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xD8:
                 Cld(Opcode);
                 break;
+            case 0xD9:
+                Cmp(Opcode);
+                break;
             case 0xE0:
                 Cp(Opcode,X);
                 break;
@@ -495,6 +508,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xF8:
                 Sed(Opcode);
                 break;
+            case 0xF9:
+                {
+                    Sbc(Opcode);
+                    break;
+                }
             default:
                 LogOpcode("Unknown opcode: ", Opcode);
                 break;
@@ -508,12 +526,18 @@ void NesCPU::AttachMemory(shared_ptr<NesMMU> mmu, unsigned short startPC) {
     this->PC = (startPC == 0) ? ((m_mmu->Read(0xFFFD) << 8) | m_mmu->Read(0xFFFC)) : startPC;
 }
 
-unsigned short NesCPU::CombineBytePairIntoUShort(uint8 Lsb, uint8 Msb) {
+unsigned short NesCPU::CombineBytePairIntoUShort(const uint8 Lsb, const uint8 Msb) {
     const unsigned short Result = ((Msb << 8) | Lsb);
     return Result;
 }
 
 inline uint8 NesCPU::GetAbsoluteRead(const uint8 Reg) {
+    const unsigned short Address = GetAbsoluteAddress(Reg);
+    return m_mmu->Read(Address);
+}
+
+inline unsigned short NesCPU::GetAbsoluteAddress(const uint8 Reg)
+{
     const uint8 LowerByte = m_mmu->Read(PC++);
     const uint8 UpperByte = m_mmu->Read(PC++);
     unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte);
@@ -522,7 +546,7 @@ inline uint8 NesCPU::GetAbsoluteRead(const uint8 Reg) {
     // ReSharper disable once CppTooWideScope
     const uint8 CurrPage = static_cast<uint8>((Address & 0xFF00) >> 8);
     if(CurrPage != PrevPage) LastCycleCount++;
-    return m_mmu->Read(Address);
+    return Address;
 }
 
 // Item1 = MSB and Item 2 = LSB
@@ -661,6 +685,13 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
                 ReadByte = m_mmu->Read(Address & 0xFF);
                 break;
             }
+        //Zero Page X
+        case 0xB4:
+            {
+                Address = m_mmu->Read(PC++) + X;
+                ReadByte = m_mmu->Read(Address & 0xFF);
+                break;
+            }
         //Absolute
         case 0xAC:
         case 0xAD:
@@ -787,10 +818,16 @@ void NesCPU::Store(const uint8 Opcode, const uint8 Reg) {
             break;
         }
         case 0x91: {
-            const unsigned Address = GetIndirectIndexed(Y);
+            const unsigned short Address = GetIndirectIndexed(Y);
             m_mmu->Write(Address,Reg);
             break;
         }
+        case 0x99:
+            {
+                const unsigned short Address = GetAbsoluteAddress(Y);
+                m_mmu->Write(Address, Reg);
+                break;
+            }
     default: ;
     }
 }
@@ -1075,6 +1112,11 @@ void NesCPU::Sbc(const uint8 Opcode) {
                 ReadByte = m_mmu->Read(Address);
                 break;
             }
+        case 0xF9:
+            {
+                ReadByte = GetAbsoluteRead(Y);
+                break;
+            }
         default: ;
     }
     const unsigned short Diff = static_cast<unsigned short>(A - ReadByte - (1 - P->ReadFlag(P->CFlag)));
@@ -1157,6 +1199,11 @@ void NesCPU::Cmp(const uint8 Opcode) {
             {
                 const unsigned short Address = GetIndirectIndexed(Y);
                 ReadByte = m_mmu->Read(Address);
+                break;
+            }
+        case 0xD9:
+            {
+                ReadByte = GetAbsoluteRead(Y);
                 break;
             }
         default: ;

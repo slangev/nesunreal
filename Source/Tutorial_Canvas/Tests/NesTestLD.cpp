@@ -128,6 +128,27 @@ void FNesTestLd::Define()
 		});
 	});
 
+	Describe("FNesTestLdZeroPageX", [this]()
+	{
+		It("LDY at 0x00FF = 0xBB Y should equal 0xBB", [this]()
+		{
+			cart->Write(0, 0xB4);
+			cart->Write(1, 0xFF);
+			mmu->Write(0x0089, 0xBB);
+			mmu->AttachCart(move(cart));
+			CPU->X = 0x8A;
+			CPU->Y = 0x00;
+			CPU->P->pSetState(0x26);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("X"), CPU->X, 0x8A);
+			TestEqual(TEXT("Y"), CPU->Y, 0xBB);
+			TestEqual(TEXT("Memory at 0x0089"), mmu->Read(0x0089), 0xBB);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xA4);
+		});
+	});
+
 	Describe("FNesTestLdAbsoluteY", [this]()
 	{
 		It("LDA at 0x0033 = 0xA3 should equal 0xA3", [this]()
