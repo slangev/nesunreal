@@ -106,4 +106,23 @@ void FNesTestEOR::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE4);
 		});
 	});
+
+	Describe("FNesTestEorZeroPageX", [this]()
+	{
+		It("A = 0xFF P = E4", [this]()
+		{
+			cart->Write(0, 0x55);
+			cart->Write(1, 0x00);
+			mmu->Write(0x78, 0xAA);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x5F;
+			CPU->X = 0x78;
+			CPU->P->pSetState(0x64);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0xF5);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE4);
+		});
+	});
 }

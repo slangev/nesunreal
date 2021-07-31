@@ -143,4 +143,24 @@ void NesTestST::Define()
 			TestEqual(TEXT("mmu at 0x0033"),CPU->A,mmu->Read(0x0033));
 		});
 	});
+
+	Describe("FNesTestSTAZeroPageX", [this]()
+	{
+		It("STY at 0x0033 = 0xAA should equal 0xFF", [this]()
+		{
+			cart->Write(0, 0x94);
+			cart->Write(1, 0xFF);
+			mmu->Write(0x0033, 0x7F);
+			mmu->AttachCart(move(cart));
+			CPU->Y = 0x87;
+			CPU->X = 0x34;
+			CPU->P->pSetState(0x67);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->Y, 0x87);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
+			TestEqual(TEXT("mmu at 0x0033"),CPU->Y,mmu->Read(0x0033));
+		});
+	});
 }

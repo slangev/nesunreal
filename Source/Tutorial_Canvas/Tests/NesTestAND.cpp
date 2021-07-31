@@ -88,4 +88,23 @@ void FNesTestAnd::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x66);
 		});
 	});
+
+	Describe("FNesTestAndZeroPageX", [this]()
+	{
+		It("A = 0x00 P = E4", [this]()
+		{
+			cart->Write(0, 0x35);
+			cart->Write(1, 0x00);
+			mmu->Write(0x78, 0xAA);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x55;
+			CPU->X = 0x78;
+			CPU->P->pSetState(0x64);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0x00);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x66);
+		});
+	});
 }

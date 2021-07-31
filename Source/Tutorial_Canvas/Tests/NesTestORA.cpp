@@ -40,10 +40,29 @@ void FNesTestOra::Define()
 			CPU->A = 0x55;
 			CPU->P->pSetState(0x64);
 			const uint8 Cycle = CPU->Tick();
-			TestEqual(TEXT("Cycle needs to be 3"), Cycle, 3);
-			TestEqual(TEXT("PC needs to be 0x8002"), CPU->PC, 0x8002);
-			TestEqual(TEXT("A needs to be 0xFF"), CPU->A, 0xFF);
-			TestEqual(TEXT("P needs to be 0xE4"), CPU->P->pStateWithBFlag(), 0xE4);
+			TestEqual(TEXT("Cycle"), Cycle, 3);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0xFF);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE4);
+		});
+	});
+
+	Describe("FNesTestOraZeroPageX", [this]()
+	{
+		It("A = 0xFF P = E4", [this]()
+		{
+			cart->Write(0, 0x15);
+			cart->Write(1, 0x00);
+			mmu->Write(0x78, 0xAA);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x55;
+			CPU->X = 0x78;
+			CPU->P->pSetState(0x64);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0xFF);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE4);
 		});
 	});
 

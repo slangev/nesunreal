@@ -48,4 +48,23 @@ void FNesTestBit::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE7);
 		});
 	});
+
+	Describe("FNesTestBitZeroPage", [this]()
+	{
+		It("Bit at 0x01=FF P should equal 0xE5", [this]()
+		{
+			cart->Write(0, 0x24);
+			cart->Write(1, 0x01);
+			mmu->Write(0x01, 0xFF);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x44;
+			CPU->P->pSetState(0x27);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 3);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0x44);
+			TestEqual(TEXT("Memory at 0x01"), mmu->Read(0x01), 0xFF);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+		});
+	});
 }
