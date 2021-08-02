@@ -136,7 +136,7 @@ void NesTestST::Define()
 			CPU->Y = 0x34;
 			CPU->P->pSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();
-			TestEqual(TEXT("Cycle"), Cycle, 6);
+			TestEqual(TEXT("Cycle"), Cycle, 5);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
 			TestEqual(TEXT("A"), CPU->A, 0x87);
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);

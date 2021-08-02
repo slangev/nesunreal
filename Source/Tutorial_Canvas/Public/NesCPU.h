@@ -33,15 +33,15 @@ private:
     uint TotalCycles = 0;
     uint LineNumber = 1;
 
-    static const uint cycleCount[];
+    static const uint CycleCount[];
     void PrintNesTestLogLine(uint8 Opcode);
     uint HandleInstructions(uint8 Opcode);
 	static void SeparateWordToBytes(ushort Word, uint8 Result[]);
 	static unsigned short CombineBytePairIntoUShort(uint8 Lsb, uint8 Msb);
     unsigned short GetIndirectAddress(const uint8 Reg);
 	unsigned short GetIndirectIndexed(const uint8 Reg);
-	inline uint8 GetAbsoluteRead(const uint8 Reg);
-	inline unsigned short GetAbsoluteAddress(const uint8 Reg);
+	inline uint8 GetAbsoluteRead(const uint8 Reg, bool bCanCross);
+	inline unsigned short GetAbsoluteAddress(const uint8 Reg, bool bCanCross);
 	void Jmp(uint8 Opcode);
     void Cp(uint8 Opcode, uint8 Reg);
 	uint8 Ld(const uint8 Opcode);

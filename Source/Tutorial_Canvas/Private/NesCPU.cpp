@@ -6,7 +6,7 @@
 DEFINE_LOG_CATEGORY(LogNesCPU);
 
 
-const uint NesCPU::cycleCount[] = {
+const uint NesCPU::CycleCount[] = { //157
     7,6,0,8,3,3,5,5,3,2,2,2,4,4,6,6,
     2,5,0,8,4,4,6,6,2,4,2,7,4,4,7,7,
     6,6,0,8,3,3,5,5,4,2,2,2,4,4,6,6,
@@ -89,7 +89,7 @@ uint NesCPU::Tick() {
 
 
 uint NesCPU::HandleInstructions(const uint8 Opcode) {
-        LastCycleCount = cycleCount[Opcode];
+        LastCycleCount = CycleCount[Opcode];
         switch(Opcode) {
             case 0x01:
                 Ora(Opcode);
@@ -406,6 +406,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x9A:
                 SP = Transfer(Opcode,X);
                 break;
+            case 0x9D:
+                {
+                    Store(Opcode,A);
+                    break;
+                }
             case 0x99:
                 {
                     Store(Opcode,A);
@@ -487,6 +492,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xBC:
                 {
                     Y = Ld(Opcode);
+                    break;
+                }
+            case 0xBD:
+                {
+                    A = Ld(Opcode);
                     break;
                 }
             case 0xC0:
@@ -630,6 +640,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     Sbc(Opcode);
                     break;
                 }
+            case 0xFD:
+                {
+                    Sbc(Opcode);
+                    break;
+                }
             default:
                 LogOpcode("Unknown opcode: ", Opcode);
                 break;
@@ -648,12 +663,12 @@ unsigned short NesCPU::CombineBytePairIntoUShort(const uint8 Lsb, const uint8 Ms
     return Result;
 }
 
-inline uint8 NesCPU::GetAbsoluteRead(const uint8 Reg) {
-    const unsigned short Address = GetAbsoluteAddress(Reg);
+inline uint8 NesCPU::GetAbsoluteRead(const uint8 Reg, bool bCanCross) {
+    const unsigned short Address = GetAbsoluteAddress(Reg,bCanCross);
     return m_mmu->Read(Address);
 }
 
-inline unsigned short NesCPU::GetAbsoluteAddress(const uint8 Reg)
+inline unsigned short NesCPU::GetAbsoluteAddress(const uint8 Reg, const bool bCanCross)
 {
     const uint8 LowerByte = m_mmu->Read(PC++);
     const uint8 UpperByte = m_mmu->Read(PC++);
@@ -662,7 +677,7 @@ inline unsigned short NesCPU::GetAbsoluteAddress(const uint8 Reg)
     Address += Reg;
     // ReSharper disable once CppTooWideScope
     const uint8 CurrPage = static_cast<uint8>((Address & 0xFF00) >> 8);
-    if(CurrPage != PrevPage) LastCycleCount++;
+    if(CurrPage != PrevPage && bCanCross) LastCycleCount++;
     return Address;
 }
 
@@ -844,12 +859,14 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
         //Absolute Y
         case 0xB9:
             {
-                ReadByte = GetAbsoluteRead(Y);
+                ReadByte = GetAbsoluteRead(Y,true);
                 break;
             }
+        //Absolute X
         case 0xBC:
+        case 0xBD:
             {
-                ReadByte = GetAbsoluteRead(X);
+                ReadByte = GetAbsoluteRead(X,true);
                 break;
             }
         default:
@@ -966,7 +983,13 @@ void NesCPU::Store(const uint8 Opcode, const uint8 Reg) {
             }
         case 0x99:
             {
-                const unsigned short Address = GetAbsoluteAddress(Y);
+                const unsigned short Address = GetAbsoluteAddress(Y,false);
+                m_mmu->Write(Address, Reg);
+                break;
+            }
+        case 0x9D:
+            {
+                const unsigned short Address = GetAbsoluteAddress(X,false);
                 m_mmu->Write(Address, Reg);
                 break;
             }
@@ -1020,13 +1043,13 @@ void NesCPU::And(const uint8 Opcode) {
         // Absolute Y
         case 0x39:
             {
-                ReadByte = GetAbsoluteRead(Y);
+                ReadByte = GetAbsoluteRead(Y,true);
                 break;
             }
         // Absolute X
         case 0x3D:
             {
-                ReadByte = GetAbsoluteRead(X);
+                ReadByte = GetAbsoluteRead(X,true);
                 break;
             }
     default: ;
@@ -1114,12 +1137,12 @@ void NesCPU::Adc(const uint8 Opcode) {
             }
         case 0x79:
             {
-                ReadByte = GetAbsoluteRead(Y);
+                ReadByte = GetAbsoluteRead(Y,true);
                 break;
             }
         case 0x7D:
             {
-                ReadByte = GetAbsoluteRead(X);
+                ReadByte = GetAbsoluteRead(X,true);
                 break;
             }
             
@@ -1178,13 +1201,13 @@ void NesCPU::Ora(const uint8 Opcode) {
         // Absolute Y
         case 0x19:
             {
-                ReadByte = GetAbsoluteRead(Y);
+                ReadByte = GetAbsoluteRead(Y,true);
                 break;
             }
         // Absolute X
         case 0x1D:
             {
-                ReadByte = GetAbsoluteRead(X);
+                ReadByte = GetAbsoluteRead(X,true);
                 break;
             }
     default: ;
@@ -1236,12 +1259,12 @@ void NesCPU::Eor(const uint8 Opcode) {
             // Absolute Y
             case 0x59:
                 {
-                    ReadByte = GetAbsoluteRead(Y);
+                    ReadByte = GetAbsoluteRead(Y,true);
                     break;
                 }
             case 0x5D:
                 {
-                    ReadByte = GetAbsoluteRead(X);
+                    ReadByte = GetAbsoluteRead(X,true);
                     break;
                 }
             default: ;
@@ -1310,7 +1333,12 @@ void NesCPU::Sbc(const uint8 Opcode) {
             }
         case 0xF9:
             {
-                ReadByte = GetAbsoluteRead(Y);
+                ReadByte = GetAbsoluteRead(Y,true);
+                break;
+            }
+        case 0xFD:
+            {
+                ReadByte = GetAbsoluteRead(X,true);
                 break;
             }
         default: ;
@@ -1405,12 +1433,12 @@ void NesCPU::Cmp(const uint8 Opcode) {
             }
         case 0xD9:
             {
-                ReadByte = GetAbsoluteRead(Y);
+                ReadByte = GetAbsoluteRead(Y,true);
                 break;
             }
         case 0xDD:
             {
-                ReadByte = GetAbsoluteRead(X);
+                ReadByte = GetAbsoluteRead(X,true);
                 break;
             }
         default: ;
