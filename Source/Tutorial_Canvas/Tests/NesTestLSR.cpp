@@ -67,4 +67,26 @@ void FNesTestLsr::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
 		});
 	});
+
+	Describe("FNesTestLsrAbsoluteX", [this]()
+	{
+		It("Lsr at 0x0678 = 1 should equal 0", [this]()
+		{
+			cart->Write(0, 0x5E);
+			cart->Write(1, 0x00);
+			cart->Write(2, 0x06);
+			mmu->Write(0x0655, 0x01);
+			TestEqual(TEXT("Memory at 0x0655"), mmu->Read(0x0655), 0x01);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0x01;
+			CPU->X = 0x55;
+			CPU->P->pSetState(0x65);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 7);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("A"), CPU->A, 0x01);
+			TestEqual(TEXT("Memory at 0x0655"), mmu->Read(0x0655), 0x00);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
+		});
+	});
 }

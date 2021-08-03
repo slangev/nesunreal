@@ -283,6 +283,14 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     Eor(Opcode);
                     break;
                 }
+            case 0x5E:
+                {
+                    const uint8 LowerByte = m_mmu->Read(PC++);
+                    const uint8 UpperByte = m_mmu->Read(PC++);
+                    const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
+                    m_mmu->Write(Address, Lsr(Opcode,m_mmu->Read(Address)));
+                    break;
+                }
             case 0x60:
                 Rts(Opcode);
                 break;
