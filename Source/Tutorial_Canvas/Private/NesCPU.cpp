@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+//https://www.nesdev.com/undocumented_opcodes.txt (Illegal Opcodes)
 #include "NesCPU.h"
 
 DEFINE_LOG_CATEGORY(LogNesCPU);
@@ -94,6 +94,13 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x01:
                 Ora(Opcode);
                 break;
+            case 0x04:
+                {
+                    //Zero Page Noop (Double NOOP)
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x05:
                 Ora(Opcode);
                 break;
@@ -112,6 +119,14 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x0A:
                 A = Asl(Opcode,A);
                 break;
+            case 0x0C:
+                {
+                    //Absolute Noop (Triple NOOP)
+                    Nop(Opcode);
+                    PC++;
+                    PC++;
+                    break;
+                }
             case 0x0D:
                 Ora(Opcode);
                 break;
@@ -129,6 +144,13 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x11:
                 Ora(Opcode);
                 break;
+            case 0x14:
+                {
+                    //Zero Page Noop (Double NOOP)
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x15:
                 Ora(Opcode);
                 break;
@@ -144,9 +166,28 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x19:
                 Ora(Opcode);
                 break;
+            case 0x1A:
+                {
+                    Nop(Opcode);
+                    break;
+                }
+            case 0x1C:
+                {
+                    Nop(Opcode);
+                    GetAbsoluteAddress(X,true);
+                    break;
+                }
             case 0x1D:
                 Ora(Opcode);
                 break;
+            case 0x1E:
+                {
+                    const uint8 LowerByte = m_mmu->Read(PC++);
+                    const uint8 UpperByte = m_mmu->Read(PC++);
+                    const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
+                    m_mmu->Write(Address, Asl(Opcode,m_mmu->Read(Address)));
+                    break;
+                }
             case 0x20:
                 Jsr(Opcode);
                 break;
@@ -196,6 +237,13 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x31:
                 And(Opcode);
                 break;
+            case 0x34:
+                {
+                    //Zero Page Noop (Double NOOP)
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x35:
                 {
                     And(Opcode);
@@ -213,9 +261,28 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x39:
                 And(Opcode);
                 break;
+            case 0x3A:
+                {
+                    Nop(Opcode);
+                    break;
+                }
+            case 0x3C:
+                {
+                    Nop(Opcode);
+                    GetAbsoluteAddress(X,true);
+                    break;
+                }
             case 0x3D:
                 {
                     And(Opcode);
+                    break;
+                }
+            case 0x3E:
+                {
+                    const uint8 LowerByte = m_mmu->Read(PC++);
+                    const uint8 UpperByte = m_mmu->Read(PC++);
+                    const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
+                    m_mmu->Write(Address, Rol(Opcode,m_mmu->Read(Address)));
                     break;
                 }
             case 0x40:
@@ -224,6 +291,13 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x41:
                 Eor(Opcode);
                 break;
+            case 0x44:
+                {
+                    //Zero Page Noop (Double NOOP)
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x45:
                 Eor(Opcode);
                 break;
@@ -262,6 +336,13 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x51:
                 Eor(Opcode);
                 break;
+            case 0x54:
+                {
+                    //Zero Page Noop (Double NOOP)
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x55:
                 {
                     Eor(Opcode);
@@ -276,6 +357,17 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x59:
                 {
                     Eor(Opcode);
+                    break;
+                }
+            case 0x5A:
+                {
+                    Nop(Opcode);
+                    break;
+                }
+            case 0x5C:
+                {
+                    Nop(Opcode);
+                    GetAbsoluteAddress(X,true);
                     break;
                 }
             case 0x5D:
@@ -297,6 +389,13 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x61:
                 Adc(Opcode);
                 break;
+            case 0x64:
+                {
+                    //Zero Page Noop (Double NOOP)
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x65:
                 Adc(Opcode);
                 break;
@@ -335,6 +434,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x71:
                 Adc(Opcode);
                 break;
+            case 0x74:
+                {
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x75:
                 {
                     Adc(Opcode);
@@ -354,14 +459,45 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     Adc(Opcode);
                     break;
                 }
+            case 0x7A:
+                {
+                    Nop(Opcode);
+                    break;
+                }
+            case 0x7C:
+                {
+                    Nop(Opcode);
+                    GetAbsoluteAddress(X,true);
+                    break;
+                }
             case 0x7D:
                 {
                     Adc(Opcode);
                     break;
                 }
+            case 0x7E:
+                {
+                    const uint8 LowerByte = m_mmu->Read(PC++);
+                    const uint8 UpperByte = m_mmu->Read(PC++);
+                    const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
+                    m_mmu->Write(Address, Ror(Opcode,m_mmu->Read(Address)));
+                    break;
+                }
+            case 0x80:
+                {
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x81:
                 Store(Opcode,X);
                 break;
+            case 0x82:
+                {
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x84:
                 Store(Opcode,Y);
                 break;
@@ -374,6 +510,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x88:
                 Y = Dec(Opcode,Y);
                 break;
+            case 0x89:
+                {
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0x8A:
                 A = Transfer(Opcode,X);
                 break;
@@ -433,6 +575,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xA2:
                 X = Ld(Opcode);
                 break;
+            case 0xA3:
+                {
+                    X = Ld(Opcode);
+                    PC--; // Go back once to load A
+                    A = Ld(Opcode);
+                }
             case 0xA4:
                 Y = Ld(Opcode);
                 break;
@@ -507,12 +655,23 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     A = Ld(Opcode);
                     break;
                 }
+            case 0xBE:
+                {
+                    X = Ld(Opcode);
+                    break;
+                }
             case 0xC0:
                 Cp(Opcode,Y);
                 break;
             case 0xC1:
                 Cmp(Opcode);
                 break;
+            case 0xC2:
+                {
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0xC4:
                 Cp(Opcode,Y);
                 break;
@@ -555,6 +714,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xD1:
                 Cmp(Opcode);
                 break;
+            case 0xD4:
+                {
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0xD5:
                 {
                     Cmp(Opcode);
@@ -572,9 +737,28 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xD9:
                 Cmp(Opcode);
                 break;
+            case 0xDA:
+                {
+                    Nop(Opcode);
+                    break;
+                }
+            case 0xDC:
+                {
+                    Nop(Opcode);
+                    GetAbsoluteAddress(X,true);
+                    break;
+                }
             case 0xDD:
                 {
                     Cmp(Opcode);
+                    break;
+                }
+            case 0xDE:
+                {
+                    const uint8 LowerByte = m_mmu->Read(PC++);
+                    const uint8 UpperByte = m_mmu->Read(PC++);
+                    const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
+                    m_mmu->Write(Address, Dec(Opcode,m_mmu->Read(Address)));
                     break;
                 }
             case 0xE0:
@@ -583,6 +767,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xE1:
                 Sbc(Opcode);
                 break;
+            case 0xE2:
+                {
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0xE4:
                 Cp(Opcode,X);
                 break;
@@ -629,6 +819,12 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     Sbc(Opcode);
                     break;
                 }
+            case 0xF4:
+                {
+                    Nop(Opcode);
+                    PC++;
+                    break;
+                }
             case 0xF5:
                 {
                     Sbc(Opcode);
@@ -648,9 +844,28 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     Sbc(Opcode);
                     break;
                 }
+            case 0xFA:
+                {
+                    Nop(Opcode);
+                    break;
+                }
+            case 0xFC:
+                {
+                    Nop(Opcode);
+                    GetAbsoluteAddress(X,true);
+                    break;
+                }
             case 0xFD:
                 {
                     Sbc(Opcode);
+                    break;
+                }
+            case 0xFE:
+                {
+                    const uint8 LowerByte = m_mmu->Read(PC++);
+                    const uint8 UpperByte = m_mmu->Read(PC++);
+                    const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
+                    m_mmu->Write(Address, Inc(Opcode,m_mmu->Read(Address)));
                     break;
                 }
             default:
@@ -852,6 +1067,7 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
         }
         //Indirect,X
         case 0xA1:
+        case 0xA3:
             {
                 Address = GetIndirectAddress(X);
                 ReadByte = m_mmu->Read(Address);
@@ -866,6 +1082,7 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
             }
         //Absolute Y
         case 0xB9:
+        case 0xBE:
             {
                 ReadByte = GetAbsoluteRead(Y,true);
                 break;
