@@ -44,7 +44,7 @@ void FNesTestLax::Define()
 			CPU->P->pSetState(0x67);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 6);
-			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
 			TestEqual(TEXT("X"), CPU->X, 0x55);
 			TestEqual(TEXT("A"), CPU->A, 0x55);
 			TestEqual(TEXT("Memory at 0x0580"), mmu->Read(0x0580), 0x55);

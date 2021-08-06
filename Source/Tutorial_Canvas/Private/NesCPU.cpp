@@ -577,9 +577,10 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                 break;
             case 0xA3:
                 {
-                    X = Ld(Opcode);
-                    PC--; // Go back once to load A
                     A = Ld(Opcode);
+                    PC--; // Go back once to load A
+                    X = Ld(Opcode);
+                    break;
                 }
             case 0xA4:
                 Y = Ld(Opcode);
