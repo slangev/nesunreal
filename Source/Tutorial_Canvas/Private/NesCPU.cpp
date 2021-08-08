@@ -498,6 +498,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     PC++;
                     break;
                 }
+            case 0x83:
+                {
+                    Sax(Opcode);
+                    break;
+                }
             case 0x84:
                 Store(Opcode,Y);
                 break;
@@ -507,6 +512,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x86:
                 Store(Opcode,X);
                 break;
+            case 0x87:
+                {
+                    Sax(Opcode);
+                    break;
+                }
             case 0x88:
                 Y = Dec(Opcode,Y);
                 break;
@@ -528,6 +538,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x8E:
                 Store(Opcode,X);
                 break;
+            case 0x8F:
+                {
+                    Sax(Opcode);
+                    break;
+                }
             case 0x90:
                 //BCC
                 LastCycleCount += Branch(Opcode,P->ReadFlag(P->CFlag) == 0);
@@ -548,6 +563,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x96:
                 {
                     Store(Opcode,X);
+                    break;
+                }
+            case 0x97:
+                {
+                    Sax(Opcode);
                     break;
                 }
             case 0x98:
@@ -591,6 +611,13 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xA6:
                 X = Ld(Opcode);
                 break;
+            case 0xA7:
+                {
+                    A = Ld(Opcode);
+                    PC--; // Go back once to load A
+                    X = Ld(Opcode);
+                    break;
+                }
             case 0xA8:
                 Y = Transfer(Opcode,A);
                 break;
@@ -611,6 +638,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xAE:
                 X = Ld(Opcode);
                 break;
+            case 0xAF:
+                {
+                    Lax(Opcode);
+                    break;
+                }
             case 0xB0:
                 //BCS
                 LastCycleCount += Branch(Opcode,P->ReadFlag(P->CFlag) == 1);
@@ -618,6 +650,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xB1:
                 {
                     A = Ld(Opcode);
+                    break;
+                }
+            case 0xB3:
+                {
+                    Lax(Opcode);
                     break;
                 }
             case 0xB4:
@@ -633,6 +670,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xB6:
                 {
                     X = Ld(Opcode);
+                    break;
+                }
+            case 0xB7:
+                {
+                    Lax(Opcode);
                     break;
                 }
             case 0xB8:
@@ -659,6 +701,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xBE:
                 {
                     X = Ld(Opcode);
+                    break;
+                }
+            case 0xBF:
+                {
+                    Lax(Opcode);
                     break;
                 }
             case 0xC0:
@@ -790,8 +837,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                 X = Inc(Opcode,X);
                 break;
             case 0xE9:
-                Sbc(Opcode);
-                break;
+            case 0xEB:
+                {
+                    Sbc(Opcode);
+                    break; 
+                }
             case 0xEA:
                 Nop(Opcode);
                 break;
@@ -1036,7 +1086,8 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
         //Zero Page
         case 0xA4:
         case 0xA5:
-        case 0xA6: {
+        case 0xA6:
+        case 0xA7: {
                 Address = m_mmu->Read(PC++);
                 ReadByte = m_mmu->Read(Address & 0xFF);
                 break;
@@ -1051,6 +1102,7 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
             }
         //Zero Page Y
         case 0xB6:
+        case 0xB7:
             {
                 Address = m_mmu->Read(PC++) + Y;
                 ReadByte = m_mmu->Read(Address & 0xFF);
@@ -1059,7 +1111,8 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
         //Absolute
         case 0xAC:
         case 0xAD:
-        case 0xAE: {
+        case 0xAE:
+        case 0xAF: {
             const uint8 LowerByte = m_mmu->Read(PC++);
             const uint8 UpperByte = m_mmu->Read(PC++);
             Address = CombineBytePairIntoUShort(LowerByte,UpperByte);
@@ -1076,6 +1129,7 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
             }
         //Indirect,Y
         case 0xB1:
+        case 0xB3:
             {
                 Address = GetIndirectIndexed(Y);
                 ReadByte = m_mmu->Read(Address);
@@ -1084,6 +1138,7 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
         //Absolute Y
         case 0xB9:
         case 0xBE:
+        case 0xBF:
             {
                 ReadByte = GetAbsoluteRead(Y,true);
                 break;
@@ -1533,8 +1588,11 @@ void NesCPU::Sbc(const uint8 Opcode) {
                 break;
             }
         case 0xE9:
-            ReadByte = m_mmu->Read(PC++);
-            break;
+        case 0xEB:
+            {
+                ReadByte = m_mmu->Read(PC++);
+                break;
+            }
         case 0xED:
             {
                 const uint8 LowerByte = m_mmu->Read(PC++);
@@ -1690,4 +1748,82 @@ uint8 NesCPU::Dec(const uint8 Opcode, uint8 Reg) const {
 
 void NesCPU::Nop(uint8 Opcode) {
     //NO OPERATION.
+}
+
+void NesCPU::Lax(const uint8 Opcode) {
+    switch(Opcode) {
+        case 0xAF:
+        case 0xBF:
+            {
+                //Absolute requires us to go back twice.
+                const uint TempLastCycleCount = LastCycleCount;
+                A = Ld(Opcode);
+                PC--; 
+                PC--; 
+                X = Ld(Opcode);
+                if(TempLastCycleCount != LastCycleCount) LastCycleCount--; //Remove double counted cycle
+                break;
+            }
+        default:
+            {
+                const uint TempLastCycleCount = LastCycleCount;
+                A = Ld(Opcode);
+                PC--; // Go back once to load A
+                X = Ld(Opcode);
+                if(TempLastCycleCount != LastCycleCount) LastCycleCount--; //Remove double counted cycle
+                break;
+            }
+    }
+}
+
+void NesCPU::Sax(const uint8 Opcode) {
+    const uint8 ReadByte = static_cast<uint8>(A & X);
+    switch(Opcode) {
+        //(Indirect,X)
+        case 0x83:
+            {
+                const unsigned short Address = GetIndirectAddress(X);
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+        //Zero Page
+        case 0x87:
+            {
+                const unsigned short Address = m_mmu->Read(PC++);
+                m_mmu->Write(Address & 0xFF,ReadByte);
+                break;
+            }
+        //Absolute
+        case 0x8F:
+            {
+                const uint8 LowerByte = m_mmu->Read(PC++);
+                const uint8 UpperByte = m_mmu->Read(PC++);
+                const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte);
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+        //Zero Page Y
+        case 0x97:
+            {
+                const unsigned short Address = m_mmu->Read(PC++) + Y;
+                m_mmu->Write(Address & 0xFF,ReadByte);
+                break;
+            }
+        default: ;
+    }
+}
+
+void NesCPU::Dcp(const uint8 Opcode) {
+    uint8 ReadByte = 0x00;
+    switch(Opcode) {
+        //(Indirect,X)
+        case 0xC3:
+            {
+                const unsigned short Address = GetIndirectAddress(X);
+                ReadByte = m_mmu->Read(Address);
+                m_mmu->Write(Address,Dec(Opcode,ReadByte));
+                break;
+            }
+    default: ;
+    }
 }

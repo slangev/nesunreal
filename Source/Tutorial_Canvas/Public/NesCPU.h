@@ -59,6 +59,9 @@ private:
     void Pla(uint8 Opcode);
     void Cmp(uint8 Opcode);
     void Sbc(uint8 Opcode);
+	void Lax(uint8 Opcode);
+	void Sax(uint8 Opcode);
+	void Dcp(uint8 Opcode);
 	static void Nop(uint8 Opcode);
     void Jsr(uint8 Opcode);
     void Bit(uint8 Opcode);

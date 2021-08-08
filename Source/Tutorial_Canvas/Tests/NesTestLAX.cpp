@@ -51,4 +51,47 @@ void FNesTestLax::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x65);
 		});
 	});
+
+	Describe("FNesTestLax Zero Page", [this]()
+	{
+		It("LAX A/X = 0x55 ", [this]()
+		{
+			cart->Write(0, 0xA7);
+			cart->Write(1, 0x67);
+			mmu->AttachCart(move(cart));
+			mmu->Write(0x0067, 0x87);
+			CPU->X = 0xAA;
+			CPU->A = 0x00;
+			CPU->P->pSetState(0x67);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 3);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("X"), CPU->X, 0x87);
+			TestEqual(TEXT("A"), CPU->A, 0x87);
+			TestEqual(TEXT("Memory at 0x0580"), mmu->Read(0x0067), 0x87);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+		});
+	});
+
+	Describe("FNesTestLax Absolute", [this]()
+	{
+		It("LAX A/X = 087 ", [this]()
+		{
+			cart->Write(0, 0xAF);
+			cart->Write(1, 0x77);
+			cart->Write(2, 0x05);
+			mmu->AttachCart(move(cart));
+			mmu->Write(0x0577, 0x87);
+			CPU->X = 0x32;
+			CPU->A = 0x00;
+			CPU->P->pSetState(0x67);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 4);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
+			TestEqual(TEXT("X"), CPU->X, 0x87);
+			TestEqual(TEXT("A"), CPU->A, 0x87);
+			TestEqual(TEXT("Memory at 0x0577"), mmu->Read(0x0577), 0x87);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+		});
+	});
 }
