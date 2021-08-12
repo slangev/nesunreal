@@ -20,7 +20,7 @@ public:
     const uint8 IFlag = 2; //Interrupt flag
     const uint8 ZFlag = 1; //Zero flag
 	const uint8 CFlag = 0; //Carry Flag
-    void SetFlag(uint8 flag);
+    void SetFlag(uint8 Flag);
     void ResetFlag(uint8 flag);
     uint8 ReadFlag(uint8 flag);
     void pSetState(uint8 state) {p = state;};

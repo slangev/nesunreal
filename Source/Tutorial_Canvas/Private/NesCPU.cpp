@@ -720,6 +720,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     PC++;
                     break;
                 }
+            case 0xC3:
+                {
+                    Dcp(Opcode);
+                    break;
+                }
             case 0xC4:
                 Cp(Opcode,Y);
                 break;
@@ -730,6 +735,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                 {
                     const unsigned short Address = m_mmu->Read(PC++);
                     m_mmu->Write(Address, Dec(Opcode, m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
+            case 0xC7:
+                {
+                    Dcp(Opcode);
                     break;
                 }
             case 0xC8:
@@ -755,6 +765,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Dec(Opcode,m_mmu->Read(Address)));
                     break;
                 }
+            case 0xCF:
+                {
+                    Dcp(Opcode);
+                    break;
+                }
             case 0xD0:
                 //BNE
                 LastCycleCount += Branch(Opcode,P->ReadFlag(P->ZFlag) == 0);
@@ -762,6 +777,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0xD1:
                 Cmp(Opcode);
                 break;
+            case 0xD3:
+                {
+                    Dcp(Opcode);
+                    break;
+                }
             case 0xD4:
                 {
                     Nop(Opcode);
@@ -777,6 +797,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                 {
                     const unsigned short Address = m_mmu->Read(PC++) + X;
                     m_mmu->Write(Address, Dec(Opcode, m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
+            case 0xD7:
+                {
+                    Dcp(Opcode);
                     break;
                 }
             case 0xD8:
@@ -1822,6 +1847,36 @@ void NesCPU::Dcp(const uint8 Opcode) {
                 const unsigned short Address = GetIndirectAddress(X);
                 ReadByte = m_mmu->Read(Address);
                 m_mmu->Write(Address,Dec(Opcode,ReadByte));
+                break;
+            }
+        case 0xC7:
+            {
+                const unsigned short Address = m_mmu->Read(PC++);
+                ReadByte = m_mmu->Read(Address);
+                m_mmu->Write(Address & 0xFF,ReadByte);
+                break;
+            }
+        case 0xCF:
+            {
+                const uint8 LowerByte = m_mmu->Read(PC++);
+                const uint8 UpperByte = m_mmu->Read(PC++);
+                const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte);
+                ReadByte = m_mmu->Read(Address);
+                m_mmu->Write(Address,Dec(Opcode,ReadByte));
+                break;
+            }
+        case 0xD3:
+            {
+                const unsigned short Address = GetIndirectIndexed(Y);
+                ReadByte = m_mmu->Read(Address);
+                m_mmu->Write(Address,Dec(Opcode,ReadByte));
+                break;
+            }
+        case 0xD7:
+            {
+                const unsigned short Address = m_mmu->Read(PC++) + X;
+                ReadByte = m_mmu->Read(Address);
+                m_mmu->Write(Address & 0xFF,ReadByte);
                 break;
             }
     default: ;
