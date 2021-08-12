@@ -51,4 +51,50 @@ void FNesTestDcp::Define()
 			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x64);
 		});
 	});
+
+	Describe("FNesTestDcp2 (Indirect,X)", [this]()
+	{
+		It("Dcp at 0xE949", [this]()
+		{
+			cart->Write(0, 0xC3);
+			cart->Write(1, 0x45);
+			mmu->Write(0x78, 0x00);
+			mmu->Write(0x47, 0x47);
+			mmu->Write(0x48, 0x06);
+			mmu->Write(0x0647,0x00);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0xFF;
+			CPU->X = 0x02;
+			CPU->P->pSetState(0xA5);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 8);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0xFF);
+			TestEqual(TEXT("Memory at 0x0647"), mmu->Read(0x0647), 0xFF);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x27);
+		});
+	});
+
+	Describe("FNesTestDcp (Indirect,X)", [this]()
+	{
+		It("Dcp at 0xE949", [this]()
+		{
+			cart->Write(0, 0xC3);
+			cart->Write(1, 0x45);
+			mmu->Write(0x78, 0x00);
+			mmu->Write(0x47, 0x47);
+			mmu->Write(0x48, 0x06);
+			mmu->Write(0x0647,0x00);
+			mmu->AttachCart(move(cart));
+			CPU->A = 0xFF;
+			CPU->X = 0x02;
+			CPU->P->pSetState(0xA5);
+			const uint8 Cycle = CPU->Tick();
+			TestEqual(TEXT("Cycle"), Cycle, 8);
+			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
+			TestEqual(TEXT("A"), CPU->A, 0xFF);
+			TestEqual(TEXT("Memory at 0x0647"), mmu->Read(0x0647), 0xFF);
+			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x27);
+		});
+	});
 }

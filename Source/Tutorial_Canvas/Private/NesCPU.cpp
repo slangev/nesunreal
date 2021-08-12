@@ -1012,7 +1012,7 @@ unsigned short NesCPU::GetIndirectAddress(const uint8 Reg) {
     return Address;
 }
 
-unsigned short NesCPU::GetIndirectIndexed(const uint8 Reg)
+unsigned short NesCPU::GetIndirectIndexed(const uint8 Reg, bool bCanCross)
 {
     const uint8 LowerByte = m_mmu->Read(PC++);
     const uint8 AddressLsb = m_mmu->Read(LowerByte); // Read the lsb of our target address.
@@ -1022,7 +1022,7 @@ unsigned short NesCPU::GetIndirectIndexed(const uint8 Reg)
     Address += static_cast<unsigned short>(Reg);
     // ReSharper disable once CppTooWideScope
     const uint8 CurrPage = static_cast<uint8>((Address & 0xFF00) >> 8);
-    if(CurrPage != PrevPage) LastCycleCount++;
+    if(CurrPage != PrevPage && bCanCross) LastCycleCount++;
     return Address;
 }
 
@@ -1156,7 +1156,7 @@ uint8 NesCPU::Ld(const uint8 Opcode) {
         case 0xB1:
         case 0xB3:
             {
-                Address = GetIndirectIndexed(Y);
+                Address = GetIndirectIndexed(Y,true);
                 ReadByte = m_mmu->Read(Address);
                 break;
             }
@@ -1269,7 +1269,7 @@ void NesCPU::Store(const uint8 Opcode, const uint8 Reg) {
             break;
         }
         case 0x91: {
-            const unsigned short Address = GetIndirectIndexed(Y);
+            const unsigned short Address = GetIndirectIndexed(Y,true);
             m_mmu->Write(Address,Reg);
             break;
         }
@@ -1336,7 +1336,7 @@ void NesCPU::And(const uint8 Opcode) {
         // Indirect Y
         case 0x31:
             {
-                const unsigned Address = GetIndirectIndexed(Y);
+                const unsigned Address = GetIndirectIndexed(Y,true);
                 ReadByte = m_mmu->Read(Address);
                 break;
             }
@@ -1431,7 +1431,7 @@ void NesCPU::Adc(const uint8 Opcode) {
             }
         case 0x71:
             {
-                const unsigned Address = GetIndirectIndexed(Y);
+                const unsigned Address = GetIndirectIndexed(Y,true);
                 ReadByte = m_mmu->Read(Address);
                 break;
             }
@@ -1494,7 +1494,7 @@ void NesCPU::Ora(const uint8 Opcode) {
         // Indirect Index Y
         case 0x11:
             {
-                const unsigned Address = GetIndirectIndexed(Y);
+                const unsigned Address = GetIndirectIndexed(Y,true);
                 ReadByte = m_mmu->Read(Address);
                 break;
             }
@@ -1551,7 +1551,7 @@ void NesCPU::Eor(const uint8 Opcode) {
             // Indirect Y
             case 0x51:
                 {
-                    const unsigned short Address = GetIndirectIndexed(Y);
+                    const unsigned short Address = GetIndirectIndexed(Y,true);
                     ReadByte = m_mmu->Read(Address);
                     break;
                 }
@@ -1629,7 +1629,7 @@ void NesCPU::Sbc(const uint8 Opcode) {
         // Indirect Y
         case 0xF1:
             {
-                const unsigned short Address = GetIndirectIndexed(Y);
+                const unsigned short Address = GetIndirectIndexed(Y,true);
                 ReadByte = m_mmu->Read(Address);
                 break;
             }
@@ -1730,7 +1730,7 @@ void NesCPU::Cmp(const uint8 Opcode) {
             }
         case 0xD1:
             {
-                const unsigned short Address = GetIndirectIndexed(Y);
+                const unsigned short Address = GetIndirectIndexed(Y,true);
                 ReadByte = m_mmu->Read(Address);
                 break;
             }
@@ -1757,14 +1757,14 @@ void NesCPU::Cmp(const uint8 Opcode) {
     (GetBit(7,static_cast<uint8>(A - ReadByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
 
-uint8 NesCPU::Inc(const uint8 Opcode, uint8 Reg) const {
+uint8 NesCPU::Inc(const uint8 Opcode, uint8 Reg) {
     Reg +=1;
     (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
     (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
     return Reg;
 }
 
-uint8 NesCPU::Dec(const uint8 Opcode, uint8 Reg) const {
+uint8 NesCPU::Dec(const uint8 Opcode, uint8 Reg) {
     Reg -=1;
     (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
     (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
@@ -1845,14 +1845,14 @@ void NesCPU::Dcp(const uint8 Opcode) {
         case 0xC3:
             {
                 const unsigned short Address = GetIndirectAddress(X);
-                ReadByte = m_mmu->Read(Address);
-                m_mmu->Write(Address,Dec(Opcode,ReadByte));
+                ReadByte = m_mmu->Read(Address)-1;
+                m_mmu->Write(Address,ReadByte);
                 break;
             }
         case 0xC7:
             {
                 const unsigned short Address = m_mmu->Read(PC++);
-                ReadByte = m_mmu->Read(Address);
+                ReadByte = m_mmu->Read(Address)-1;
                 m_mmu->Write(Address & 0xFF,ReadByte);
                 break;
             }
@@ -1861,24 +1861,27 @@ void NesCPU::Dcp(const uint8 Opcode) {
                 const uint8 LowerByte = m_mmu->Read(PC++);
                 const uint8 UpperByte = m_mmu->Read(PC++);
                 const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte);
-                ReadByte = m_mmu->Read(Address);
-                m_mmu->Write(Address,Dec(Opcode,ReadByte));
+                ReadByte = m_mmu->Read(Address)-1;
+                m_mmu->Write(Address,ReadByte);
                 break;
             }
         case 0xD3:
             {
-                const unsigned short Address = GetIndirectIndexed(Y);
-                ReadByte = m_mmu->Read(Address);
-                m_mmu->Write(Address,Dec(Opcode,ReadByte));
+                const unsigned short Address = GetIndirectIndexed(Y,false);
+                ReadByte = m_mmu->Read(Address)-1;
+                m_mmu->Write(Address,ReadByte);
                 break;
             }
         case 0xD7:
             {
                 const unsigned short Address = m_mmu->Read(PC++) + X;
-                ReadByte = m_mmu->Read(Address);
+                ReadByte = m_mmu->Read(Address)-1;
                 m_mmu->Write(Address & 0xFF,ReadByte);
                 break;
             }
     default: ;
     }
+    (A == ReadByte) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (A >= ReadByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    (GetBit(7,static_cast<uint8>(A - ReadByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
