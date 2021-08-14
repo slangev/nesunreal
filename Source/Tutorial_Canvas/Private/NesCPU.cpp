@@ -815,6 +815,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     Nop(Opcode);
                     break;
                 }
+            case 0xDB:
+                {
+                    Dcp(Opcode);
+                    break;
+                }
             case 0xDC:
                 {
                     Nop(Opcode);
@@ -834,6 +839,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Dec(Opcode,m_mmu->Read(Address)));
                     break;
                 }
+            case 0xDF:
+                {
+                    Dcp(Opcode);
+                    break;
+                }
             case 0xE0:
                 Cp(Opcode,X);
                 break;
@@ -844,6 +854,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                 {
                     Nop(Opcode);
                     PC++;
+                    break;
+                }
+            case 0xE3:
+                {
+                    Isb(Opcode);
                     break;
                 }
             case 0xE4:
@@ -1875,8 +1890,26 @@ void NesCPU::Dcp(const uint8 Opcode) {
         case 0xD7:
             {
                 const unsigned short Address = m_mmu->Read(PC++) + X;
-                ReadByte = m_mmu->Read(Address)-1;
+                ReadByte = m_mmu->Read(Address & 0xFF)-1;
                 m_mmu->Write(Address & 0xFF,ReadByte);
+                break;
+            }
+        case 0xDB:
+            {
+                const uint8 LowerByte = m_mmu->Read(PC++);
+                const uint8 UpperByte = m_mmu->Read(PC++);
+                const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + Y;
+                ReadByte = m_mmu->Read(Address)-1;
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+        case 0xDF:
+            {
+                const uint8 LowerByte = m_mmu->Read(PC++);
+                const uint8 UpperByte = m_mmu->Read(PC++);
+                const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
+                ReadByte = m_mmu->Read(Address)-1;
+                m_mmu->Write(Address,ReadByte);
                 break;
             }
     default: ;
@@ -1885,3 +1918,25 @@ void NesCPU::Dcp(const uint8 Opcode) {
     (A >= ReadByte) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
     (GetBit(7,static_cast<uint8>(A - ReadByte)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
+
+void NesCPU::Isb(const uint8 Opcode) {
+    uint8 ReadByte = 0x00;
+    switch(Opcode) {
+        //(Indirect,X)
+        case 0xE3:
+            {
+                const unsigned short Address = GetIndirectAddress(X);
+                ReadByte = m_mmu->Read(Address)+1;
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+    default: ;
+    }
+    const unsigned short Diff = static_cast<unsigned short>(A - ReadByte - (1 - P->ReadFlag(P->CFlag)));
+    (static_cast<uint8>(Diff) == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (Diff <= 0xFF) ? P->SetFlag(P->CFlag) : P->ResetFlag(P->CFlag);
+    (GetBit(7,static_cast<uint8>(Diff)) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+    (((A ^ Diff) & (~ReadByte ^ Diff) & 0x80) != 0) ? P->SetFlag(P->VFlag) : P->ResetFlag(P->VFlag);
+    A = static_cast<uint8>(Diff);
+}
+

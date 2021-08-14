@@ -62,6 +62,7 @@ private:
 	void Lax(uint8 Opcode);
 	void Sax(uint8 Opcode);
 	void Dcp(uint8 Opcode);
+	void Isb(uint8 Opcode);
 	static void Nop(uint8 Opcode);
     void Jsr(uint8 Opcode);
     void Bit(uint8 Opcode);
