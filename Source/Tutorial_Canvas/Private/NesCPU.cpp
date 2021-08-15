@@ -1990,7 +1990,7 @@ void NesCPU::Isb(const uint8 Opcode) {
                 const uint8 LowerByte = m_mmu->Read(PC++);
                 const uint8 UpperByte = m_mmu->Read(PC++);
                 const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + Y;
-                ReadByte = m_mmu->Read(Address)-1;
+                ReadByte = m_mmu->Read(Address)+1;
                 m_mmu->Write(Address,ReadByte);
                 break;
             }
@@ -1999,7 +1999,7 @@ void NesCPU::Isb(const uint8 Opcode) {
                 const uint8 LowerByte = m_mmu->Read(PC++);
                 const uint8 UpperByte = m_mmu->Read(PC++);
                 const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
-                ReadByte = m_mmu->Read(Address)-1;
+                ReadByte = m_mmu->Read(Address)+1;
                 m_mmu->Write(Address,ReadByte);
                 break;
             }
