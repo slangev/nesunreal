@@ -984,6 +984,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Inc(Opcode,m_mmu->Read(Address)));
                     break;
                 }
+            case 0xFF:
+                {
+                    Isb(Opcode);
+                    break;
+                }
             default:
                 LogOpcode("Unknown opcode: ", Opcode);
                 break;
