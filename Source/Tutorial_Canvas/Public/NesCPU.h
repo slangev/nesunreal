@@ -65,6 +65,7 @@ private:
 	void Isb(uint8 Opcode);
 	void Slo(uint8 Opcode);
 	void Rla(uint8 Opcode);
+	void Sre(uint8 Opcode);
 	static void Nop(uint8 Opcode);
     void Jsr(uint8 Opcode);
     void Bit(uint8 Opcode);

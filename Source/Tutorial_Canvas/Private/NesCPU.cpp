@@ -3,6 +3,8 @@
 //https://www.nesdev.com/undocumented_opcodes.txt (Illegal Opcodes)
 #include "NesCPU.h"
 
+#include "../../../Plugins/Developer/RiderLink/Source/RD/src/rd_core_cpp/src/main/reactive/base/viewable_collections.h"
+
 DEFINE_LOG_CATEGORY(LogNesCPU);
 
 
@@ -246,6 +248,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Rol(Opcode,m_mmu->Read(Address & 0xFF)));
                     break;
                 }
+            case 0x27:
+                {
+                    Rla(Opcode);
+                    break;
+                }
             case 0x28:
                 Plp(Opcode);
                 break;
@@ -271,12 +278,22 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Rol(Opcode,m_mmu->Read(Address)));
                     break;
                 }
+            case 0x2F:
+                {
+                    Rla(Opcode);
+                    break;
+                }
             case 0x30:
                 LastCycleCount += Branch(Opcode,P->ReadFlag(P->NFlag) == 1);
                 break;
             case 0x31:
                 And(Opcode);
                 break;
+            case 0x33:
+                {
+                    Rla(Opcode);
+                    break;
+                }
             case 0x34:
                 {
                     //Zero Page Noop (Double NOOP)
@@ -295,6 +312,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Rol(Opcode,m_mmu->Read(Address & 0xFF)));
                     break;
                 }
+            case 0x37:
+                {
+                    Rla(Opcode);
+                    break;
+                }
             case 0x38:
                 Sec(Opcode);
                 break;
@@ -304,6 +326,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x3A:
                 {
                     Nop(Opcode);
+                    break;
+                }
+            case 0x3B:
+                {
+                    Rla(Opcode);
                     break;
                 }
             case 0x3C:
@@ -325,12 +352,22 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Rol(Opcode,m_mmu->Read(Address)));
                     break;
                 }
+            case 0x3F:
+                {
+                    Rla(Opcode);
+                    break;
+                }
             case 0x40:
                 Rti(Opcode);
                 break;
             case 0x41:
                 Eor(Opcode);
                 break;
+            case 0x43:
+                {
+                    Sre(Opcode);
+                    break;
+                }
             case 0x44:
                 {
                     //Zero Page Noop (Double NOOP)
@@ -345,6 +382,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                 {
                     const unsigned short Address = m_mmu->Read(PC++);
                     m_mmu->Write(Address, Lsr(Opcode,m_mmu->Read(Address & 0xFF)));
+                    break;
+                }
+            case 0x47:
+                {
+                    Sre(Opcode);
                     break;
                 }
             case 0x48:
@@ -370,12 +412,22 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Lsr(Opcode,m_mmu->Read(Address)));
                     break;
                 }
+            case 0x4F:
+                {
+                    Sre(Opcode);
+                    break;
+                }
             case 0x50:
                 LastCycleCount += Branch(Opcode,P->ReadFlag(P->VFlag) == 0);
                 break;
             case 0x51:
                 Eor(Opcode);
                 break;
+            case 0x53:
+                {
+                    Sre(Opcode);
+                    break;
+                }
             case 0x54:
                 {
                     //Zero Page Noop (Double NOOP)
@@ -394,6 +446,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     m_mmu->Write(Address, Lsr(Opcode,m_mmu->Read(Address & 0xFF)));
                     break;
                 }
+            case 0x57:
+                {
+                    Sre(Opcode);
+                    break;
+                }
             case 0x59:
                 {
                     Eor(Opcode);
@@ -402,6 +459,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
             case 0x5A:
                 {
                     Nop(Opcode);
+                    break;
+                }
+            case 0x5B:
+                {
+                    Sre(Opcode);
                     break;
                 }
             case 0x5C:
@@ -421,6 +483,11 @@ uint NesCPU::HandleInstructions(const uint8 Opcode) {
                     const uint8 UpperByte = m_mmu->Read(PC++);
                     const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
                     m_mmu->Write(Address, Lsr(Opcode,m_mmu->Read(Address)));
+                    break;
+                }
+            case 0x5F:
+                {
+                    Sre(Opcode);
                     break;
                 }
             case 0x60:
@@ -2189,3 +2256,71 @@ void NesCPU::Rla(const uint8 Opcode)
     (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
     (GetBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
 }
+
+void NesCPU::Sre(const uint8 Opcode)
+{
+    uint8 ReadByte = 0x00;
+    switch (Opcode)
+    {
+        case 0x43:
+            {
+                const unsigned short Address = GetIndirectAddress(X);
+                ReadByte = Lsr(Opcode,m_mmu->Read(Address));
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+        case 0x47:
+            {
+                const unsigned short Address = m_mmu->Read(PC++);
+                ReadByte = Lsr(Opcode,m_mmu->Read(Address));
+                m_mmu->Write(Address & 0xFF,ReadByte);
+                break;
+            }
+        case 0x4F:
+            {
+                const uint8 LowerByte = m_mmu->Read(PC++);
+                const uint8 UpperByte = m_mmu->Read(PC++);
+                const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte);
+                ReadByte = Lsr(Opcode,m_mmu->Read(Address));
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+        case 0x53:
+            {
+                const unsigned short Address = GetIndirectIndexed(Y,false);
+                ReadByte = Lsr(Opcode,m_mmu->Read(Address));
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+        case 0x57:
+            {
+                const unsigned short Address = m_mmu->Read(PC++) + X;
+                ReadByte = Lsr(Opcode,m_mmu->Read(Address & 0xFF));
+                m_mmu->Write(Address & 0xFF,ReadByte);
+                break;
+            }
+        case 0x5B:
+            {
+                const uint8 LowerByte = m_mmu->Read(PC++);
+                const uint8 UpperByte = m_mmu->Read(PC++);
+                const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + Y;
+                ReadByte = Lsr(Opcode,m_mmu->Read(Address));
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+        case 0x5F:
+            {
+                const uint8 LowerByte = m_mmu->Read(PC++);
+                const uint8 UpperByte = m_mmu->Read(PC++);
+                const unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte) + X;
+                ReadByte = Lsr(Opcode,m_mmu->Read(Address));
+                m_mmu->Write(Address,ReadByte);
+                break;
+            }
+        default:;
+    }
+    A = static_cast<uint8>(A ^ ReadByte);
+    (A == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
+    (GetBit(7,A) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
+}
+
