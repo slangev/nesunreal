@@ -3,10 +3,10 @@
 
 #include "NesHeader.h"
 
-NesHeader::NesHeader()
+FNesHeader::FNesHeader()
 {
 }
 
-NesHeader::~NesHeader()
+FNesHeader::~FNesHeader()
 {
 }

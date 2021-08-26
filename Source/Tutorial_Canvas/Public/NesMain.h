@@ -16,7 +16,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogNesMain, Log, All);
 using namespace std;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class TUTORIAL_CANVAS_API UNesMain : public UActorComponent
+class TUTORIAL_CANVAS_API UNesMain final : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -25,10 +25,10 @@ public:
 	uint64 MAXCYCLES = 29781;
 	UPROPERTY(EditAnywhere,Meta = (Bitmask))
 	FString pathToRom;
-	std::unique_ptr<NesPPU> m_ppu;
-	std::unique_ptr<NesCart> m_cart;
-	std::shared_ptr<NesMMU> m_mmu;
-	std::unique_ptr<NesCPU> m_cpu;
+	std::unique_ptr<NesPPU> M_Ppu;
+	std::unique_ptr<NesCart> M_Cart;
+	std::shared_ptr<NesMMU> M_Mmu;
+	std::unique_ptr<NesCPU> M_CPU;
 	static void Log(FString);
 
 

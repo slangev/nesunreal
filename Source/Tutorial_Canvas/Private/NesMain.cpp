@@ -25,18 +25,18 @@ void UNesMain::Log(FString msg) {
 void UNesMain::BeginPlay()
 {
 	Super::BeginPlay();
-	m_ppu = make_unique<NesPPU>(256, 240, 4);
-	m_mmu = make_shared<NesMMU>();
-	m_cpu = make_unique<NesCPU>();
-	m_mmu->AttachCart(make_unique<NesCart>(pathToRom));
-	m_cpu->AttachMemory(m_mmu, 0xC000);
+	M_Ppu = make_unique<NesPPU>(256, 240, 4);
+	M_Mmu = make_shared<NesMMU>();
+	M_CPU = make_unique<NesCPU>();
+	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
+	M_CPU->AttachMemory(M_Mmu, 0xC000);
 	AActor *a = GetOwner();
 	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(Mesh)
 	{
 		UMaterialInstanceDynamic* mat = Mesh->CreateDynamicMaterialInstance(
 			0, static_cast<UMaterialInterface*>(nullptr), FName(TEXT("Dynamic Mat")));
-		mat->SetTextureParameterValue(FName(TEXT("TextureInput")), m_ppu->GetScreen());
+		mat->SetTextureParameterValue(FName(TEXT("TextureInput")), M_Ppu->GetScreen());
 	}
 }
 
@@ -51,11 +51,11 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	uint CyclesThisUpdate = 0 ; 
     while (CyclesThisUpdate < MAXCYCLES) {
 		//gbJoyPad.HandleKeyEvents();
-		const uint Cycles = m_cpu->Tick();
+		const uint Cycles = M_CPU->Tick();
 		CyclesThisUpdate+=Cycles;
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/
 	}
-	m_ppu->RenderStaticByMatrix();
+	M_Ppu->RenderStaticByMatrix();
 }
 

@@ -6,8 +6,8 @@
 #include "NesMMU.h"
 #include "NesPRegister.h"
 #include <memory>
-#include <iomanip>
 #include <sstream>
+
 DECLARE_LOG_CATEGORY_EXTERN(LogNesCPU, Log, All);
 
 /**
@@ -66,6 +66,9 @@ private:
 	void Slo(uint8 Opcode);
 	void Rla(uint8 Opcode);
 	void Sre(uint8 Opcode);
+	void Rra(uint8 Opcode);
+	void Brk(uint8 Opcode) const;
+	void Las(uint8 Opcode);
 	static void Nop(uint8 Opcode);
     void Jsr(uint8 Opcode);
     void Bit(uint8 Opcode);

@@ -7,8 +7,6 @@
 #include <vector>
 #include "NesHeader.h"
 #include "NesCartController.h"
-#include "NesNoMapper.h"
-#include "NesTestCart.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNesCart, Log, All);
 using namespace std;
@@ -19,19 +17,19 @@ class TUTORIAL_CANVAS_API NesCart
 {
 public:
 	NesCart();
-	NesCart(vector<uint8>);
-	NesCart(FString pathToRom);
+	explicit NesCart(vector<uint8>);
+	explicit NesCart(FString PathToRom);
 	~NesCart();
-	uint8 Read(unsigned short address);
-	void Write(unsigned short address, uint8 data);
+	uint8 Read(unsigned short Address);
+	void Write(unsigned short Address, uint8 Data);
 
 private:
-	void loadRom(FString pathToRom);
-	void printRomData();
-	void Log(string msg);
-	unique_ptr<NesCartController> mbc;
-	unique_ptr<NesHeader> header;
-	shared_ptr<vector<uint8>> romMemory;
-	shared_ptr<vector<uint8>> ramMemory;
-	shared_ptr<vector<uint8>> vRomMemory;
+	void LoadRom(FString PathToRom);
+	void PrintRomData();
+	static void Log(string Msg);
+	unique_ptr<NesCartController> Mbc;
+	unique_ptr<FNesHeader> Header;
+	shared_ptr<vector<uint8>> RomMemory;
+	shared_ptr<vector<uint8>> RAMMemory;
+	shared_ptr<vector<uint8>> VRomMemory;
 };

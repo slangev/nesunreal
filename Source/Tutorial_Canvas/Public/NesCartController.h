@@ -11,6 +11,6 @@ class TUTORIAL_CANVAS_API NesCartController
 {
 public:
 	virtual ~NesCartController();
-	virtual uint8 Read(unsigned short addr) = 0;
-	virtual void Write(unsigned short addr, uint8 data) = 0;
+	virtual uint8 Read(unsigned short Address) = 0;
+	virtual void Write(unsigned short Address, uint8 Data) = 0;
 };

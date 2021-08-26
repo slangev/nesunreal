@@ -9,19 +9,19 @@ using namespace std;
 /**
  * 
  */
-class TUTORIAL_CANVAS_API NesHeader
+class TUTORIAL_CANVAS_API FNesHeader
 {
 public:
-	NesHeader();
-	~NesHeader();
-	string nes = "";
-	uint8 oneA = 0;
-	uint8 numberOfPROROMS = 0;
-	uint8 numberOfCHRROMS = 0;
-	uint8 ROMControlByteOne = 0;
-	uint8 ROMControlByteTwo = 0;
-	uint8 numberOfRamBanks = 0;
-	string futureUsage = ""; // should be 7 zeros
-	int mapper = 0;
-	uint8 mirroring = 0; //0 = horizontal, 1 = vertical, and 2 = four screen mirroring
+	FNesHeader();
+	~FNesHeader();
+	string Nes = "";
+	uint8 OneA = 0;
+	uint8 NumberOfProroms = 0;
+	uint8 NumberOfChrroms = 0;
+	uint8 RomControlByteOne = 0;
+	uint8 RomControlByteTwo = 0;
+	uint8 NumberOfRamBanks = 0;
+	string FutureUsage = ""; // should be 7 zeros
+	int Mapper = 0;
+	uint8 Mirroring = 0; //0 = horizontal, 1 = vertical, and 2 = four screen mirroring
 };
