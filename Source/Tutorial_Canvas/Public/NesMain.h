@@ -28,7 +28,7 @@ public:
 	std::unique_ptr<NesPPU> M_Ppu;
 	std::unique_ptr<NesCart> M_Cart;
 	std::shared_ptr<NesMMU> M_Mmu;
-	std::unique_ptr<NesCPU> M_CPU;
+	std::unique_ptr<FNesCPU> M_CPU;
 	static void Log(FString);
 
 

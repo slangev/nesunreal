@@ -7,36 +7,36 @@ DEFINE_LOG_CATEGORY(LogNesPPU);
 NesPPU::NesPPU()
 {
     //dynamic texture initialization
-	canvasWidth = 256;
-	canvasHeight = 240;
+	CanvasWidth = 256;
+	CanvasHeight = 240;
 
-	dynamicCanvas = UTexture2D::CreateTransient(canvasWidth, canvasHeight);
+	DynamicCanvas = UTexture2D::CreateTransient(CanvasWidth, CanvasHeight);
 #if WITH_EDITORONLY_DATA
-	dynamicCanvas->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+	DynamicCanvas->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
 #endif
-	dynamicCanvas->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	dynamicCanvas->SRGB = false;
-	dynamicCanvas->AddToRoot();
-	dynamicCanvas->Filter = TextureFilter::TF_Nearest;
-	dynamicCanvas->UpdateResource();
+	DynamicCanvas->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+	DynamicCanvas->SRGB = false;
+	DynamicCanvas->AddToRoot();
+	DynamicCanvas->Filter = TextureFilter::TF_Nearest;
+	DynamicCanvas->UpdateResource();
 
 	// buffers initialization
-	bytesPerPixel = 4; // r g b a
+	BytesPerPixel = 4; // r g b a
 }
 
-NesPPU::NesPPU(int canvasWidth, int canvasHeight, int bytesPerPixel) {
-    this->canvasWidth = canvasWidth;
-    this->canvasHeight = canvasHeight;
-    this->bytesPerPixel = bytesPerPixel;
-	dynamicCanvas = UTexture2D::CreateTransient(canvasWidth, canvasHeight);
+NesPPU::NesPPU(int CanvasWidth, int CanvasHeight, int BytesPerPixel) {
+    this->CanvasWidth = CanvasWidth;
+    this->CanvasHeight = CanvasHeight;
+    this->BytesPerPixel = BytesPerPixel;
+	DynamicCanvas = UTexture2D::CreateTransient(CanvasWidth, CanvasHeight);
 #if WITH_EDITORONLY_DATA
-	dynamicCanvas->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+	DynamicCanvas->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
 #endif
-	dynamicCanvas->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	dynamicCanvas->SRGB = true;
-	dynamicCanvas->AddToRoot();
-	dynamicCanvas->Filter = TextureFilter::TF_Nearest;
-	dynamicCanvas->UpdateResource();
+	DynamicCanvas->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+	DynamicCanvas->SRGB = true;
+	DynamicCanvas->AddToRoot();
+	DynamicCanvas->Filter = TextureFilter::TF_Nearest;
+	DynamicCanvas->UpdateResource();
 	ClearScreen();
 }
 
@@ -49,7 +49,7 @@ void NesPPU::PrintSomething() {
 }
 
 void NesPPU::RenderStaticByMatrix() {
-	FTexture2DMipMap* MyMipMap = &dynamicCanvas->PlatformData->Mips[0];
+	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
 	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 
@@ -73,12 +73,12 @@ void NesPPU::RenderStaticByMatrix() {
 		}
 	}
 
-	dynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
-	dynamicCanvas->UpdateResource();
+	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	DynamicCanvas->UpdateResource();
 }
 
 void NesPPU::RenderLine() {
-	FTexture2DMipMap* MyMipMap = &dynamicCanvas->PlatformData->Mips[0];
+	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
 	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 
@@ -95,13 +95,13 @@ void NesPPU::RenderLine() {
 		}
 	}
 
-	dynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
-	dynamicCanvas->UpdateResource();
+	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	DynamicCanvas->UpdateResource();
 }
 
 
 void NesPPU::RenderLines() {
-	FTexture2DMipMap* MyMipMap = &dynamicCanvas->PlatformData->Mips[0];
+	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
 	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 
@@ -125,12 +125,12 @@ void NesPPU::RenderLines() {
 		}
 	}
 
-	dynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
-	dynamicCanvas->UpdateResource();
+	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	DynamicCanvas->UpdateResource();
 }
 
 void NesPPU::ClearScreen() {
-	FTexture2DMipMap* MyMipMap = &dynamicCanvas->PlatformData->Mips[0];
+	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
 	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 
@@ -147,6 +147,6 @@ void NesPPU::ClearScreen() {
 		}
 	}
 
-	dynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
-	dynamicCanvas->UpdateResource();
+	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	DynamicCanvas->UpdateResource();
 }

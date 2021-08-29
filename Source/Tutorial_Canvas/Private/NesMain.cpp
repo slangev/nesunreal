@@ -27,16 +27,16 @@ void UNesMain::BeginPlay()
 	Super::BeginPlay();
 	M_Ppu = make_unique<NesPPU>(256, 240, 4);
 	M_Mmu = make_shared<NesMMU>();
-	M_CPU = make_unique<NesCPU>();
+	M_CPU = make_unique<FNesCPU>();
 	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
 	M_CPU->AttachMemory(M_Mmu, 0xC000);
-	AActor *a = GetOwner();
+	const AActor *a = GetOwner();
 	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(Mesh)
 	{
-		UMaterialInstanceDynamic* mat = Mesh->CreateDynamicMaterialInstance(
+		UMaterialInstanceDynamic* Mat = Mesh->CreateDynamicMaterialInstance(
 			0, static_cast<UMaterialInterface*>(nullptr), FName(TEXT("Dynamic Mat")));
-		mat->SetTextureParameterValue(FName(TEXT("TextureInput")), M_Ppu->GetScreen());
+		Mat->SetTextureParameterValue(FName(TEXT("TextureInput")), M_Ppu->GetScreen());
 	}
 }
 

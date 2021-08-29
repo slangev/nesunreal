@@ -14,21 +14,21 @@ class TUTORIAL_CANVAS_API NesPPU
 {
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Variables)
-	UTexture2D* dynamicCanvas;
+	UTexture2D* DynamicCanvas;
 	
 	NesPPU();
-	NesPPU(int canvasWidth,int canvasHeight, int bytesPerPixel);
+	NesPPU(int CanvasWidth,int CanvasHeight, int BytesPerPixel);
 	~NesPPU();
 	void PrintSomething();
 	void ClearScreen();
 	void RenderLine();
 	void RenderLines();
 	void RenderStaticByMatrix();
-	UTexture2D* GetScreen() {return dynamicCanvas;};
+	UTexture2D* GetScreen() {return DynamicCanvas;};
 
 private:
 	// canvas
-	int canvasWidth;
-	int canvasHeight;
-	int bytesPerPixel;
+	int CanvasWidth;
+	int CanvasHeight;
+	int BytesPerPixel;
 };

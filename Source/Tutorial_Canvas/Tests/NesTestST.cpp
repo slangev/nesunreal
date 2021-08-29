@@ -9,7 +9,7 @@
 #include "NesCart.h"
 
 BEGIN_DEFINE_SPEC(NesTestST, "Nes.ST", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
-	unique_ptr<NesCPU> CPU;
+	unique_ptr<FNesCPU> CPU;
 	shared_ptr<NesMMU> mmu;
 	unique_ptr<NesCart> cart;
 	uint m_memorySize = 0x4000;
@@ -20,7 +20,7 @@ void NesTestST::Define()
 {
 	BeforeEach([this]()
 	{
-		CPU = make_unique<NesCPU>();
+		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
 		CPU->AttachMemory(mmu,0x8000); //Set PC to 0x8000
 		rom.clear();
@@ -73,12 +73,12 @@ void NesTestST::Define()
 			mmu->AttachCart(move(cart));
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
 			CPU->Y = 0x46;
-			CPU->P->pSetState(0xE5);
+			CPU->P->PSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 4);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
 			TestEqual(TEXT("Y"), CPU->Y, 0x46);
-			TestEqual(TEXT("P"), CPU->P->pState(), 0xE5);
+			TestEqual(TEXT("P"), CPU->P->PState(), 0xE5);
 			TestEqual(TEXT("mmu at 0x0678"), mmu->Read(0x0678), CPU->Y);
 		});
 	});
@@ -113,12 +113,12 @@ void NesTestST::Define()
 			mmu->Write(0x0400, 0x7F);
 			CPU->A = 0x87;
 			CPU->Y = 0x00;
-			CPU->P->pSetState(0xE5);
+			CPU->P->PSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 6);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
 			TestEqual(TEXT("A"), CPU->A, 0x87);
-			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+			TestEqual(TEXT("P"), CPU->P->PStateWithBFlag(), 0xE5);
 			TestEqual(TEXT("mmu at 0x0400"),CPU->A,mmu->Read(0x0400));
 		});
 	});
@@ -134,12 +134,12 @@ void NesTestST::Define()
 			mmu->AttachCart(move(cart));
 			CPU->A = 0x87;
 			CPU->Y = 0x34;
-			CPU->P->pSetState(0xE5);
+			CPU->P->PSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 5);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
 			TestEqual(TEXT("A"), CPU->A, 0x87);
-			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0xE5);
+			TestEqual(TEXT("P"), CPU->P->PStateWithBFlag(), 0xE5);
 			TestEqual(TEXT("mmu at 0x0033"),CPU->A,mmu->Read(0x0033));
 		});
 	});
@@ -154,12 +154,12 @@ void NesTestST::Define()
 			mmu->AttachCart(move(cart));
 			CPU->Y = 0x87;
 			CPU->X = 0x34;
-			CPU->P->pSetState(0x67);
+			CPU->P->PSetState(0x67);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 4);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
 			TestEqual(TEXT("A"), CPU->Y, 0x87);
-			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
+			TestEqual(TEXT("P"), CPU->P->PStateWithBFlag(), 0x67);
 			TestEqual(TEXT("mmu at 0x0033"),CPU->Y,mmu->Read(0x0033));
 		});
 	});

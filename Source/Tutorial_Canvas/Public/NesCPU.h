@@ -7,20 +7,24 @@
 #include "NesPRegister.h"
 #include <memory>
 #include <sstream>
+#include <iomanip>      // std::setfill, std::setw
+
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNesCPU, Log, All);
 
 /**
  * 
  */
-class TUTORIAL_CANVAS_API NesCPU
+class TUTORIAL_CANVAS_API FNesCPU
 {
 public:
-	NesCPU();
-	~NesCPU();
-	void AttachMemory(shared_ptr<NesMMU> mmu, unsigned short PC);
+	FNesCPU();
+	~FNesCPU();
+	void AttachMemory(shared_ptr<NesMMU> Mmu, unsigned short PC);
+	void HandleInterrupts();
+	void Reset();
     uint Tick();
-    unique_ptr<NesPRegister> P;
+    unique_ptr<FNesPRegister> P;
     unsigned short PC;
     uint8 SP;
     uint8 A;
@@ -29,9 +33,10 @@ public:
 	uint LastCycleCount = 0;
     
 private:
-	shared_ptr<NesMMU> m_mmu;
+	shared_ptr<NesMMU> M_Mmu;
     uint TotalCycles = 0;
     uint LineNumber = 1;
+	bool bReset = false;
 
     static const uint CycleCount[];
     void PrintNesTestLogLine(uint8 Opcode);
@@ -67,7 +72,7 @@ private:
 	void Rla(uint8 Opcode);
 	void Sre(uint8 Opcode);
 	void Rra(uint8 Opcode);
-	void Brk(uint8 Opcode) const;
+	void Brk(uint8 Opcode);
 	void Las(uint8 Opcode);
 	static void Nop(uint8 Opcode);
     void Jsr(uint8 Opcode);

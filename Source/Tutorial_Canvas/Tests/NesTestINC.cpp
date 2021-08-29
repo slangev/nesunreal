@@ -10,7 +10,7 @@
 
 BEGIN_DEFINE_SPEC(FNesTestInc, "Nes.INC",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
-unique_ptr<NesCPU> CPU;
+unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
 unique_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
@@ -21,7 +21,7 @@ void FNesTestInc::Define()
 {
 	BeforeEach([this]()
 	{
-		CPU = make_unique<NesCPU>();
+		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
 		CPU->AttachMemory(mmu, 0x8000); //Set PC to 0x8000
 		rom.clear();
@@ -38,13 +38,13 @@ void FNesTestInc::Define()
 			mmu->Write(0x78, 0xFF);
 			mmu->AttachCart(move(cart));
 			CPU->A = 0xFF;
-			CPU->P->pSetState(0xE5);
+			CPU->P->PSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 5);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8002);
 			TestEqual(TEXT("A"), CPU->A, 0xFF);
 			TestEqual(TEXT("Memory at 0x78"), mmu->Read(0x78), 0x00);
-			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
+			TestEqual(TEXT("P"), CPU->P->PStateWithBFlag(), 0x67);
 		});
 	});
 
@@ -58,12 +58,12 @@ void FNesTestInc::Define()
 			mmu->Write(0x0678, 0xFF);
 			mmu->AttachCart(move(cart));
 			CPU->A = 0xFF;
-			CPU->P->pSetState(0xE5);
+			CPU->P->PSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();
 			TestEqual(TEXT("Cycle"), Cycle, 6);
 			TestEqual(TEXT("PC"), CPU->PC, 0x8003);
 			TestEqual(TEXT("A"), CPU->A, 0xFF);
-			TestEqual(TEXT("P"), CPU->P->pStateWithBFlag(), 0x67);
+			TestEqual(TEXT("P"), CPU->P->PStateWithBFlag(), 0x67);
 			TestEqual(TEXT("Memory at 0x0678"), mmu->Read(0x0678), 0x00);
 		});
 	});
