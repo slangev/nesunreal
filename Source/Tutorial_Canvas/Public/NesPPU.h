@@ -19,11 +19,12 @@ public:
 	NesPPU();
 	NesPPU(int CanvasWidth,int CanvasHeight, int BytesPerPixel);
 	~NesPPU();
-	void PrintSomething();
+	void PrintStats(int32 x, int32 y);
 	void ClearScreen();
 	void RenderLine();
 	void RenderLines();
 	void RenderStaticByMatrix();
+	void RenderCornerDots();
 	UTexture2D* GetScreen() {return DynamicCanvas;};
 
 private:

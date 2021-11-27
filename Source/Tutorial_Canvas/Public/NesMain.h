@@ -25,6 +25,10 @@ public:
 	uint64 MAXCYCLES = 29781;
 	UPROPERTY(EditAnywhere,Meta = (Bitmask))
 	FString pathToRom;
+
+	UPROPERTY(EditAnywhere,Meta = (Bitmask))
+    bool bTesting;
+
 	std::unique_ptr<NesPPU> M_Ppu;
 	std::unique_ptr<NesCart> M_Cart;
 	std::shared_ptr<NesMMU> M_Mmu;

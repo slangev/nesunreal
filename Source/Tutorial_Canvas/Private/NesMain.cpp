@@ -27,7 +27,7 @@ void UNesMain::BeginPlay()
 	Super::BeginPlay();
 	M_Ppu = make_unique<NesPPU>(256, 240, 4);
 	M_Mmu = make_shared<NesMMU>();
-	M_CPU = make_unique<FNesCPU>();
+	M_CPU = make_unique<FNesCPU>(bTesting);
 	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
 	M_CPU->AttachMemory(M_Mmu, 0xC000);
 	const AActor *a = GetOwner();
@@ -56,6 +56,6 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/
 	}
-	M_Ppu->RenderStaticByMatrix();
+	M_Ppu->RenderLines();
 }
 

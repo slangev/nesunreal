@@ -36,39 +36,53 @@ FNesCPU::FNesCPU()
     TotalCycles = 7;
 }
 
+FNesCPU::FNesCPU(bool bTesting)
+{
+    P = make_unique<FNesPRegister>();
+    PC = 0x8000;
+    A = 0;
+    X = 0;
+    Y = 0;
+    SP = 0xFD;
+    TotalCycles = 7;
+    this->bTesting = bTesting;
+}
+
 FNesCPU::~FNesCPU()
 {
 }
 
 void FNesCPU::PrintNesTestLogLine(uint8 Opcode) {
-    string Result = to_string(LineNumber++) + " ";
-    stringstream StreamPC;
-    stringstream StreamOpCode;
-    stringstream StreamA;
-    stringstream StreamX;
-    stringstream StreamY;
-    stringstream StreamP;
-    stringstream StreamSP;
-    StreamPC << setfill ('0') << setw(sizeof(unsigned short)*2) << hex << PC-1;
-    StreamOpCode << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Opcode);
-    StreamA << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(A);
-    StreamX << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(X);
-    StreamY << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Y);
-    StreamP << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(P->PState());
-    StreamSP << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(SP);
+    if(bTesting) {
+        string Result = to_string(LineNumber++) + " ";
+        stringstream StreamPC;
+        stringstream StreamOpCode;
+        stringstream StreamA;
+        stringstream StreamX;
+        stringstream StreamY;
+        stringstream StreamP;
+        stringstream StreamSP;
+        StreamPC << setfill ('0') << setw(sizeof(unsigned short)*2) << hex << PC-1;
+        StreamOpCode << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Opcode);
+        StreamA << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(A);
+        StreamX << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(X);
+        StreamY << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Y);
+        StreamP << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(P->PState());
+        StreamSP << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(SP);
 
-    Result += StreamPC.str() + "  ";
-    Result += StreamOpCode.str() + "                       A:";
-    Result += StreamA.str() + " X:";
-    Result += StreamX.str() + " Y:";
-    Result += StreamY.str() + " P:";
-    Result += StreamP.str() + " SP:";
-    Result += StreamSP.str() + " CYC:";
-    Result += to_string(TotalCycles);
+        Result += StreamPC.str() + "  ";
+        Result += StreamOpCode.str() + "                       A:";
+        Result += StreamA.str() + " X:";
+        Result += StreamX.str() + " Y:";
+        Result += StreamY.str() + " P:";
+        Result += StreamP.str() + " SP:";
+        Result += StreamSP.str() + " CYC:";
+        Result += to_string(TotalCycles);
 
-    FString DebugResult(Result.c_str());
-    DebugResult = DebugResult.ToUpper();
-    UE_LOG(LogNesCPU, Log, TEXT("%s"), *DebugResult);
+        FString DebugResult(Result.c_str());
+        DebugResult = DebugResult.ToUpper();
+        UE_LOG(LogNesCPU, Log, TEXT("%s"), *DebugResult);
+    }
 }
 
 void LogOpcode(const FString Msg, const uint8 Opcode) {

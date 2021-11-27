@@ -19,6 +19,7 @@ class TUTORIAL_CANVAS_API FNesCPU
 {
 public:
 	FNesCPU();
+    explicit FNesCPU(bool bTesting);
 	~FNesCPU();
 	void AttachMemory(shared_ptr<NesMMU> Mmu, unsigned short PC);
 	void HandleInterrupts();
@@ -37,6 +38,7 @@ private:
     uint TotalCycles = 0;
     uint LineNumber = 1;
 	bool bReset = false;
+    bool bTesting = false;
 
     static const uint CycleCount[];
     void PrintNesTestLogLine(uint8 Opcode);
