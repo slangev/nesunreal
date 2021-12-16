@@ -9,6 +9,8 @@
 #include "NesMMU.h"
 #include "NesCPU.h"
 #include <memory>
+
+#include "Camera/CameraComponent.h"
 #include "Containers/UnrealString.h"
 #include "NesMain.generated.h"
 
@@ -43,6 +45,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+		UCameraComponent *Camera;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		UStaticMeshComponent *Canvas;
 
 		
 };

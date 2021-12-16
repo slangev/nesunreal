@@ -2,6 +2,7 @@
 
 
 #include "NesMain.h"
+#include "Components/SceneComponent.h"
 #include <iomanip>
 
 DEFINE_LOG_CATEGORY(LogNesMain);
@@ -12,8 +13,6 @@ UNesMain::UNesMain()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 void UNesMain::Log(FString msg) {
@@ -30,13 +29,27 @@ void UNesMain::BeginPlay()
 	M_CPU = make_unique<FNesCPU>(bTesting);
 	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
 	M_CPU->AttachMemory(M_Mmu, 0xC000);
+
 	const AActor *a = GetOwner();
-	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(a->FindComponentByClass(UStaticMeshComponent::StaticClass()));
+	if(a)
+		UE_LOG(LogTemp,Warning,TEXT("%s HERE(Owner)"),*a->GetName());
+	
+	USceneComponent* DefaultScene = Cast<USceneComponent>(a->FindComponentByClass(USceneComponent::StaticClass()));
+	if(DefaultScene)
+		UE_LOG(LogTemp,Warning,TEXT("%s HERE (DefaultScene)"),*DefaultScene->GetName());
+	
+	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(GetOwner()->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(Mesh)
 	{
+		Log(Mesh->GetName());
 		UMaterialInstanceDynamic* Mat = Mesh->CreateDynamicMaterialInstance(
 			0, static_cast<UMaterialInterface*>(nullptr), FName(TEXT("Dynamic Mat")));
-		Mat->SetTextureParameterValue(FName(TEXT("TextureInput")), M_Ppu->GetScreen());
+		if(Mat)
+			Mat->SetTextureParameterValue(FName(TEXT("TextureInput")), M_Ppu->GetScreen());
+		else
+		{
+			Log("Error");
+		}
 	}
 }
 
@@ -56,6 +69,6 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/
 	}
-	M_Ppu->RenderLines();
+	M_Ppu->RenderStaticByMatrix();
 }
 
