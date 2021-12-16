@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class Tutorial_Canvas : ModuleRules
+public class NesUnreal : ModuleRules
 {
-	public Tutorial_Canvas(ReadOnlyTargetRules Target) : base(Target)
+	public NesUnreal(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	

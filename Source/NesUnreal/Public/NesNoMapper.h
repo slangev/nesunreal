@@ -10,7 +10,7 @@ using namespace std;
 /**
  * 
  */
-class TUTORIAL_CANVAS_API NesNoMapper : public NesCartController
+class NESUNREAL_API NesNoMapper : public NesCartController
 {
 public:
 	NesNoMapper();

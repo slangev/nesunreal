@@ -10,7 +10,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogNesPPU, Log, All);
 /**
  * 
  */
-class TUTORIAL_CANVAS_API NesPPU
+class NESUNREAL_API NesPPU
 {
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Variables)

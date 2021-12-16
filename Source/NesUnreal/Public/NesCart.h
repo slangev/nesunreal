@@ -13,7 +13,7 @@ using namespace std;
 /**
  * 
  */
-class TUTORIAL_CANVAS_API NesCart
+class NESUNREAL_API NesCart
 {
 public:
 	NesCart();

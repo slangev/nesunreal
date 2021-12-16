@@ -15,7 +15,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogNesCPU, Log, All);
 /**
  * 
  */
-class TUTORIAL_CANVAS_API FNesCPU
+class NESUNREAL_API FNesCPU
 {
 public:
 	FNesCPU();

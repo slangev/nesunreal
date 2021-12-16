@@ -7,7 +7,7 @@
 /**
  * 
  */
-class TUTORIAL_CANVAS_API NesCartController
+class NESUNREAL_API NesCartController
 {
 public:
 	virtual ~NesCartController();

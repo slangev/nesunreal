@@ -18,7 +18,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogNesMain, Log, All);
 using namespace std;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class TUTORIAL_CANVAS_API UNesMain final : public UActorComponent
+class NESUNREAL_API UNesMain final : public UActorComponent
 {
 	GENERATED_BODY()
 

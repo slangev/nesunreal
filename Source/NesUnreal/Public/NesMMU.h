@@ -10,7 +10,7 @@
 /**
  * 
  */
-class TUTORIAL_CANVAS_API NesMMU
+class NESUNREAL_API NesMMU
 {
 public:
 	NesMMU();

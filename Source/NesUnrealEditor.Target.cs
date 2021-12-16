@@ -3,12 +3,12 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class Tutorial_CanvasEditorTarget : TargetRules
+public class NesUnrealEditorTarget : TargetRules
 {
-	public Tutorial_CanvasEditorTarget(TargetInfo Target) : base(Target)
+	public NesUnrealEditorTarget(TargetInfo Target) : base(Target)
 	{
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		Type = TargetType.Editor;
-		ExtraModuleNames.AddRange( new string[] { "Tutorial_Canvas" } );
+		ExtraModuleNames.AddRange( new string[] { "NesUnreal" } );
 	}
 }

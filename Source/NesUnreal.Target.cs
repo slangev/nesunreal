@@ -3,12 +3,12 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class Tutorial_CanvasTarget : TargetRules
+public class NesUnrealTarget : TargetRules
 {
-	public Tutorial_CanvasTarget(TargetInfo Target) : base(Target)
+	public NesUnrealTarget(TargetInfo Target) : base(Target)
 	{
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		Type = TargetType.Game;
-		ExtraModuleNames.AddRange( new string[] { "Tutorial_Canvas" } );
+		ExtraModuleNames.AddRange( new string[] { "NesUnreal" } );
 	}
 }

@@ -9,7 +9,7 @@ using namespace std;
 /**
  * 
  */
-class TUTORIAL_CANVAS_API NesTestCart : public NesCartController
+class NESUNREAL_API NesTestCart : public NesCartController
 {
 public:
 	NesTestCart();

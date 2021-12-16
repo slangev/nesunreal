@@ -9,7 +9,7 @@ using namespace std;
 /**
  * 
  */
-class TUTORIAL_CANVAS_API FNesHeader
+class NESUNREAL_API FNesHeader
 {
 public:
 	FNesHeader();

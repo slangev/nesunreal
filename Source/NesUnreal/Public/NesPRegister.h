@@ -7,7 +7,7 @@
 /**
  * 
  */
-class TUTORIAL_CANVAS_API FNesPRegister
+class NESUNREAL_API FNesPRegister
 {
 public:
 	FNesPRegister();
