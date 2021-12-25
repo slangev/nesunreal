@@ -21,7 +21,7 @@ public:
 	FNesCPU();
     explicit FNesCPU(bool bTesting);
 	~FNesCPU();
-	void AttachMemory(shared_ptr<NesMMU> Mmu, unsigned short PC);
+	void AttachMemory(shared_ptr<NesMMU> Mmu);
 	void HandleInterrupts();
 	void Reset();
     uint Tick();
@@ -32,13 +32,13 @@ public:
     uint8 X;
     uint8 Y;
 	uint LastCycleCount = 0;
+	bool bTesting = false;
     
 private:
 	shared_ptr<NesMMU> M_Mmu;
     uint TotalCycles = 0;
     uint LineNumber = 1;
 	bool bReset = false;
-    bool bTesting = false;
 
     static const uint CycleCount[];
     void PrintNesTestLogLine(uint8 Opcode);

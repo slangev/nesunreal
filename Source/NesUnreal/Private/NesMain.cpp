@@ -1,8 +1,8 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "NesMain.h"
-#include "Components/SceneComponent.h"
 #include <iomanip>
 
 DEFINE_LOG_CATEGORY(LogNesMain);
@@ -28,20 +28,11 @@ void UNesMain::BeginPlay()
 	M_Mmu = make_shared<NesMMU>();
 	M_CPU = make_unique<FNesCPU>(bTesting);
 	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
-	M_CPU->AttachMemory(M_Mmu, 0xC000);
-
-	const AActor *a = GetOwner();
-	if(a)
-		UE_LOG(LogTemp,Warning,TEXT("%s HERE(Owner)"),*a->GetName());
-	
-	USceneComponent* DefaultScene = Cast<USceneComponent>(a->FindComponentByClass(USceneComponent::StaticClass()));
-	if(DefaultScene)
-		UE_LOG(LogTemp,Warning,TEXT("%s HERE (DefaultScene)"),*DefaultScene->GetName());
+	M_CPU->AttachMemory(M_Mmu);
 	
 	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(GetOwner()->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(Mesh)
 	{
-		Log(Mesh->GetName());
 		UMaterialInstanceDynamic* Mat = Mesh->CreateDynamicMaterialInstance(
 			0, static_cast<UMaterialInterface*>(nullptr), FName(TEXT("Dynamic Mat")));
 		if(Mat)
@@ -69,6 +60,12 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/
 	}
-	M_Ppu->RenderStaticByMatrix();
+	if(M_CPU->bTesting)
+	{
+		M_Ppu->RenderStaticByMatrix();
+	} else
+	{
+		M_Ppu->RenderScreen();
+	}
 }
 

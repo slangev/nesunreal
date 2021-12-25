@@ -23,7 +23,7 @@ void FNesTestLd::Define()
 	{
 		Cpu = make_unique<FNesCPU>();
 		Mmu = make_shared<NesMMU>();
-		Cpu->AttachMemory(Mmu, 0x8000); //Set PC to 0x8000
+		Cpu->AttachMemory(Mmu); //Set PC to 0x8000
 		Rom.clear();
 		Rom.resize(0x8000, 0);
 		Cart = make_unique<NesCart>(Rom);

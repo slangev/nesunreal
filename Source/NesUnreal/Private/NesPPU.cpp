@@ -19,6 +19,19 @@ NesPPU::NesPPU()
 	DynamicCanvas->Filter = TextureFilter::TF_Nearest;
 	DynamicCanvas->UpdateResource();
 
+	videoMemory = make_unique<vector<unique_ptr<vector<NesPixel>>>>();
+	for(int i = 0; i < CanvasWidth; i++)
+	{
+		videoMemory->push_back(make_unique<vector<NesPixel>>(CanvasHeight));
+	}
+	
+	FColor red;
+	red.A = 255;
+	red.R = 255;
+	red.G = 0;
+	red.B = 0;
+	
+	videoMemory->at(0)->at(0).pixel = red;
 	// buffers initialization
 	BytesPerPixel = 4; // r g b a
 	ClearScreen();
@@ -35,6 +48,19 @@ NesPPU::NesPPU(int CanvasWidth, int CanvasHeight, int BytesPerPixel) {
 	DynamicCanvas->AddToRoot();
 	DynamicCanvas->Filter = TextureFilter::TF_Nearest;
 	DynamicCanvas->UpdateResource();
+	videoMemory = make_unique<vector<unique_ptr<vector<NesPixel>>>>();
+    for(int i = 0; i < CanvasWidth; i++)
+    {
+    	videoMemory->push_back(make_unique<vector<NesPixel>>(CanvasHeight));
+    }
+    
+	for(auto &Outer : *videoMemory)
+	{
+		for(auto &Inner : *Outer)
+		{
+			Inner.pixel = FColor::White;
+		}
+	}
 	ClearScreen();
 }
 
@@ -97,6 +123,24 @@ void NesPPU::RenderCornerDots() {
 	DynamicCanvas->UpdateResource();
 }
 
+void NesPPU::RenderScreen()
+{
+	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
+	FByteBulkData* RawImageData = &MyMipMap->BulkData;
+	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
+	for(int32 X = 0; X < MyMipMap->SizeX; X++)
+	{
+		for (int32 Y = 0; Y < MyMipMap->SizeY; Y++)
+		{
+			FColor pixel = videoMemory->at(X)->at(Y).pixel;
+			FormatedImageData[Y * MyMipMap->SizeX + X] = pixel;
+		}
+	}
+
+	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	DynamicCanvas->UpdateResource();
+}
+
 void NesPPU::RenderStaticByMatrix() {
 	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
@@ -108,58 +152,6 @@ void NesPPU::RenderStaticByMatrix() {
 		{
 			FColor pixel;
 			if(FMath::RandRange(0,2) == 0) {
-				 pixel.A = 255;
-				 pixel.R = 255;
-				 pixel.G = 255;
-				 pixel.B = 255;
-			} else {
-				 pixel.A = 255;
-				 pixel.R = 0;
-				 pixel.G = 0;
-				 pixel.B = 0;
-			}
-			FormatedImageData[Y * MyMipMap->SizeX + X] = pixel;
-		}
-	}
-
-	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
-	DynamicCanvas->UpdateResource();
-}
-
-void NesPPU::RenderLine() {
-	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
-	FByteBulkData* RawImageData = &MyMipMap->BulkData;
-	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
-
-	for(int32 X = 0; X < 10; X = X + 2) 
-	{
-		for (int32 Y = 0; Y < MyMipMap->SizeY; Y++)
-		{
-			FColor pixel;
-			pixel.A = 255;
-			pixel.R = 255;
-			pixel.G = 0;
-			pixel.B = 0;
-			FormatedImageData[Y * MyMipMap->SizeX + X] = pixel;
-		}
-	}
-
-	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
-	DynamicCanvas->UpdateResource();
-}
-
-
-void NesPPU::RenderLines() {
-	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
-	FByteBulkData* RawImageData = &MyMipMap->BulkData;
-	FColor* FormatedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
-
-	for(int32 X = 0; X < MyMipMap->SizeX; X++)
-	{
-		for (int32 Y = 0; Y < MyMipMap->SizeY; Y++)
-		{
-			FColor pixel;
-			if(X % 2 == 0) {
 				 pixel.A = 255;
 				 pixel.R = 255;
 				 pixel.G = 255;
