@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include <vector>
 #include "NesPixel.h"
-#include "Engine/Texture2D.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNesPPU, Log, All);
 
@@ -16,7 +15,6 @@ using namespace std;
 class NESUNREAL_API NesPPU
 {
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Variables)
 	UTexture2D* DynamicCanvas;
 	
 	NesPPU();
@@ -27,6 +25,7 @@ public:
 	void RenderStaticByMatrix();
 	void RenderCornerDots();
 	void RenderScreen();
+	void Step(uint cycle);
 	UTexture2D* GetScreen() {return DynamicCanvas;};
 
 private:
@@ -36,5 +35,5 @@ private:
 	int BytesPerPixel;
 
 	// Frame Buffer
-	unique_ptr<vector<unique_ptr<vector<NesPixel>>>> videoMemory;
+	unique_ptr<vector<unique_ptr<vector<NesPixel>>>> VideoMemory;
 };

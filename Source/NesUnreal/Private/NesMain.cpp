@@ -57,6 +57,7 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		//gbJoyPad.HandleKeyEvents();
 		const uint Cycles = M_CPU->Tick();
 		CyclesThisUpdate+=Cycles;
+		M_Ppu->Step(Cycles);
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/
 	}

@@ -1847,6 +1847,7 @@ void FNesCPU::Php(const uint8 Opcode) {
                 M_Mmu->Write(SP--|0x100,CopyP);
                 break;
             }
+    default: ;
     }
     
 }
@@ -2518,7 +2519,6 @@ void FNesCPU::Rra(const uint8 Opcode)
 }
 
 void FNesCPU::Las(const uint8 Opcode) {
-    uint8 ReadByte = 0x00;
     const unsigned short Address = GetAbsoluteAddress(Y,true);
-    ReadByte = M_Mmu->Read(Address);
+    uint8 ReadByte = M_Mmu->Read(Address);
 }
