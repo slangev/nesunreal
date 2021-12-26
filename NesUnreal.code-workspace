@@ -11,8 +11,13 @@
 	],
 	"settings": {
 		"typescript.tsc.autoDetect": "off",
+		"C_Cpp.default.forcedInclude": [
+			"${default}",
+			"/Users/slangev/nesunreal/Intermediate/Build/Mac/x86_64/UE4Editor/Development/NesUnreal/Definitions.NesUnreal.h",
+			"/Users/slangev/nesunreal/Intermediate/Build/Mac/x86_64/NesUnrealEditor/Development/Engine/SharedPCH.Engine.ShadowErrors.h"
+		],
 		"files.associations": {
-			"vector": "cpp"
+			"memory": "cpp"
 		}
 	},
 	"extensions": {

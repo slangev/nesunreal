@@ -8,7 +8,6 @@
 #include "NesHeader.h"
 #include "NesCartController.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogNesCart, Log, All);
 using namespace std;
 /**
  * 
@@ -29,7 +28,8 @@ private:
 	static void Log(string Msg);
 	unique_ptr<NesCartController> Mbc;
 	unique_ptr<FNesHeader> Header;
-	shared_ptr<vector<uint8>> RomMemory;
-	shared_ptr<vector<uint8>> RAMMemory;
-	shared_ptr<vector<uint8>> VRomMemory;
+	shared_ptr<vector<uint8>> PRGRomMemory;
+	shared_ptr<vector<uint8>> PRGRamMemory;
+	shared_ptr<vector<uint8>> ChrRomMemory;
+	shared_ptr<vector<uint8>> ChrRamMemory;
 };

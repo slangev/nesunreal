@@ -7,10 +7,11 @@ NesNoMapper::NesNoMapper()
 {
 }
 
-NesNoMapper::NesNoMapper(shared_ptr<vector<uint8>> romMemory, shared_ptr<vector<uint8>> ramMemory, shared_ptr<vector<uint8>> vRomMemory){
-    this->romMemory = romMemory;
-    this->ramMemory = ramMemory;
-    this->vRomMemory = vRomMemory;
+NesNoMapper::NesNoMapper(shared_ptr<vector<uint8>> PRGRomMemory, shared_ptr<vector<uint8>> PRGRamMemory, shared_ptr<vector<uint8>> ChrRomMemory, shared_ptr<vector<uint8>> ChrRamMemory){
+    this->PRGRomMemory = PRGRomMemory;
+    this->PRGRamMemory = PRGRamMemory;
+    this->ChrRomMemory = ChrRomMemory;
+    this->ChrRamMemory = ChrRamMemory;
 }
 
 NesNoMapper::~NesNoMapper()
@@ -18,9 +19,9 @@ NesNoMapper::~NesNoMapper()
 }
 
 uint8 NesNoMapper::Read(unsigned short address) {
-    return romMemory->at(address & 0x3FFF);
+    return PRGRomMemory->at(address & 0x3FFF);
 }
 
 void NesNoMapper::Write(unsigned short address, uint8 data) {
-    ramMemory->at(address) = data;
+    PRGRamMemory->at(address) = data;
 }

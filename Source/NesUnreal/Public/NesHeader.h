@@ -16,8 +16,8 @@ public:
 	~FNesHeader();
 	string Nes = "";
 	uint8 OneA = 0;
-	uint8 NumberOfProroms = 0;
-	uint8 NumberOfChrroms = 0;
+	uint8 NumberOfPrgRoms = 0;
+	uint8 NumberOfChrRoms = 0;
 	uint8 RomControlByteOne = 0;
 	uint8 RomControlByteTwo = 0;
 	uint8 NumberOfRamBanks = 0;

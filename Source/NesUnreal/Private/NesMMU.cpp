@@ -3,9 +3,11 @@
 
 #include "NesMMU.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogNesCPUMMU,Log,All)
+
 NesMMU::NesMMU()
 {
-    m_cpuRam = make_unique<vector<uint8>>(m_memorySize,0);
+    m_cpuRam = make_unique<vector<uint8>>(m_memoryRamSize,0);
 }
 
 NesMMU::~NesMMU()
@@ -33,10 +35,22 @@ void NesMMU::Write(const unsigned short Address, const uint8 Data) const
         } else {
             m_cpuRam->at(Address & 0x7FF) = Data;
         }
+    } // PPU Registers
+    else if (Address >= 0x2000 && Address <= 0x3FFF) {
+        // with mirrors handling
+        //m_ppu->at(Address & 0x2007);
     }
-    /*if (address >= 0x0000 && address <= 0x1FFF) {
-        cpuRam[address & 0x7FF] = data;
-    }*/
+    else if (Address >= 0x4020 && Address <= 0x5FFF) {
+        // Cartridge expansion rom, not implemented
+        UE_LOG(LogNesCPUMMU, Log, TEXT("Write Cartridge expansion rom, not implemented"));
+    }
+    // Cart SRam
+    else if (Address >= 0x6000 && Address <= 0x7FFF){
+        m_cart->Write(Address - 0x6000, Data);
+    // Cart Rom
+    } else if (Address >= 0x8000 && Address <= 0xFFFF){
+        m_cart->Write(Address - 0x8000, Data);
+    }
 }
 
 uint8 NesMMU::Read(const unsigned short Address) const {
@@ -55,15 +69,21 @@ uint8 NesMMU::Read(const unsigned short Address) const {
         } else {
             return m_cpuRam->at(Address & 0x7FF);
         }
+    } 
+    // PPU Registers
+    else if (Address >= 0x2000 && Address <= 0x3FFF) {
+        // with mirrors handling
+        //m_ppu->at(Address & 0x2007);
     }
-    /*if (address >= 0x0000 && address <= 0x1FFF){
-        return cpuRam[address & 0x7FF];
-    }*/ 
-    // Cart Ram
+    else if (Address >= 0x4020 && Address <= 0x5FFF) {
+        // Cartridge expansion rom, not implemented
+        UE_LOG(LogNesCPUMMU, Log, TEXT("Read Cartridge expansion rom, not implemented"));
+    }
+    // Cart SRam
     else if (Address >= 0x6000 && Address <= 0x7FFF){
         return m_cart->Read(Address - 0x6000);
     // Cart Rom
-    } else if (Address >= 0x8000 && Address <= 0x10000){
+    } else if (Address >= 0x8000 && Address <= 0xFFFF){
         return m_cart->Read(Address - 0x8000);
     }
     return 0xFF;

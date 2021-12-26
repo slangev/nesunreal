@@ -4,7 +4,7 @@
 #include "NesNoMapper.h"
 #include "NesTestCart.h"
 
-DEFINE_LOG_CATEGORY(LogNesCart);
+DEFINE_LOG_CATEGORY_STATIC(LogNesCart,Log,All)
 
 NesCart::NesCart()
 {
@@ -20,7 +20,7 @@ NesCart::NesCart(FString PathToRom) {
 }
 
 void NesCart::PrintRomData() {
-	for(const auto &s : *RomMemory) {
+	for(const auto &s : *PRGRomMemory) {
 		UE_LOG(LogNesCart, Log, TEXT("%X"), s);
     }
 }
@@ -46,9 +46,8 @@ void NesCart::LoadRom(FString PathToRom) {
 		UE_LOG(LogNesCart, Warning, TEXT("Found file."));
 	}
     Header = make_unique<FNesHeader>();
-	RomMemory = make_shared<vector<uint8>>();
-	RAMMemory = make_shared<vector<uint8>>();
-	VRomMemory = make_shared<vector<uint8>>();
+	PRGRomMemory = make_shared<vector<uint8>>();
+	ChrRomMemory = make_shared<vector<uint8>>();
 	Header->Nes += static_cast<char>(romData[0]);
 	Header->Nes += static_cast<char>(romData[1]);
 	Header->Nes += static_cast<char>(romData[2]);
@@ -57,21 +56,32 @@ void NesCart::LoadRom(FString PathToRom) {
 	if(Header->Nes == "NES" && Header->OneA == 0x1A) {
 		UE_LOG(LogNesCart, Log, TEXT("NES header found!"));
     }
-	Header->NumberOfProroms = romData[4];
-    const int RomMemorySize = 0x4000 * Header->NumberOfProroms; //16KB of banks
+	Header->NumberOfPrgRoms = romData[4];
+	Header->NumberOfChrRoms = romData[5];
+    const int RomMemorySize = 0x4000 * Header->NumberOfPrgRoms; //16KB of banks
 	for(int i = 0x10; i < RomMemorySize+0x10; i++) {
-		RomMemory->push_back(romData[i]);
+		PRGRomMemory->push_back(romData[i]);
 	}
 
-    const int VRomMemorySize = 0x2000 * Header->NumberOfChrroms; //8KB of banks
-	for(int i = 0x10+RomMemorySize; i < VRomMemorySize; i++) {
-		VRomMemory->push_back(romData[i]);
+    const int VRomMemorySize = 0x2000 * Header->NumberOfChrRoms; //8KB of banks
+	for(int i = 0; i < VRomMemorySize; i++) {
+		ChrRomMemory->push_back(romData[i + RomMemorySize + 0x10]);
+	}
+
+	//NumberOfChrRoms/romData[5]: Size of CHR ROM in 8 KB units (Value 0 means the board uses CHR RAM)
+	if(Header->NumberOfChrRoms == 0) {
+		ChrRamMemory = make_shared<vector<uint8>>(0x2000);
 	}
 
 	Header->RomControlByteOne = romData[6];
 	Header->RomControlByteTwo = romData[7];
 	Header->NumberOfRamBanks = romData[8];
-	//int ramMemorySize = 0x2000 * Header->NumberOfRamBanks;
+	if(Header->NumberOfRamBanks == 0) {
+		PRGRamMemory = make_shared<vector<uint8>>(0x2000);
+	} else {
+		uint ramMemorySize = 0x2000 * Header->NumberOfRamBanks;
+		PRGRamMemory = make_shared<vector<uint8>>(ramMemorySize);
+	}
 	Header->Mapper = (Header->RomControlByteTwo & 0xF0) | (Header->RomControlByteOne & 0xF0 >> 4);
 
     const uint8 Mirror = static_cast<uint8>(Header->RomControlByteOne & 0x1);
@@ -80,8 +90,8 @@ void NesCart::LoadRom(FString PathToRom) {
 
 	switch(Header->Mapper) {
 		case 0:
-			Mbc = make_unique<NesNoMapper>(RomMemory,RAMMemory,VRomMemory);
-			Log(to_string(RomMemory->size()));
+			Mbc = make_unique<NesNoMapper>(PRGRomMemory,PRGRamMemory,ChrRomMemory, ChrRamMemory);
+			Log(to_string(PRGRomMemory->size()));
 			break;
 		default:
 			break;
