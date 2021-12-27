@@ -8,12 +8,13 @@
 #include "NesMMU.h"
 #include "NesCart.h"
 
-BEGIN_DEFINE_SPEC(NesTestST, "Nes.ST", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
-	unique_ptr<FNesCPU> CPU;
-	shared_ptr<NesMMU> mmu;
-	unique_ptr<NesCart> cart;
-	uint m_memorySize = 0x4000;
-	vector<uint8> rom;
+BEGIN_DEFINE_SPEC(NesTestST, "Nes.ST", 
+				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+unique_ptr<FNesCPU> CPU;
+shared_ptr<NesMMU> mmu;
+shared_ptr<NesCart> cart;
+uint m_memorySize = 0x4000;
+vector<uint8> rom;
 END_DEFINE_SPEC(NesTestST)
 
 void NesTestST::Define()
@@ -22,19 +23,23 @@ void NesTestST::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000,0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});	
 
     Describe("NesZeroPageSTX", [this]()
     {
         It("mmu at 0x0011 should contain value 0x1", [this]()
         {
-			cart->Write(0,0x86);
-            cart->Write(1,0x11);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000,0x86);
+            cart->Write(0x8001,0x11);
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
             CPU->X = 0x1;
 			const uint8 Cycle = CPU->Tick();
@@ -49,9 +54,11 @@ void NesTestST::Define()
     {
         It("mmu at 0x0011 should contain value 0x1", [this]()
         {
-			cart->Write(0,0x84);
-            cart->Write(1,0x11);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000,0x84);
+            cart->Write(0x8001,0x11);
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
             CPU->Y = 0x1;
 			const uint8 Cycle = CPU->Tick();
@@ -66,11 +73,13 @@ void NesTestST::Define()
 	{
 		It("mmu at 0x0678 should contain value 0x46 from Y=0x46", [this]()
 		{
-			cart->Write(0,0x8C);
-			cart->Write(1,0x78);
-			cart->Write(2,0x06);
-			mmu->Write(0x0678,0x55);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0x8C);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
+			mmu->Write(0x0678, 0x55);
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			TestEqual(TEXT("mmu at 0x11 should be 0x0."), mmu->Read(0x11), 0x0);
 			CPU->Y = 0x46;
 			CPU->P->PSetState(0xE5);
@@ -87,10 +96,12 @@ void NesTestST::Define()
     {
         It("mmu at 0x07FF should contain value 0xFB.", [this]()
         {
-			cart->Write(0,0x8E);
-            cart->Write(1,0xFF);
-            cart->Write(2,0x07);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0x8E);
+            cart->Write(0x8001, 0xFF);
+            cart->Write(0x8002, 0x07);
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
             TestEqual(TEXT(""),0x0,mmu->Read(0x07FF));
             CPU->X = 0xFB;
 			const uint8 Cycle = CPU->Tick();
@@ -105,12 +116,14 @@ void NesTestST::Define()
 	{
 		It("A = 0x87 P = 0xE5", [this]()
 		{
-			cart->Write(0, 0x91);
-			cart->Write(1, 0x33);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0x91);
+			cart->Write(0x8001, 0x33);
+			mmu->AttachCart(cart);
 			mmu->Write(0x33,0x00);
 			mmu->Write(0x34,0x04);
 			mmu->Write(0x0400, 0x7F);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x87;
 			CPU->Y = 0x00;
 			CPU->P->PSetState(0xE5);
@@ -127,11 +140,13 @@ void NesTestST::Define()
 	{
 		It("STA at 0x0033 = 0xAA should equal 0xFF", [this]()
 		{
-			cart->Write(0, 0x99);
-			cart->Write(1, 0xFF);
-			cart->Write(2, 0xFF);
+			cart->Write(0x8000, 0x99);
+			cart->Write(0x8001, 0xFF);
+			cart->Write(0x8002, 0xFF);
 			mmu->Write(0x0033, 0x7F);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x87;
 			CPU->Y = 0x34;
 			CPU->P->PSetState(0xE5);
@@ -148,10 +163,12 @@ void NesTestST::Define()
 	{
 		It("STY at 0x0033 = 0xAA should equal 0xFF", [this]()
 		{
-			cart->Write(0, 0x94);
-			cart->Write(1, 0xFF);
+			cart->Write(0x8000, 0x94);
+			cart->Write(0x8001, 0xFF);
 			mmu->Write(0x0033, 0x7F);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->Y = 0x87;
 			CPU->X = 0x34;
 			CPU->P->PSetState(0x67);

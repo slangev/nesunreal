@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestLsr, "Nes.LSR",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestLsr)
@@ -23,20 +23,24 @@ void FNesTestLsr::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestLsr", [this]()
 	{
 		It("Lsr at 0x78 = 1 should equal 0", [this]()
 		{
-			cart->Write(0, 0x46);
-			cart->Write(1, 0x78);
+			cart->Write(0x8000, 0x46);
+			cart->Write(0x8001, 0x78);
 			mmu->Write(0x78, 0x01);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x01;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
@@ -52,11 +56,13 @@ void FNesTestLsr::Define()
 	{
 		It("Lsr at 0x0678 = 1 should equal 0", [this]()
 		{
-			cart->Write(0, 0x4E);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0x4E);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0x01);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x01;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
@@ -72,12 +78,14 @@ void FNesTestLsr::Define()
 	{
 		It("Lsr at 0x0678 = 1 should equal 0", [this]()
 		{
-			cart->Write(0, 0x5E);
-			cart->Write(1, 0x00);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0x5E);
+			cart->Write(0x8001, 0x00);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0655, 0x01);
 			TestEqual(TEXT("Memory at 0x0655"), mmu->Read(0x0655), 0x01);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x01;
 			CPU->X = 0x55;
 			CPU->P->PSetState(0x65);

@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestLax, "Nes.LAX",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestLax)
@@ -23,22 +23,26 @@ void FNesTestLax::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestLax Indirect X", [this]()
 	{
 		It("LAX A/X = 0x55 ", [this]()
 		{
-			cart->Write(0, 0xA3);
-			cart->Write(1, 0x40);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0xA3);
+			cart->Write(0x8001, 0x40);
+			mmu->AttachCart(cart);
 			mmu->Write(0x0580, 0x55);
 			mmu->Write(0x43,0x80);
 			mmu->Write(0x44,0x05);
+			CPU->AttachMemory(mmu);
+
 			CPU->X = 0x03;
 			CPU->A = 0x00;
 			CPU->P->PSetState(0x67);
@@ -56,10 +60,12 @@ void FNesTestLax::Define()
 	{
 		It("LAX A/X = 0x55 ", [this]()
 		{
-			cart->Write(0, 0xA7);
-			cart->Write(1, 0x67);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0xA7);
+			cart->Write(0x8001, 0x67);
+			mmu->AttachCart(cart);
 			mmu->Write(0x0067, 0x87);
+			CPU->AttachMemory(mmu);
+
 			CPU->X = 0xAA;
 			CPU->A = 0x00;
 			CPU->P->PSetState(0x67);
@@ -77,11 +83,13 @@ void FNesTestLax::Define()
 	{
 		It("LAX A/X = 087 ", [this]()
 		{
-			cart->Write(0, 0xAF);
-			cart->Write(1, 0x77);
-			cart->Write(2, 0x05);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0xAF);
+			cart->Write(0x8001, 0x77);
+			cart->Write(0x8002, 0x05);
+			mmu->AttachCart(cart);
 			mmu->Write(0x0577, 0x87);
+			CPU->AttachMemory(mmu);
+
 			CPU->X = 0x32;
 			CPU->A = 0x00;
 			CPU->P->PSetState(0x67);

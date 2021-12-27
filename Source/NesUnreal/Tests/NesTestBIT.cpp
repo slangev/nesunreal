@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestBit, "Nes.BIT",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestBit)
@@ -23,21 +23,25 @@ void FNesTestBit::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestBitAbsolute", [this]()
 	{
 		It("Bit at 0x678 = 0xC0 P should equal 0xE7", [this]()
 		{
-			cart->Write(0, 0x2C);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0x2C);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0xC0);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x05;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
@@ -53,10 +57,12 @@ void FNesTestBit::Define()
 	{
 		It("Bit at 0x01=FF P should equal 0xE5", [this]()
 		{
-			cart->Write(0, 0x24);
-			cart->Write(1, 0x01);
+			cart->Write(0x8000, 0x24);
+			cart->Write(0x8001, 0x01);
 			mmu->Write(0x01, 0xFF);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+			
 			CPU->A = 0x44;
 			CPU->P->PSetState(0x27);
 			const uint8 Cycle = CPU->Tick();

@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestEOR, "Nes.EOR",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestEOR)
@@ -23,20 +23,24 @@ void FNesTestEOR::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestEOR", [this]()
 	{
 		It("A = 0xF5 P = E4", [this]()
 		{
-			cart->Write(0, 0x45);
-			cart->Write(1, 0x78);
+			cart->Write(0x8000, 0x45);
+			cart->Write(0x8001, 0x78);
 			mmu->Write(0x78, 0xAA);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x5F;
 			CPU->P->PSetState(0x64);
 			const uint8 Cycle = CPU->Tick();
@@ -51,11 +55,13 @@ void FNesTestEOR::Define()
 	{
 		It("A = 0x5F P = 64", [this]()
 		{
-			cart->Write(0, 0x4D);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0x4D);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0xAA);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x5F;
 			CPU->P->PSetState(0x64);
 			const uint8 Cycle = CPU->Tick();
@@ -70,12 +76,14 @@ void FNesTestEOR::Define()
 	{
 		It("A = 0x5F P = 0x64", [this]()
 		{
-			cart->Write(0, 0x51);
-			cart->Write(1, 0x33);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0x51);
+			cart->Write(0x8001, 0x33);
+			mmu->AttachCart(cart);
 			mmu->Write(0x33,0x00);
 			mmu->Write(0x34,0x04);
 			mmu->Write(0x0400, 0xAA);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x5F;
 			CPU->Y = 0x00;
 			CPU->P->PSetState(0x64);
@@ -91,11 +99,13 @@ void FNesTestEOR::Define()
 	{
 		It("EOR Y at 0x0033 = 0xAA should equal 0xF5", [this]()
 		{
-			cart->Write(0, 0x59);
-			cart->Write(1, 0xFF);
-			cart->Write(2, 0xFF);
+			cart->Write(0x8000, 0x59);
+			cart->Write(0x8001, 0xFF);
+			cart->Write(0x8002, 0xFF);
 			mmu->Write(0x0033, 0xAA);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x5F;
 			CPU->Y = 0x34;
 			CPU->P->PSetState(0x64);
@@ -111,10 +121,12 @@ void FNesTestEOR::Define()
 	{
 		It("A = 0xFF P = E4", [this]()
 		{
-			cart->Write(0, 0x55);
-			cart->Write(1, 0x00);
+			cart->Write(0x8000, 0x55);
+			cart->Write(0x8001, 0x00);
 			mmu->Write(0x78, 0xAA);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+			
 			CPU->A = 0x5F;
 			CPU->X = 0x78;
 			CPU->P->PSetState(0x64);

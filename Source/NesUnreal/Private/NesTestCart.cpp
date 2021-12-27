@@ -16,9 +16,10 @@ NesTestCart::~NesTestCart()
 }
 
 uint8 NesTestCart::Read(unsigned short addr) {
-    return memory.at(addr & 0x7FFF);
+    return memory.at(addr-0x8000) & 0xFF;
 }
 
 void NesTestCart::Write(unsigned short addr, uint8 data) {
-    memory[addr] = data;
+    if(addr >= 0x8000 && addr <= 0xFFFF)
+        memory.at(addr-0x8000) = data;
 }

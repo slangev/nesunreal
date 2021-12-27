@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestSbc, "Nes.SBC",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestSbc)
@@ -23,21 +23,25 @@ void FNesTestSbc::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestSBCAbsolute", [this]()
 	{
 		It("A = 0x40 P = 0x65", [this]()
 		{
-			cart->Write(0, 0xED);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0xED);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0x40);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x40;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
@@ -52,12 +56,14 @@ void FNesTestSbc::Define()
 	{
 		It("A = 0x40 P = 0x65", [this]()
 		{
-			cart->Write(0, 0xF1);
-			cart->Write(1, 0x33);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0xF1);
+			cart->Write(0x8001, 0x33);
+			mmu->AttachCart(cart);
 			mmu->Write(0x33,0x00);
 			mmu->Write(0x34,0x04);
 			mmu->Write(0x0400, 0x40);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x40;
 			CPU->Y = 0x00;
 			CPU->P->PSetState(0x65);
@@ -73,11 +79,13 @@ void FNesTestSbc::Define()
 	{
 		It("SBC Y at 0x0033 = 0xAA should equal 0xFF", [this]()
 		{
-			cart->Write(0, 0xF9);
-			cart->Write(1, 0xFF);
-			cart->Write(2, 0xFF);
+			cart->Write(0x8000, 0xF9);
+			cart->Write(0x8001, 0xFF);
+			cart->Write(0x8002, 0xFF);
 			mmu->Write(0x0033, 0x40);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x40;
 			CPU->Y = 0x34;
 			CPU->P->PSetState(0x65);
@@ -93,10 +101,12 @@ void FNesTestSbc::Define()
 	{
 		It("A = 0x00 P = 66", [this]()
 		{
-			cart->Write(0, 0xF5);
-			cart->Write(1, 0x00);
+			cart->Write(0x8000, 0xF5);
+			cart->Write(0x8001, 0x00);
 			mmu->Write(0x78, 0x40);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x40;
 			CPU->X = 0x78;
 			CPU->P->PSetState(0x65);

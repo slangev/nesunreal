@@ -149,8 +149,10 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
                     break;
                 }
             case 0x01:
-                Ora(Opcode);
-                break;
+                {
+                    Ora(Opcode);
+                    break;
+                }
             case 0x03:
                 {
                     Slo(Opcode);
@@ -1202,7 +1204,6 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
 void FNesCPU::AttachMemory(const shared_ptr<NesMMU> Mmu) {
     this->M_Mmu = Mmu;
     this->PC = (!bTesting) ? ((M_Mmu->Read(0xFFFD) << 8) | M_Mmu->Read(0xFFFC)) : 0xC000; //0xC000 is the start of nestest
-    UE_LOG(LogTemp,Warning,TEXT("PC: %X"), this->PC);
 }
 
 unsigned short FNesCPU::CombineBytePairIntoUShort(const uint8 Lsb, const uint8 Msb) {

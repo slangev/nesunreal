@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestJmp, "Nes.JMP",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestJmp)
@@ -23,20 +23,24 @@ void FNesTestJmp::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestJMPAbsolute", [this]()
 	{
 		It("A = 0x00 P = 0x24 PC = 0xC5F5", [this]()
 		{
-			cart->Write(0, 0x4C);
-			cart->Write(1, 0xF5);
-			cart->Write(2, 0xC5);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0x4C);
+			cart->Write(0x8001, 0xF5);
+			cart->Write(0x8002, 0xC5);
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x00;
 			CPU->P->PSetState(0x24);
 			const uint8 Cycle = CPU->Tick();
@@ -51,12 +55,14 @@ void FNesTestJmp::Define()
 	{
 		It("A = 0xDB P = 0xE5 PC = 0xDB7E", [this]()
 		{
-			cart->Write(0, 0x6C);
-			cart->Write(1, 0x00);
-			cart->Write(2, 0x02);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0x6C);
+			cart->Write(0x8001, 0x00);
+			cart->Write(0x8002, 0x02);
+			mmu->AttachCart(cart);
 			mmu->Write(0x0200,0x7E);
 			mmu->Write(0x0201,0xDB);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0xDB;
 			CPU->P->PSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();

@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestCmp, "Nes.CMP",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestCmp)
@@ -23,21 +23,25 @@ void FNesTestCmp::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestCMPAbsolute", [this]()
 	{
 		It("A = 0x5F P = 64", [this]()
 		{
-			cart->Write(0, 0xCD);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0xCD);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0x40);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+			
 			CPU->A = 0x40;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
@@ -52,11 +56,13 @@ void FNesTestCmp::Define()
 	{
 		It("X = 0x5F P = 64", [this]()
 		{
-			cart->Write(0, 0xEC);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0xEC);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0x40);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->X = 0x40;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
@@ -71,11 +77,13 @@ void FNesTestCmp::Define()
 	{
 		It("Y = 0x5F P = 64", [this]()
 		{
-			cart->Write(0, 0xCC);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0xCC);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0x40);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->Y = 0x40;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
@@ -90,12 +98,14 @@ void FNesTestCmp::Define()
 	{
 		It("A = 0x40 P = 0x65", [this]()
 		{
-			cart->Write(0, 0xD1);
-			cart->Write(1, 0x33);
-			mmu->AttachCart(move(cart));
+			cart->Write(0x8000, 0xD1);
+			cart->Write(0x8001, 0x33);
+			mmu->AttachCart(cart);
 			mmu->Write(0x33,0x00);
 			mmu->Write(0x34,0x04);
 			mmu->Write(0x0400, 0x40);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x40;
 			CPU->Y = 0x00;
 			CPU->P->PSetState(0x65);
@@ -111,11 +121,13 @@ void FNesTestCmp::Define()
 	{
 		It("CMP Y at 0x0033 = 0x40 should equal 0x40", [this]()
 		{
-			cart->Write(0, 0xD9);
-			cart->Write(1, 0xFF);
-			cart->Write(2, 0xFF);
+			cart->Write(0x8000, 0xD9);
+			cart->Write(0x8001, 0xFF);
+			cart->Write(0x8002, 0xFF);
 			mmu->Write(0x0033, 0x40);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x40;
 			CPU->Y = 0x34;
 			CPU->P->PSetState(0x65);
@@ -131,10 +143,12 @@ void FNesTestCmp::Define()
 	{
 		It("A = 0x40 P = 65", [this]()
 		{
-			cart->Write(0, 0xD5);
-			cart->Write(1, 0x00);
+			cart->Write(0x8000, 0xD5);
+			cart->Write(0x8001, 0x00);
 			mmu->Write(0x78, 0x40);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+			
 			CPU->A = 0x40;
 			CPU->X = 0x78;
 			CPU->P->PSetState(0x65);

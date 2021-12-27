@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestRor, "Nes.ROR",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestRor)
@@ -23,20 +23,24 @@ void FNesTestRor::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestRor", [this]()
 	{
 		It("Ror at 0x78 = 1 should equal 0x80", [this]()
 		{
-			cart->Write(0, 0x66);
-			cart->Write(1, 0x78);
+			cart->Write(0x8000, 0x66);
+			cart->Write(0x8001, 0x78);
 			mmu->Write(0x78, 0x01);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x01;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();
@@ -52,11 +56,13 @@ void FNesTestRor::Define()
 	{
 		It("A = 0x01 P = 0x65", [this]()
 		{
-			cart->Write(0, 0x6E);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0x6E);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0x01);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x01;
 			CPU->P->PSetState(0x65);
 			const uint8 Cycle = CPU->Tick();

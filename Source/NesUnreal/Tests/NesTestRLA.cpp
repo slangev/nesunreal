@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestRla, "Nes.RLA",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestRla)
@@ -23,22 +23,26 @@ void FNesTestRla::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestRLA (Indirect,X)", [this]()
 	{
 		It("Rla at 0xF07E", [this]()
 		{
-			cart->Write(0, 0x23);
-			cart->Write(1, 0x45);
+			cart->Write(0x8000, 0x23);
+			cart->Write(0x8001, 0x45);
 			mmu->Write(0x47, 0x47);
 			mmu->Write(0x48, 0x06);
 			mmu->Write(0x0647,0xA5);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0xB3;
 			CPU->X = 0x02;
 			CPU->P->PSetState(0xE4);

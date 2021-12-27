@@ -12,7 +12,7 @@ BEGIN_DEFINE_SPEC(FNesTestRol, "Nes.ROL",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
-unique_ptr<NesCart> cart;
+shared_ptr<NesCart> cart;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestRol)
@@ -23,20 +23,24 @@ void FNesTestRol::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
-		CPU->AttachMemory(mmu); //Set PC to 0x8000
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);
+		//Writing the PC of 0x8000
+		cart->Write(0xFFFD, 0x80);
+		cart->Write(0xFFFC, 0x00);
 	});
 
 	Describe("FNesTestRol", [this]()
 	{
 		It("Rol at 0x78 = 0x80 should equal 0x01", [this]()
 		{
-			cart->Write(0, 0x26);
-			cart->Write(1, 0x78);
+			cart->Write(0x8000, 0x26);
+			cart->Write(0x8001, 0x78);
 			mmu->Write(0x78, 0x80);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x80;
 			CPU->P->PSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();
@@ -52,11 +56,13 @@ void FNesTestRol::Define()
 	{
 		It("A = 0x80 P = 0xE5", [this]()
 		{
-			cart->Write(0, 0x2E);
-			cart->Write(1, 0x78);
-			cart->Write(2, 0x06);
+			cart->Write(0x8000, 0x2E);
+			cart->Write(0x8001, 0x78);
+			cart->Write(0x8002, 0x06);
 			mmu->Write(0x0678, 0x80);
-			mmu->AttachCart(move(cart));
+			mmu->AttachCart(cart);
+			CPU->AttachMemory(mmu);
+
 			CPU->A = 0x80;
 			CPU->P->PSetState(0xE5);
 			const uint8 Cycle = CPU->Tick();

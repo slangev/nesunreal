@@ -14,8 +14,8 @@ NesMMU::~NesMMU()
 {
 }
 
-void NesMMU::AttachCart(unique_ptr<NesCart> cart) {
-    this->m_cart = std::move(cart);
+void NesMMU::AttachCart(shared_ptr<NesCart> cart) {
+    this->m_cart = cart;
 }
 
 void NesMMU::Write(const unsigned short Address, const uint8 Data) const
@@ -46,10 +46,11 @@ void NesMMU::Write(const unsigned short Address, const uint8 Data) const
     }
     // Cart SRam
     else if (Address >= 0x6000 && Address <= 0x7FFF){
-        m_cart->Write(Address - 0x6000, Data);
+        m_cart->Write(Address, Data);
     // Cart Rom
     } else if (Address >= 0x8000 && Address <= 0xFFFF){
-        m_cart->Write(Address - 0x8000, Data);
+        UE_LOG(LogNesCPUMMU, Log, TEXT("Trying to write outside SRAM space."));
+        m_cart->Write(Address, Data);
     }
 }
 
@@ -81,10 +82,10 @@ uint8 NesMMU::Read(const unsigned short Address) const {
     }
     // Cart SRam
     else if (Address >= 0x6000 && Address <= 0x7FFF){
-        return m_cart->Read(Address - 0x6000);
+        return m_cart->Read(Address);
     // Cart Rom
     } else if (Address >= 0x8000 && Address <= 0xFFFF){
-        return m_cart->Read(Address - 0x8000);
+        return m_cart->Read(Address);
     }
     return 0xFF;
 }
