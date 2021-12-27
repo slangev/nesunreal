@@ -29,6 +29,7 @@ void UNesMain::BeginPlay()
 	M_CPU = make_unique<FNesCPU>(bTesting);
 	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
 	M_CPU->AttachMemory(M_Mmu);
+	UE_LOG(LogTemp,Warning, TEXT("Starting PC: 0x%X") ,M_CPU->PC);
 	
 	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(GetOwner()->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(Mesh)

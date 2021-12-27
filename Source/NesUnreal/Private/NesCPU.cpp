@@ -3,8 +3,7 @@
 //https://www.nesdev.com/undocumented_opcodes.txt (Illegal Opcodes)
 #include "NesCPU.h"
 
-DEFINE_LOG_CATEGORY(LogNesCPU);
-
+DEFINE_LOG_CATEGORY_STATIC(LogNesCPU,Log,All)
 
 constexpr uint FNesCPU::CycleCount[] = { //157
     7,6,0,8,3,3,5,5,3,2,2,2,4,4,6,6,
@@ -1223,7 +1222,6 @@ inline unsigned short FNesCPU::GetAbsoluteAddress(const uint8 Reg, const bool bC
     unsigned short Address = CombineBytePairIntoUShort(LowerByte,UpperByte);
     const uint8 PrevPage = static_cast<uint8>((Address & 0xFF00) >> 8);
     Address += Reg;
-    // ReSharper disable once CppTooWideScope
     const uint8 CurrPage = static_cast<uint8>((Address & 0xFF00) >> 8);
     if(CurrPage != PrevPage && bCanCross) LastCycleCount++;
     return Address;
@@ -1269,7 +1267,6 @@ unsigned short FNesCPU::GetIndirectIndexed(const uint8 Reg, bool bCanCross)
     unsigned short Address = CombineBytePairIntoUShort(AddressLsb,AddressMsb);
     const uint8 PrevPage = static_cast<uint8>((Address & 0xFF00) >> 8);
     Address += static_cast<unsigned short>(Reg);
-    // ReSharper disable once CppTooWideScope
     const uint8 CurrPage = static_cast<uint8>((Address & 0xFF00) >> 8);
     if(CurrPage != PrevPage && bCanCross) LastCycleCount++;
     return Address;

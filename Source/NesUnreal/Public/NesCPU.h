@@ -10,8 +10,6 @@
 #include <iomanip>      // std::setfill, std::setw
 
 
-DECLARE_LOG_CATEGORY_EXTERN(LogNesCPU, Log, All);
-
 /**
  * 
  */
@@ -26,6 +24,7 @@ public:
 	void Reset();
     uint Tick();
     unique_ptr<FNesPRegister> P;
+
     unsigned short PC;
     uint8 SP;
     uint8 A;
