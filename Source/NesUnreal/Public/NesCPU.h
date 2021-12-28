@@ -34,7 +34,8 @@ private:
     uint TotalCycles = 0;
     uint LineNumber = 1;
 	bool bReset = false;
-    bool lastNMI = false;
+    bool bLastNMI = false;
+    bool bInterrupted = false;
 
     static const uint CycleCount[];
     void PrintNesTestLogLine(uint8 Opcode);

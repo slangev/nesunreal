@@ -112,14 +112,14 @@ void FNesCPU::HandleInterrupts()
     // if (NMI && !lastNMI){
     //     interruptPush(0xFFFA);
     //     flag_B = false; // Clear the B flag. This is probably kind of a hack.
-    //     interrupted = true;
+    //     bInterrupted = true;
     // }
     //     //IRQ - Some memory mappers can set IRQ. The interrupt disable flag only disables IRQ interrupts.
     // else if (IRQ && !flag_I){
     //     // Vector
     //     // Certain instructions can be delay the IRQ interrupt for some odd reason.
     //     interruptPush(0xFFFE);
-    //     interrupted = true;
+    //     bInterrupted = true;
     // }
     //lastNMI = NMI;  // Save the NMI state    
     /*uint8 Result[2];
@@ -1201,6 +1201,11 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
                 break;
         }
         TotalCycles += LastCycleCount;
+        if(bInterrupted) {
+            TotalCycles += 7;
+            LastCycleCount += 7;
+            bInterrupted = false;
+        }
         return LastCycleCount;
 }
 
