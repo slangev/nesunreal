@@ -4,6 +4,7 @@
 #include "Misc/AutomationTest.h"
 #include "NesCPU.h"
 #include "NesMMU.h"
+#include "NesPPU.h"
 #include "NesCart.h"
 #include <vector>
 #include <memory>
@@ -13,6 +14,7 @@ BEGIN_DEFINE_SPEC(FNesTestLax, "Nes.LAX",
 unique_ptr<FNesCPU> CPU;
 shared_ptr<NesMMU> mmu;
 shared_ptr<NesCart> cart;
+shared_ptr<NesPPU> ppu;
 uint m_memorySize = 0x4000;
 vector<uint8> rom;
 END_DEFINE_SPEC(FNesTestLax)
@@ -23,6 +25,8 @@ void FNesTestLax::Define()
 	{
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesMMU>();
+		ppu = make_shared<NesPPU>();
+		mmu->AttachPPU(ppu);
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);

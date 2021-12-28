@@ -3,7 +3,8 @@
 
 #include "NesPPU.h"
 
-DEFINE_LOG_CATEGORY(LogNesPPU);
+DEFINE_LOG_CATEGORY_STATIC(LogNesPPU,Log,All)
+
 
 NesPPU::NesPPU()
 {
@@ -70,6 +71,14 @@ NesPPU::~NesPPU()
 
 void NesPPU::Step(uint Cycle) {
 	
+}
+
+void NesPPU::SetNMIInterrupt(bool request) {
+	NMI = request;
+}
+
+bool NesPPU::GetNMIInterrupt() {
+	return NMI;
 }
 
 void NesPPU::PrintStats(int32 x, int32 y) {

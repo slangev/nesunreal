@@ -9,10 +9,6 @@
 #include <sstream>
 #include <iomanip>      // std::setfill, std::setw
 
-
-/**
- * 
- */
 class NESUNREAL_API FNesCPU
 {
 public:
@@ -38,6 +34,7 @@ private:
     uint TotalCycles = 0;
     uint LineNumber = 1;
 	bool bReset = false;
+    bool lastNMI = false;
 
     static const uint CycleCount[];
     void PrintNesTestLogLine(uint8 Opcode);

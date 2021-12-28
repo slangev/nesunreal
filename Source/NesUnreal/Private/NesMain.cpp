@@ -5,7 +5,8 @@
 #include "NesMain.h"
 #include <iomanip>
 
-DEFINE_LOG_CATEGORY(LogNesMain);
+DEFINE_LOG_CATEGORY_STATIC(LogNesMain,Log,All)
+
 
 // Sets default values for this component's properties
 UNesMain::UNesMain()
@@ -24,12 +25,13 @@ void UNesMain::Log(FString msg) {
 void UNesMain::BeginPlay()
 {
 	Super::BeginPlay();
-	M_Ppu = make_unique<NesPPU>(256, 240, 4);
+	M_Ppu = make_shared<NesPPU>(256, 240, 4);
 	M_Mmu = make_shared<NesMMU>();
 	M_CPU = make_unique<FNesCPU>(bTesting);
 	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
+	M_Mmu->AttachPPU(M_Ppu);
 	M_CPU->AttachMemory(M_Mmu);
-	UE_LOG(LogTemp,Warning, TEXT("Starting PC: 0x%X") ,M_CPU->PC);
+	UE_LOG(LogTemp,Log, TEXT("Starting PC: 0x%X") ,M_CPU->PC);
 	
 	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(GetOwner()->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(Mesh)
@@ -57,10 +59,10 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
     while (CyclesThisUpdate < MAXCYCLES) {
 		//gbJoyPad.HandleKeyEvents();
 		const uint Cycles = M_CPU->Tick();
-		CyclesThisUpdate+=Cycles;
 		M_Ppu->Step(Cycles);
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/
+		CyclesThisUpdate+=Cycles;
 	}
 	if(M_CPU->bTesting)
 	{

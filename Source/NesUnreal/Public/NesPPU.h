@@ -6,8 +6,6 @@
 #include <vector>
 #include "NesPixel.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogNesPPU, Log, All);
-
 /**
  * 
  */
@@ -25,6 +23,8 @@ public:
 	void RenderStaticByMatrix();
 	void RenderCornerDots();
 	void RenderScreen();
+	void SetNMIInterrupt(bool request);
+	bool GetNMIInterrupt();
 	void Step(uint cycle);
 	UTexture2D* GetScreen() {return DynamicCanvas;};
 
@@ -33,6 +33,7 @@ private:
 	int CanvasWidth;
 	int CanvasHeight;
 	int BytesPerPixel;
+	bool NMI = false;
 
 	// Frame Buffer
 	unique_ptr<vector<unique_ptr<vector<NesPixel>>>> VideoMemory;

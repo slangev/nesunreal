@@ -14,7 +14,6 @@
 #include "Containers/UnrealString.h"
 #include "NesMain.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogNesMain, Log, All);
 using namespace std;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -31,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere,Meta = (Bitmask))
     bool bTesting;
 
-	std::unique_ptr<NesPPU> M_Ppu;
+	std::shared_ptr<NesPPU> M_Ppu;
 	std::unique_ptr<NesCart> M_Cart;
 	std::shared_ptr<NesMMU> M_Mmu;
 	std::unique_ptr<FNesCPU> M_CPU;

@@ -18,6 +18,14 @@ void NesMMU::AttachCart(shared_ptr<NesCart> cart) {
     this->m_cart = cart;
 }
 
+void NesMMU::AttachPPU(shared_ptr<NesPPU> ppu) {
+    this->m_ppu = ppu;
+}
+
+bool NesMMU::RequestNMIInterrupt() {
+    return m_ppu->GetNMIInterrupt();
+}
+
 void NesMMU::Write(const unsigned short Address, const uint8 Data) const
 {
     //CPU RAM
