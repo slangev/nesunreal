@@ -68,6 +68,7 @@ void FNesCPU::PrintNesTestLogLine(uint8 Opcode) {
         StreamY << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Y);
         StreamP << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(P->PState());
         StreamSP << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(SP);
+        
 
         Result += StreamPC.str() + "  ";
         Result += StreamOpCode.str() + "                       A:";
@@ -75,7 +76,9 @@ void FNesCPU::PrintNesTestLogLine(uint8 Opcode) {
         Result += StreamX.str() + " Y:";
         Result += StreamY.str() + " P:";
         Result += StreamP.str() + " SP:";
-        Result += StreamSP.str() + " CYC:";
+        Result += StreamSP.str();
+        Result += " PPU:  " + to_string(0) + ", " + to_string(0); //linenumber, ppu cycle
+        Result += " CYC:";
         Result += to_string(TotalCycles);
 
         FString DebugResult(Result.c_str());

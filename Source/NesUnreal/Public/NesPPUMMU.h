@@ -3,15 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NesCart.h"
 #include <vector>
 #include <memory>
 
 using namespace std;
-class NESUNREAL_API NesPPU_MMU
+class NESUNREAL_API NesPPUMMU
 {
 public:
-	NesPPU_MMU();
-	~NesPPU_MMU();
+	NesPPUMMU(shared_ptr<NesCart> cart);
+	~NesPPUMMU();
+	shared_ptr<NesCart> cart;
 	unique_ptr<vector<int>> oam;
 	unique_ptr<vector<int>> paletteRAM;
 	unique_ptr<vector<int>> nameSpaceTable;
