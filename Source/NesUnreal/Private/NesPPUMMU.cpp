@@ -23,19 +23,12 @@ uint8 NesPPUMMU::Read(unsigned short Address) const {
     //Read from pattern table/chrrom/chrram
     if(Address >= 0x0000 && Address < 0x2000) {
         return cart->Read(Address);
-    } else if (Address >= 0x2000 && Address < 0x3F00){
+    } else if (Address >= 0x2000 && Address < 0x3F00) {
+        if(Address >= 0x3000 && Address < 0x3F00) {
+            return Read(Address - 0x1000);
+        }
         int VRAMAddress = Address & 0x3FF; // (namespacetable.size() - 1);
         // Vertical mirroring
-        /*if (cart->Header->Mirroring == 1) {
-            VRAMAddress = Address & 0x7FF;
-        }
-        // Horizontal mirroring
-        else if (cart->Header->Mirroring == 0) {
-            VRAMAddress = Address & 0x3FF;
-            if ((Address & 0x800) > 0){
-                VRAMAddress |= 0x400;
-            }
-        }*/
         if(cart->Header->Mirroring == 1) {
             if(Address >= 0x2400 && Address < 0x3000) {
                 VRAMAddress |= 0x400;
@@ -69,7 +62,11 @@ uint8 NesPPUMMU::Read(unsigned short Address) const {
 void NesPPUMMU::Write(unsigned short Address, uint8 Data) const {
     if(Address >= 0x0000 && Address < 0x2000) {
         cart->Write(Address,Data);
-    } else if (Address >= 0x2000 && Address < 0x3F00){
+    } else if (Address >= 0x2000 && Address < 0x3F00) {
+        if(Address >= 0x3000 && Address < 0x3F00) {
+            Write(Address - 0x1000, Data);
+            return;
+        }
         int VRAMAddress = Address & 0x3FF; // (namespacetable.size() - 1);
         if(cart->Header->Mirroring == 1) {
             if(Address >= 0x2400 && Address < 0x3000) {
