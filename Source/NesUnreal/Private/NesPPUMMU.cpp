@@ -91,6 +91,7 @@ void NesPPUMMU::Write(unsigned short Address, uint8 Data) const {
 
         if(Address >= 0x3F20 && Address < 0x4000) {
             Write((Address & 0x3F1F), Data);
+            return;
         }
         paletteRAM->at(Address & 0x1F) = Data; // 0x1F is (paletteRam->size() -1)
     }
