@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NesMMU.h"
+#include "NesCPUMMU.h"
 #include "NesPRegister.h"
 #include <memory>
 #include <sstream>
@@ -15,7 +15,7 @@ public:
 	FNesCPU();
     explicit FNesCPU(bool bTesting);
 	~FNesCPU();
-	void AttachMemory(shared_ptr<NesMMU> Mmu);
+	void AttachMemory(shared_ptr<NesCPUMMU> Mmu);
 	void HandleInterrupts();
 	void Reset();
     uint Tick();
@@ -30,7 +30,7 @@ public:
 	bool bTesting = false;
     
 private:
-	shared_ptr<NesMMU> M_Mmu;
+	shared_ptr<NesCPUMMU> M_Mmu;
     uint TotalCycles = 0;
     uint LineNumber = 1;
 	bool bReset = false;

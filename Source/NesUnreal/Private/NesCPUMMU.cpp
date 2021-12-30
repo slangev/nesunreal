@@ -1,32 +1,32 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "NesMMU.h"
+#include "NesCPUMMU.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogNesCPUMMU,Log,All)
 
-NesMMU::NesMMU()
+NesCPUMMU::NesCPUMMU()
 {
     m_cpuRam = make_unique<vector<uint8>>(m_memoryRamSize,0);
 }
 
-NesMMU::~NesMMU()
+NesCPUMMU::~NesCPUMMU()
 {
 }
 
-void NesMMU::AttachCart(shared_ptr<NesCart> cart) {
+void NesCPUMMU::AttachCart(shared_ptr<NesCart> cart) {
     this->m_cart = cart;
 }
 
-void NesMMU::AttachPPU(shared_ptr<NesPPU> ppu) {
+void NesCPUMMU::AttachPPU(shared_ptr<NesPPU> ppu) {
     this->m_ppu = ppu;
 }
 
-bool NesMMU::RequestNMIInterrupt() {
+bool NesCPUMMU::RequestNMIInterrupt() {
     return m_ppu->GetNMIInterrupt();
 }
 
-void NesMMU::Write(const unsigned short Address, const uint8 Data) const
+void NesCPUMMU::Write(const unsigned short Address, const uint8 Data) const
 {
     //CPU RAM
     if(Address >= 0x0000 && Address < 0x2000) {
@@ -62,7 +62,7 @@ void NesMMU::Write(const unsigned short Address, const uint8 Data) const
     }
 }
 
-uint8 NesMMU::Read(const unsigned short Address) const {
+uint8 NesCPUMMU::Read(const unsigned short Address) const {
     //CPU RAM
     if(Address >= 0x0000 && Address < 0x2000) {
         //Zero Page

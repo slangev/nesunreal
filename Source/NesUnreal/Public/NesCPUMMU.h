@@ -10,12 +10,12 @@
 /**
  * 
  */
-class NESUNREAL_API NesMMU
+class NESUNREAL_API NesCPUMMU
 {
 
 public:
-	NesMMU();
-	~NesMMU();
+	NesCPUMMU();
+	~NesCPUMMU();
 	void AttachCart(shared_ptr<NesCart> cart);
 	void AttachPPU(shared_ptr<NesPPU> ppu);
 	bool RequestNMIInterrupt();

@@ -26,7 +26,7 @@ void UNesMain::BeginPlay()
 {
 	Super::BeginPlay();
 	M_Ppu = make_shared<NesPPU>(256, 240, 4);
-	M_Mmu = make_shared<NesMMU>();
+	M_Mmu = make_shared<NesCPUMMU>();
 	M_CPU = make_unique<FNesCPU>(bTesting);
 	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
 	M_Mmu->AttachPPU(M_Ppu);

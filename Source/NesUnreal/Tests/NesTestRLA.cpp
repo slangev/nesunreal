@@ -5,14 +5,14 @@
 #include <memory>
 #include <vector>
 #include "NesCPU.h"
-#include "NesMMU.h"
+#include "NesCPUMMU.h"
 #include "NesPPU.h"
 #include "NesCart.h"
 
 BEGIN_DEFINE_SPEC(FNesTestRla, "Nes.RLA",
 				EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 unique_ptr<FNesCPU> CPU;
-shared_ptr<NesMMU> mmu;
+shared_ptr<NesCPUMMU> mmu;
 shared_ptr<NesCart> cart;
 shared_ptr<NesPPU> ppu;
 uint m_memorySize = 0x4000;
@@ -24,7 +24,7 @@ void FNesTestRla::Define()
 	BeforeEach([this]()
 	{
 		CPU = make_unique<FNesCPU>();
-		mmu = make_shared<NesMMU>();
+		mmu = make_shared<NesCPUMMU>();
 		ppu = make_shared<NesPPU>();
 		mmu->AttachPPU(ppu);
 		rom.clear();

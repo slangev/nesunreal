@@ -21,13 +21,13 @@ public:
 	~NesCart();
 	uint8 Read(unsigned short Address);
 	void Write(unsigned short Address, uint8 Data);
+	unique_ptr<FNesHeader> Header;
 
 private:
 	void LoadRom(FString PathToRom);
 	void PrintRomData();
 	static void Log(string Msg);
 	unique_ptr<NesCartController> Mbc;
-	unique_ptr<FNesHeader> Header;
 	shared_ptr<vector<uint8>> PRGRomMemory;
 	shared_ptr<vector<uint8>> PRGRamMemory;
 	shared_ptr<vector<uint8>> ChrRomMemory;
