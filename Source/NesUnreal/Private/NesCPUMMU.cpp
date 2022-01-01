@@ -45,9 +45,37 @@ void NesCPUMMU::Write(const unsigned short Address, const uint8 Data) const
         }
     } // PPU Registers
     else if (Address >= 0x2000 && Address <= 0x3FFF) {
-        // with mirrors handling
-        //m_ppu->at(Address & 0x2007);
-    }
+        // with mirror handling
+        m_ppu->WriteRegister(Address & 0x2007, Data);
+    } 
+    else if (Address >= 0x4000 && Address <= 0x401F) {
+            // APU and I/O Registers
+            // Implement as needed
+
+            // APU
+            // if (Address <= 0x4013 || Address == 0x4015 || Address == 0x4017){
+            //     //APU.writeData(address, data);
+            // }
+
+            // OAM DMA
+            if (Address == 0x4014){
+                // int OAMDMAaddress = (Data << 8);
+                // int[] OAMData = new int[256];
+                // for (int i = 0; i < 256; i++){
+                //     OAMData[i] = readByte(OAMDMAaddress + i);
+                // }
+                // PPU.OAMDMA(OAMData);
+                // cycleAdditions += 513;  // 513 additional cpu cycles for a DMA
+                UE_LOG(LogNesCPUMMU,Warning, TEXT("Data: %X"), Data);
+            }
+
+            // Controller
+            // Only 4016 is used for the controller on write, 4017 writes to an APU register.
+            // else if (Address == 0x4016){
+            //     controller.sendData(Address, data);
+            // }
+        }
+    
     else if (Address >= 0x4020 && Address <= 0x5FFF) {
         // Cartridge expansion rom, not implemented
         UE_LOG(LogNesCPUMMU, Log, TEXT("Write Cartridge expansion rom, not implemented"));

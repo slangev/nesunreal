@@ -7,6 +7,7 @@
 #include "NesPPU.h"
 #include "NesCart.h"
 #include "NesCPUMMU.h"
+#include "NesPPUMMU.h"
 #include "NesCPU.h"
 #include <memory>
 
@@ -31,8 +32,9 @@ public:
     bool bTesting;
 
 	std::shared_ptr<NesPPU> M_Ppu;
-	std::unique_ptr<NesCart> M_Cart;
+	std::shared_ptr<NesCart> M_Cart;
 	std::shared_ptr<NesCPUMMU> M_Mmu;
+	std::shared_ptr<NesPPUMMU> M_PPUMmu;
 	std::unique_ptr<FNesCPU> M_CPU;
 	static void Log(FString);
 

@@ -28,10 +28,13 @@ void UNesMain::BeginPlay()
 	M_Ppu = make_shared<NesPPU>(256, 240, 4);
 	M_Mmu = make_shared<NesCPUMMU>();
 	M_CPU = make_unique<FNesCPU>(bTesting);
-	M_Mmu->AttachCart(make_unique<NesCart>(pathToRom));
+	M_Cart = make_shared<NesCart>(pathToRom);
+	M_PPUMmu = make_shared<NesPPUMMU>(M_Cart);
+	M_Mmu->AttachCart(M_Cart);
+	M_Ppu->AttachPPUMUU(M_PPUMmu);
 	M_Mmu->AttachPPU(M_Ppu);
 	M_CPU->AttachMemory(M_Mmu);
-	UE_LOG(LogTemp,Log, TEXT("Starting PC: 0x%X") ,M_CPU->PC);
+	UE_LOG(LogNesMain,Log, TEXT("Starting PC: 0x%X") ,M_CPU->PC);
 	
 	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(GetOwner()->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 	if(Mesh)
@@ -59,7 +62,7 @@ void UNesMain::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
     while (CyclesThisUpdate < MAXCYCLES) {
 		//gbJoyPad.HandleKeyEvents();
 		const uint Cycles = M_CPU->Tick();
-		M_Ppu->Step(Cycles);
+		M_Ppu->Step(Cycles * 3);
 		/*gbGraphic.UpdateGraphics(cycles);
 		gbAudio.UpdateAudioTimer(cycles);*/
 		CyclesThisUpdate+=Cycles;

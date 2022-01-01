@@ -34,7 +34,11 @@
 			"system_error": "cpp",
 			"unordered_map": "cpp",
 			"unordered_set": "cpp",
-			"vector": "cpp"
+			"vector": "cpp",
+			"coroutine": "cpp",
+			"array": "cpp",
+			"iterator": "cpp",
+			"string_view": "cpp"
 		}
 	},
 	"extensions": {

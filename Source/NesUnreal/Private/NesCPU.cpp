@@ -1212,7 +1212,7 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
         return LastCycleCount;
 }
 
-void FNesCPU::AttachMemory(const shared_ptr<NesCPUMMU> Mmu) {
+void FNesCPU::AttachMemory(shared_ptr<NesCPUMMU> Mmu) {
     this->M_Mmu = Mmu;
     this->PC = (!bTesting) ? ((M_Mmu->Read(0xFFFD) << 8) | M_Mmu->Read(0xFFFC)) : 0xC000; //0xC000 is the start of nestest
 }
