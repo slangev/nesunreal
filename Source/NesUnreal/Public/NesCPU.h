@@ -28,6 +28,7 @@ public:
     uint8 Y;
 	uint LastCycleCount = 0;
 	bool bTesting = false;
+    bool lastNMI = false;
     
 private:
 	shared_ptr<NesCPUMMU> M_Mmu;
@@ -40,6 +41,7 @@ private:
     static const uint CycleCount[];
     void PrintNesTestLogLine(uint8 Opcode);
     uint HandleInstructions(uint8 Opcode);
+    void ServiceInterrupt(unsigned short Address);
 	static void SeparateWordToBytes(ushort Word, uint8 Result[]);
 	static unsigned short CombineBytePairIntoUShort(uint8 Lsb, uint8 Msb);
     unsigned short GetIndirectAddress(const uint8 Reg);

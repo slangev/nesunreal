@@ -360,6 +360,7 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY){
 		int pixelColor = 0;
 		if ((paletteIndex & 0x3) != 0 && !(!ppumask.showBGLeft && i < 8)){
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
+			VideoMemory->at(i)->at(lineCount).pixel = FColor::White;
 		} else {
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
 			VideoMemory->at(i)->at(lineCount).pixel = FColor::Black;
@@ -393,10 +394,6 @@ void NesPPU::Step(uint Cycle) {
 			cycleCount = 0;
 			lineCount++;
 			if (lineCount < 240) {
-				// Zero out line buffer
-				// for (int i = 0; i < 256; i++) {
-				//     lineBuffer[i] = 0;
-				// }
 				// Attempt with loopy's data
 				if (ppumask.showBG) {
 					bool baseNameTableX = (loopyV & 0x400) == 0x400;
@@ -406,10 +403,6 @@ void NesPPU::Step(uint Cycle) {
 							(((loopyV >> 8) & 0x3) << 6)) + (baseNameTableY ? 240:0);
 					drawBGScanLine(loopyXscroll, loopyYscroll, lineCount);
 				}
-				// if (showSprites) {
-				//     drawSpriteLine(lineCount);
-				// }
-				//renderLine(lineCount);
 			} 
 			// Vblank trigger
 			if (lineCount == 241) {

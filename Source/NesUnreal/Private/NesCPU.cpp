@@ -111,20 +111,20 @@ void FNesCPU::HandleInterrupts()
         Reset();
         return;
     }
+    bool NMI = M_Mmu->RequestNMIInterrupt();
     //NMI -  However, triggering of a NMI can be prevented if bit 7 of PPU Control Register 1 ($2000) is clear. When a NMI occurs the system jumps to the address located at $FFFA and $FFFB
-    // if (NMI && !lastNMI){
-    //     interruptPush(0xFFFA);
-    //     flag_B = false; // Clear the B flag. This is probably kind of a hack.
-    //     bInterrupted = true;
-    // }
-    //     //IRQ - Some memory mappers can set IRQ. The interrupt disable flag only disables IRQ interrupts.
+    if (NMI && !lastNMI){
+        ServiceInterrupt(0xFFFA);
+        bInterrupted = true;
+    }
+        //IRQ - Some memory mappers can set IRQ. The interrupt disable flag only disables IRQ interrupts.
     // else if (IRQ && !flag_I){
     //     // Vector
     //     // Certain instructions can be delay the IRQ interrupt for some odd reason.
     //     interruptPush(0xFFFE);
     //     bInterrupted = true;
     // }
-    //lastNMI = NMI;  // Save the NMI state    
+    lastNMI = NMI;  // Save the NMI state    
     /*uint8 Result[2];
     SeparateWordToBytes(static_cast<unsigned short>(PC), Result);
     M_Mmu->Write(SP--|0x100,Result[0]);
@@ -132,6 +132,16 @@ void FNesCPU::HandleInterrupts()
     Php(0x00);
     P->SetFlag(P->IFlag); Set the interrupt disable flag to prevent further interrupts.
     PC = ((M_Mmu->Read(0xFFFF) << 8) | M_Mmu->Read(0xFFFE));*/
+}
+
+void FNesCPU::ServiceInterrupt(unsigned short Address) {
+    uint8 Result[2];
+    SeparateWordToBytes(static_cast<unsigned short>(PC), Result);
+    M_Mmu->Write(SP--|0x100,Result[0]);
+    M_Mmu->Write(SP--|0x100,Result[1]);
+    Php(0x00);
+    P->SetFlag(P->IFlag); //Set the interrupt disable flag to prevent further interrupts.
+    PC = ((M_Mmu->Read(Address+1) << 8) | M_Mmu->Read(Address));
 }
 
 void FNesCPU::Reset()
