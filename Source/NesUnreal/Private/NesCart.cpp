@@ -43,7 +43,7 @@ void NesCart::LoadRom(FString PathToRom) {
     const bool bResult = FFileHelper::LoadFileToArray(romData,*projectDir);
 	if(bResult)
 	{
-		UE_LOG(LogNesCart, Warning, TEXT("Found file."));
+		UE_LOG(LogNesCart, Log, TEXT("Found file."));
 	}
     Header = make_unique<FNesHeader>();
 	PRGRomMemory = make_shared<vector<uint8>>();
@@ -91,7 +91,7 @@ void NesCart::LoadRom(FString PathToRom) {
 	switch(Header->Mapper) {
 		case 0:
 			Mbc = make_unique<NesNoMapper>(PRGRomMemory,PRGRamMemory,ChrRomMemory, ChrRamMemory);
-			Log(to_string(PRGRomMemory->size()));
+			//Log(to_string(PRGRomMemory->size()));
 			break;
 		default:
 			break;
