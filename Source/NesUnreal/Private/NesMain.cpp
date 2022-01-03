@@ -20,11 +20,27 @@ void UNesMain::Log(FString msg) {
 	UE_LOG(LogNesMain, Log, TEXT("%s"), *msg);
 }
 
+void UNesMain::Action() {
+	UE_LOG(LogTemp,Warning,TEXT("HERE"));
+}
 
 // Called when the game starts
 void UNesMain::BeginPlay()
 {
 	Super::BeginPlay();
+	// InputComponent = NewObject<UInputComponent>(this);
+    // InputComponent->RegisterComponent();
+
+	// InputComponent->BindAction
+    // (
+    //     "TEST", // The input identifier (specified in DefaultInput.ini)
+    //     IE_Pressed, // React when button pressed (or on release, etc., if desired)
+    //     this, // The object instance that is going to react to the input
+    //     &UNesMain::Action // The function that will fire when input is received
+    // ); 
+
+	//InputComponent->BindKey(EKeys::Five, IE_Pressed, this, &UNesMain::Action);
+
 	M_Ppu = make_shared<NesPPU>(256, 240, 4);
 	M_Mmu = make_shared<NesCPUMMU>();
 	M_CPU = make_unique<FNesCPU>(bTesting);

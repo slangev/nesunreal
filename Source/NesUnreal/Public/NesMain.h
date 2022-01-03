@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/InputComponent.h"
 #include "NesPPU.h"
 #include "NesCart.h"
 #include "NesCPUMMU.h"
@@ -38,13 +39,7 @@ public:
 	std::shared_ptr<NesPPUMMU> M_PPUMmu;
 	std::unique_ptr<FNesCPU> M_CPU;
 	static void Log(FString);
-
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
+	void Action();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
@@ -54,5 +49,12 @@ public:
 	UPROPERTY(VisibleDefaultsOnly)
 		UStaticMeshComponent *Canvas;
 
-		
+	UPROPERTY(VisibleDefaultsOnly)
+		UInputComponent *InputComp;
+
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
 };
