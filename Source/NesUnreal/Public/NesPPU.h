@@ -52,7 +52,6 @@ class PPUMASK {
 			showBGLeft = (Data & 0x2) > 0;
 			showSpriteLeft = (Data & 0x4) > 0;
 			showBG = (Data & 0x8) > 0;
-			UE_LOG(LogTemp,Warning, TEXT("%s"), (showBG) ? TEXT("Y") : TEXT("N"));
 			showSprites = (Data & 0x10) > 0;
 			emphRed = (Data & 0x20) > 0;
 			emphGreen = (Data & 0x40) > 0;

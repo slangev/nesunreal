@@ -38,7 +38,7 @@ void NesCart::LoadRom(FString PathToRom) {
 	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*projectDir))
 	{
 		const FString Str = projectDir+"File does not exist!";
-		UE_LOG(LogNesCart, Warning, TEXT("%s,  file does not exist!"), *Str);
+		UE_LOG(LogNesCart, Warning, TEXT("%s, file does not exist!"), *Str);
 	}
     const bool bResult = FFileHelper::LoadFileToArray(romData,*projectDir);
 	if(bResult)

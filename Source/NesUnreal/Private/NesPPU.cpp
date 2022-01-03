@@ -371,6 +371,7 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY){
 void NesPPU::Step(uint Cycle) {
 	while(Cycle-- > 0) {
 		cycleCount++;
+
 		if (cycleCount == 256){
 			if ((ppumask.showBG || ppumask.showSprites) && lineCount < 240) {
 				incrementLoopyY();
@@ -390,6 +391,20 @@ void NesPPU::Step(uint Cycle) {
 				//loopyV = loopyT;
 			}
 		}
+		//Vblank trigger 
+		else if (lineCount == 241 && cycleCount == 1) {
+			// Trigger NMI as soon as vblank reached
+			vBlank = true;
+			NMI = ppuctrl.NMIGenerate;
+		} 
+		//Reset values
+		else if (lineCount == 260 && cycleCount == 1) {
+			lineCount = -1;
+			vBlank = false;
+			ppustatus.spriteZeroHit = false;
+			ppustatus.spriteOverflow = false;
+			NMI = false;
+		}
 		else if (cycleCount > 340) {
 			cycleCount = 0;
 			lineCount++;
@@ -404,20 +419,6 @@ void NesPPU::Step(uint Cycle) {
 					drawBGScanLine(loopyXscroll, loopyYscroll, lineCount);
 				}
 			} 
-			// Vblank trigger
-			if (lineCount == 241) {
-				// Trigger NMI as soon as vblank reached
-				vBlank = true;
-				NMI = ppuctrl.NMIGenerate;
-			}
-			// Reset line count
-			if (lineCount > 260) {
-				lineCount = -1;
-				vBlank = false;
-				ppustatus.spriteZeroHit = false;
-				ppustatus.spriteOverflow = false;
-				NMI = false;
-			}
 		}
 	}
 }

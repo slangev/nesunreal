@@ -106,8 +106,7 @@ uint FNesCPU::Tick() {
 
 void FNesCPU::HandleInterrupts()
 {
-    if(bReset)
-    {
+    if(bReset) {
         Reset();
         return;
     }
@@ -124,14 +123,7 @@ void FNesCPU::HandleInterrupts()
     //     interruptPush(0xFFFE);
     //     bInterrupted = true;
     // }
-    lastNMI = NMI;  // Save the NMI state    
-    /*uint8 Result[2];
-    SeparateWordToBytes(static_cast<unsigned short>(PC), Result);
-    M_Mmu->Write(SP--|0x100,Result[0]);
-    M_Mmu->Write(SP--|0x100,Result[1]);
-    Php(0x00);
-    P->SetFlag(P->IFlag); Set the interrupt disable flag to prevent further interrupts.
-    PC = ((M_Mmu->Read(0xFFFF) << 8) | M_Mmu->Read(0xFFFE));*/
+    lastNMI = NMI;  // Save the NMI state
 }
 
 void FNesCPU::ServiceInterrupt(unsigned short Address) {
