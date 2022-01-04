@@ -19,7 +19,7 @@
 using namespace std;
 
 //https://unrealistic.dev/posts/binding-input-in-c
-UCLASS()
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class NESUNREAL_API UNesMain final : public UActorComponent
 {
 	GENERATED_BODY()
