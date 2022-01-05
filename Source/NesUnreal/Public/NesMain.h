@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/InputComponent.h"
+#include "Materials/Material.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "NesPPU.h"
 #include "NesCart.h"
 #include "NesCPUMMU.h"
@@ -19,13 +22,13 @@
 using namespace std;
 
 //https://unrealistic.dev/posts/binding-input-in-c
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class NESUNREAL_API UNesMain final : public UActorComponent
+UCLASS()
+class NESUNREAL_API ANesMain final : public APawn
 {
 	GENERATED_BODY()
 
 public:	
-	UNesMain();
+	ANesMain();
 	uint64 MAXCYCLES = 29781;
 	UPROPERTY(EditAnywhere,Meta = (Bitmask))
 	FString pathToRom;
@@ -40,17 +43,19 @@ public:
 	std::unique_ptr<FNesCPU> M_CPU;
 	static void Log(FString);
 	void Action();
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-		UCameraComponent *Camera;
+	// Called every frame
+    virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleDefaultsOnly)
-		UStaticMeshComponent *Canvas;
-
-	UPROPERTY(VisibleDefaultsOnly)
-		UInputComponent *InputComp;
+    // Called to bind functionality to input
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	UPROPERTY(VisibleAnywhere)
+    USpringArmComponent *m_springArm;
+    UPROPERTY(VisibleAnywhere)
+    UCameraComponent *m_camera;
+    UPROPERTY(VisibleAnywhere)
+    UStaticMeshComponent *m_screen;
 
 
 protected:

@@ -3,3 +3,6 @@
 
 #include "MyGameModeBase.h"
 
+AMyGameModeBase::AMyGameModeBase() {
+    DefaultPawnClass = nullptr;
+}
