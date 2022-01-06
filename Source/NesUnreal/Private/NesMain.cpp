@@ -45,10 +45,6 @@ void ANesMain::Log(FString msg) {
 	UE_LOG(LogNesMain, Log, TEXT("%s"), *msg);
 }
 
-void ANesMain::Action() {
-	UE_LOG(LogTemp,Warning,TEXT("HERE"));
-}
-
 // Called when the game starts
 void ANesMain::BeginPlay()
 {
@@ -56,6 +52,7 @@ void ANesMain::BeginPlay()
 
 	M_Ppu = make_shared<NesPPU>(256, 240, 4);
 	M_Mmu = make_shared<NesCPUMMU>();
+	M_Controller = make_shared<NesController>();
 	M_CPU = make_unique<FNesCPU>(bTesting);
 	M_Cart = make_shared<NesCart>(pathToRom);
 	M_PPUMmu = make_shared<NesPPUMMU>(M_Cart);
@@ -71,6 +68,7 @@ void ANesMain::BeginPlay()
     }
 
 	M_Mmu->AttachCart(M_Cart);
+	M_Mmu->AttachController(M_Controller);
 	M_Ppu->AttachPPUMUU(M_PPUMmu);
 	M_Mmu->AttachPPU(M_Ppu);
 	M_CPU->AttachMemory(M_Mmu);
@@ -99,10 +97,41 @@ void ANesMain::Tick(float DeltaTime)
 	}
 }
 
+void ANesMain::PressedStart() {
+	M_Controller->SetKey(4); //4 is start
+}
+
+void ANesMain::ReleasedStart() {
+	M_Controller->ResetKey(4);
+}
+
+void ANesMain::PressedDown() {
+	M_Controller->SetKey(2); //2 is Down
+}
+
+void ANesMain::ReleasedDown() {
+	M_Controller->ResetKey(2);
+}
+
 // Called to bind functionality to input
 void ANesMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
-    PlayerInputComponent->BindAction("TEST", IE_Pressed, this, &ANesMain::Action);
-}
+    // PlayerInputComponent->BindAction("Up", IE_Pressed, this, &ANesMain::PressedStart);
+	PlayerInputComponent->BindAction("Down", IE_Pressed, this, &ANesMain::PressedDown);
+    // PlayerInputComponent->BindAction("Left", IE_Pressed, this, &ANesMain::PressedStart);
+    // PlayerInputComponent->BindAction("Right", IE_Pressed, this, &ANesMain::PressedStart);
+    // PlayerInputComponent->BindAction("A", IE_Pressed, this, &ANesMain::PressedStart);
+    // PlayerInputComponent->BindAction("B", IE_Pressed, this, &ANesMain::PressedStart);
+    PlayerInputComponent->BindAction("Start", IE_Pressed, this, &ANesMain::PressedStart);
+    // PlayerInputComponent->BindAction("Select", IE_Pressed, this, &ANesMain::PressedStart);
 
+	// PlayerInputComponent->BindAction("Up", IE_Released, this, &ANesMain::ReleasedStart);
+	PlayerInputComponent->BindAction("Down", IE_Released, this, &ANesMain::ReleasedDown);
+    // PlayerInputComponent->BindAction("Left", IE_Released, this, &ANesMain::ReleasedStart);
+    // PlayerInputComponent->BindAction("Right", IE_Released, this, &ANesMain::ReleasedStart);
+    // PlayerInputComponent->BindAction("A", IE_Released, this, &ANesMain::ReleasedStart);
+    // PlayerInputComponent->BindAction("B", IE_Released, this, &ANesMain::ReleasedStart);
+    PlayerInputComponent->BindAction("Start", IE_Released, this, &ANesMain::ReleasedStart);
+    // PlayerInputComponent->BindAction("Select", IE_Released, this, &ANesMain::ReleasedStart);
+}

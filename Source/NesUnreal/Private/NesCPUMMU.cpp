@@ -22,6 +22,10 @@ void NesCPUMMU::AttachPPU(shared_ptr<NesPPU> ppu) {
     this->m_ppu = ppu;
 }
 
+void NesCPUMMU::AttachController(shared_ptr<NesController> controller) {
+    this->m_controller = controller;
+}
+
 bool NesCPUMMU::RequestNMIInterrupt() {
     return m_ppu->GetNMIInterrupt();
 }
@@ -71,9 +75,9 @@ void NesCPUMMU::Write(const unsigned short Address, const uint8 Data) const
 
             // Controller
             // Only 4016 is used for the controller on write, 4017 writes to an APU register.
-            // else if (Address == 0x4016){
-            //     controller.sendData(Address, data);
-            // }
+            else if (Address == 0x4016){
+                m_controller->Write(Address,Data);
+            }
         }
     
     else if (Address >= 0x4020 && Address <= 0x5FFF) {
@@ -111,6 +115,10 @@ uint8 NesCPUMMU::Read(const unsigned short Address) const {
     else if (Address >= 0x2000 && Address <= 0x3FFF) {
         // with mirrors handling
         //m_ppu->at(Address & 0x2007);
+    }
+    // Controllers
+    else if (Address >= 0x4016 && Address <= 0x4017) {
+        return m_controller->Read(0x4016);
     }
     else if (Address >= 0x4020 && Address <= 0x5FFF) {
         // Cartridge expansion rom, not implemented

@@ -12,6 +12,7 @@
 #include "NesCart.h"
 #include "NesCPUMMU.h"
 #include "NesPPUMMU.h"
+#include "NesController.h"
 #include "NesCPU.h"
 #include <memory>
 
@@ -41,8 +42,12 @@ public:
 	std::shared_ptr<NesCPUMMU> M_Mmu;
 	std::shared_ptr<NesPPUMMU> M_PPUMmu;
 	std::unique_ptr<FNesCPU> M_CPU;
+	std::shared_ptr<NesController> M_Controller;
 	static void Log(FString);
-	void Action();
+	void PressedStart();
+	void ReleasedStart();
+	void PressedDown();
+	void ReleasedDown();
 	
 	// Called every frame
     virtual void Tick(float DeltaTime) override;
