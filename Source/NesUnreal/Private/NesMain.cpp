@@ -7,11 +7,8 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogNesMain,Log,All)
 
-// Sets default values for this component's properties
 ANesMain::ANesMain()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryActorTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
@@ -27,9 +24,6 @@ ANesMain::ANesMain()
     m_springArm->SetRelativeRotation(FVector(0.0f, 0.0f, 0.0f).Rotation());
     m_springArm->SetAbsolute(false, false, false);
     m_springArm->TargetArmLength = 100.f;
-    // Disable clipping
-    m_springArm->bDoCollisionTest = false;
-
 
     m_camera = CreateDefaultSubobject<UCameraComponent>(TEXT("MyCamera"));
     m_camera->SetupAttachment(m_springArm);
@@ -82,7 +76,6 @@ void ANesMain::Tick(float DeltaTime)
 
 	uint CyclesThisUpdate = 0 ; 
     while (CyclesThisUpdate < MAXCYCLES) {
-		//gbJoyPad.HandleKeyEvents();
 		const uint Cycles = M_CPU->Tick();
 		M_Ppu->Step(Cycles * 3);
 		/*gbAudio.UpdateAudioTimer(cycles);*/
@@ -97,41 +90,90 @@ void ANesMain::Tick(float DeltaTime)
 	}
 }
 
-void ANesMain::PressedStart() {
-	M_Controller->SetKey(4); //4 is start
+void ANesMain::PressedA() {
+	M_Controller->SetKey(NesController::Keys::A);
 }
 
-void ANesMain::ReleasedStart() {
-	M_Controller->ResetKey(4);
+void ANesMain::ReleasedA() {
+	M_Controller->ResetKey(NesController::Keys::A);
+}
+
+void ANesMain::PressedB() {
+	M_Controller->SetKey(NesController::Keys::B);
+}
+
+void ANesMain::ReleasedB() {
+	M_Controller->ResetKey(NesController::Keys::B);
+}
+
+void ANesMain::PressedUp() {
+	M_Controller->SetKey(NesController::Keys::Up);
+}
+
+void ANesMain::ReleasedUp() {
+	M_Controller->ResetKey(NesController::Keys::Up);
+}
+
+void ANesMain::PressedLeft() {
+	M_Controller->SetKey(NesController::Keys::Left);
+}
+
+void ANesMain::ReleasedLeft() {
+	M_Controller->ResetKey(NesController::Keys::Left);
+}
+
+void ANesMain::PressedRight() {
+	M_Controller->SetKey(NesController::Keys::Right);
+}
+
+void ANesMain::ReleasedRight() {
+	M_Controller->ResetKey(NesController::Keys::Right);
 }
 
 void ANesMain::PressedDown() {
-	M_Controller->SetKey(2); //2 is Down
+	M_Controller->SetKey(NesController::Keys::Down);
 }
 
 void ANesMain::ReleasedDown() {
-	M_Controller->ResetKey(2);
+	M_Controller->ResetKey(NesController::Keys::Down);
 }
+
+void ANesMain::PressedStart() {
+	M_Controller->SetKey(NesController::Keys::Start);
+}
+
+void ANesMain::ReleasedStart() {
+	M_Controller->ResetKey(NesController::Keys::Start);
+}
+
+void ANesMain::PressedSelect() {
+	M_Controller->SetKey(NesController::Keys::Select);
+}
+
+void ANesMain::ReleasedSelect() {
+	M_Controller->ResetKey(NesController::Keys::Select);
+}
+
 
 // Called to bind functionality to input
 void ANesMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
-    // PlayerInputComponent->BindAction("Up", IE_Pressed, this, &ANesMain::PressedStart);
+    PlayerInputComponent->BindAction("Up", IE_Pressed, this, &ANesMain::PressedUp);
 	PlayerInputComponent->BindAction("Down", IE_Pressed, this, &ANesMain::PressedDown);
-    // PlayerInputComponent->BindAction("Left", IE_Pressed, this, &ANesMain::PressedStart);
-    // PlayerInputComponent->BindAction("Right", IE_Pressed, this, &ANesMain::PressedStart);
-    // PlayerInputComponent->BindAction("A", IE_Pressed, this, &ANesMain::PressedStart);
-    // PlayerInputComponent->BindAction("B", IE_Pressed, this, &ANesMain::PressedStart);
+    PlayerInputComponent->BindAction("Left", IE_Pressed, this, &ANesMain::PressedLeft);
+    PlayerInputComponent->BindAction("Right", IE_Pressed, this, &ANesMain::PressedRight);
+    PlayerInputComponent->BindAction("A", IE_Pressed, this, &ANesMain::PressedA);
+    PlayerInputComponent->BindAction("B", IE_Pressed, this, &ANesMain::PressedB);
     PlayerInputComponent->BindAction("Start", IE_Pressed, this, &ANesMain::PressedStart);
-    // PlayerInputComponent->BindAction("Select", IE_Pressed, this, &ANesMain::PressedStart);
+    PlayerInputComponent->BindAction("Select", IE_Pressed, this, &ANesMain::PressedSelect);
 
-	// PlayerInputComponent->BindAction("Up", IE_Released, this, &ANesMain::ReleasedStart);
+	PlayerInputComponent->BindAction("Up", IE_Released, this, &ANesMain::ReleasedUp);
 	PlayerInputComponent->BindAction("Down", IE_Released, this, &ANesMain::ReleasedDown);
-    // PlayerInputComponent->BindAction("Left", IE_Released, this, &ANesMain::ReleasedStart);
-    // PlayerInputComponent->BindAction("Right", IE_Released, this, &ANesMain::ReleasedStart);
-    // PlayerInputComponent->BindAction("A", IE_Released, this, &ANesMain::ReleasedStart);
-    // PlayerInputComponent->BindAction("B", IE_Released, this, &ANesMain::ReleasedStart);
+    PlayerInputComponent->BindAction("Left", IE_Released, this, &ANesMain::ReleasedLeft);
+    PlayerInputComponent->BindAction("Right", IE_Released, this, &ANesMain::ReleasedRight);
+    PlayerInputComponent->BindAction("A", IE_Released, this, &ANesMain::ReleasedA);
+    PlayerInputComponent->BindAction("B", IE_Released, this, &ANesMain::ReleasedB);
     PlayerInputComponent->BindAction("Start", IE_Released, this, &ANesMain::ReleasedStart);
-    // PlayerInputComponent->BindAction("Select", IE_Released, this, &ANesMain::ReleasedStart);
+    PlayerInputComponent->BindAction("Select", IE_Released, this, &ANesMain::ReleasedSelect);
 }

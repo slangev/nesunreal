@@ -44,10 +44,22 @@ public:
 	std::unique_ptr<FNesCPU> M_CPU;
 	std::shared_ptr<NesController> M_Controller;
 	static void Log(FString);
-	void PressedStart();
-	void ReleasedStart();
+	void PressedUp();
+	void ReleasedUp();
+	void PressedLeft();
+	void ReleasedLeft();
+	void PressedRight();
+	void ReleasedRight();
 	void PressedDown();
 	void ReleasedDown();
+	void PressedA();
+	void ReleasedA();
+	void PressedB();
+	void ReleasedB();
+	void PressedStart();
+	void ReleasedStart();
+	void PressedSelect();
+	void ReleasedSelect();
 	
 	// Called every frame
     virtual void Tick(float DeltaTime) override;

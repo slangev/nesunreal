@@ -7,9 +7,20 @@
 /**
  * 
  */
+
 class NESUNREAL_API NesController
 {
 public:
+	enum Keys : uint8 {
+			Right = 0,
+			Left,
+			Down,
+			Up,
+			Start,
+			Select,
+			B,
+			A
+		};
 	NesController();
 	~NesController();
 	void Write(unsigned Address, uint8 Data);
