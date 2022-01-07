@@ -128,7 +128,7 @@ void NesPPU::WriteRegister(unsigned short Address, uint8 Data) {
 			int sixBitsForLoopyT = (Data & 0x3F) << 8;
 			loopyT = (loopyT & 0x00FF) | sixBitsForLoopyT;
 		} else {
-			loopyT = (loopyT & 0xFF00) | (Data && 0xFF);
+			loopyT = (loopyT & 0xFF00) | (Data & 0xFF);
 			loopyV = loopyT;
 		}
 		loopyW = !loopyW;
