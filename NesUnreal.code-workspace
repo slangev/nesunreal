@@ -38,7 +38,8 @@
 			"coroutine": "cpp",
 			"array": "cpp",
 			"iterator": "cpp",
-			"string_view": "cpp"
+			"string_view": "cpp",
+			"cstddef": "cpp"
 		}
 	},
 	"extensions": {

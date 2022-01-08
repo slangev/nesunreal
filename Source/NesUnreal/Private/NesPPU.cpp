@@ -182,59 +182,26 @@ bool NesPPU::GetNMIInterrupt() {
 	return NMI;
 }
 
+FColor NesPPU::GetPixelColor(int colorData) {
+	FColor color;
+	uint8 red = (uint8)(colorData & 0x1F);
+	red = (uint8)((red * 255) / 31);
+	uint8 green = (uint8)((colorData >> 5) & 0x1F);
+	green = (uint8)((green * 255) / 31);
+	uint8 blue = (uint8)((colorData >> 10) & 0x1F);
+	blue = (uint8)((blue * 255) / 31);
+	//Color resultColor = new Color(red/255.0f, green/255.0f, blue/255.0f,1);
+	color.A = 255;
+	color.R = red;
+	color.G = green;
+	color.B = blue;
+	return color;
+}
+
 void NesPPU::PrintStats(int32 x, int32 y) {
 	FString xStr = FString::FromInt(x);
 	FString yStr = FString::FromInt(y);
     UE_LOG(LogNesPPU, Warning, TEXT("%s %s"), *xStr, *yStr);
-}
-
-void NesPPU::RenderCornerDots() {
-	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
-	FByteBulkData* RawImageData = &MyMipMap->BulkData;
-	FColor* FormattedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
-	for(int32 X = 0; X < MyMipMap->SizeX; X++)
-	{
-		for (int32 Y = 0; Y < MyMipMap->SizeY; Y++)
-		{
-			FColor pixel;
-			//Upper left red dot
-			if(X == 0 && Y == 0) {
-				pixel.A = 255;
-				pixel.R = 255;
-				pixel.G = 0;
-				pixel.B = 0;
-				FormattedImageData[Y * MyMipMap->SizeX + X] = pixel;
-			}
-			//Bottom left green dot
-			if(X == 0 && Y == 239) {
-				pixel.A = 255;
-				pixel.R = 0;
-				pixel.G = 255;
-				pixel.B = 0;
-				FormattedImageData[Y * MyMipMap->SizeX + X] = pixel;
-			}
-			//Upper right blue dot
-			if(X == 255 && Y == 0) {
-				pixel.A = 255;
-				pixel.R = 0;
-				pixel.G = 0;
-				pixel.B = 255;
-				FormattedImageData[Y * MyMipMap->SizeX + X] = pixel;
-			}
-
-			//Lower right black dot
-			if(X == 255 && Y == 239) {
-				pixel.A = 255;
-				pixel.R = 0;
-				pixel.G = 0;
-				pixel.B = 0;
-				FormattedImageData[Y * MyMipMap->SizeX + X] = pixel;
-			}
-		}
-	}
-
-	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
-	DynamicCanvas->UpdateResource();
 }
 
 void NesPPU::RenderScreen()
@@ -319,16 +286,13 @@ void NesPPU::incrementLoopyY() {
 }
 
 void NesPPU::drawBGScanLine(int x, int y, int screenY){
-	//int[] bgBuffer = new int[256];
 	int baseX = x;
 	int baseY = y;
 	int patternTable = ppuctrl.backgroundTable ? 0x1000:0x0000;
-	//int drawX = baseX;
-	//int drawY = 0;
 	for (int i = 0; i < 256; i++){
 		int drawX = (baseX + i) & 0x1FF;
-		//int drawY = baseY % 480;
 		int drawY = baseY % 480;
+
 		// Determine nametable region
 		int baseNameTable2 = 0x2000;
 		if (drawX >= 256){
@@ -346,8 +310,7 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY){
 		int pixelY = drawY % 8;
 
 		// Get pixel data (specifically the palette data)
-		int tilePointer = M_Mmu->Read(baseNameTable2 + tileNum);    // Tile pointer
-		// I borrowed this code from the drawnametable0 method so here's a hack to make this work
+		int tilePointer = M_Mmu->Read(baseNameTable2 + tileNum); // Tile pointer
 		int tileX = tileNum % 32;
 		int tileY = tileNum / 32;
 		int attributeByte = (baseNameTable2 + 0x3C0) + ((tileX/4) + ((tileY/4) * 8));
@@ -357,13 +320,13 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY){
 		int paletteIndex = (attribute << 2) | ((M_Mmu->Read(patternTable + (tilePointer << 4) + pixelY) >> (7 - pixelX)) & 0x1)|
 				((M_Mmu->Read(patternTable + (tilePointer << 4) + (pixelY + 8)) >> (7 - pixelX)) & 0x1) << 1;
 
-		int pixelColor = 0;
+		FColor pixelColor;
 		if ((paletteIndex & 0x3) != 0 && !(!ppumask.showBGLeft && i < 8)){
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
-			VideoMemory->at(i)->at(lineCount).pixel = FColor::White;
+			VideoMemory->at(i)->at(lineCount).pixel = pixelColor;
 		} else {
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
-			VideoMemory->at(i)->at(lineCount).pixel = FColor::Black;
+			VideoMemory->at(i)->at(lineCount).pixel = pixelColor;
 		}
 	}
 }
@@ -385,10 +348,8 @@ void NesPPU::Step(uint Cycle) {
 		}
 		else if (cycleCount == 304){
 			// Copy vertical bits during pre-render line
-			// Copying is meant to be partially done, so this is inaccurate
 			if ((ppumask.showBG || ppumask.showSprites) && lineCount == -1) {
 				loopyV = (loopyV & 0x41F)|(loopyT & 0xFBE0);
-				//loopyV = loopyT;
 			}
 		}
 		//Vblank trigger 
