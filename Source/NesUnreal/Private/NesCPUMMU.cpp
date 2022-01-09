@@ -114,7 +114,7 @@ uint8 NesCPUMMU::Read(const unsigned short Address) const {
     // PPU Registers
     else if (Address >= 0x2000 && Address <= 0x3FFF) {
         // with mirrors handling
-        //m_ppu->at(Address & 0x2007);
+        return m_ppu->ReadRegister(Address & 0x2007);
     }
     // Controllers
     else if (Address >= 0x4016 && Address <= 0x4017) {

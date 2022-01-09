@@ -101,7 +101,6 @@ private:
     int loopyT = 0;         // Temporary VRAM address (15-bit)
     int loopyX = 0;         // Fine X Scroll (3-bit)
     bool loopyW = false; 	// First or second write toggle (1 bit)
-	bool vBlank = false;    // Set if  vblank has started. Cleared with status is read and during pre-render
 	uint8 OAMADDR = 0x0;
 
     // Internal stuff

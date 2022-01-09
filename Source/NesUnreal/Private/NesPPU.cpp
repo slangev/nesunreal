@@ -93,7 +93,7 @@ void NesPPU::WriteRegister(unsigned short Address, uint8 Data) {
 
 		// NMI triggered on register write if vBlank is in progress during this.
 		// Apparently activation here is dependent on Vblank flag that can be disabled by reading $2002
-		if(ppuctrl.NMIGenerate && vBlank){
+		if(ppuctrl.NMIGenerate && ppustatus.vBlank){
 			NMI = true;
 		}
 		else if (!ppuctrl.NMIGenerate){
@@ -355,13 +355,13 @@ void NesPPU::Step(uint Cycle) {
 		//Vblank trigger 
 		else if (lineCount == 241 && cycleCount == 1) {
 			// Trigger NMI as soon as vblank reached
-			vBlank = true;
+			ppustatus.vBlank = true;
 			NMI = ppuctrl.NMIGenerate;
 		} 
 		//Reset values
 		else if (lineCount == 260 && cycleCount == 1) {
 			lineCount = -1;
-			vBlank = false;
+			ppustatus.vBlank = false;
 			ppustatus.spriteZeroHit = false;
 			ppustatus.spriteOverflow = false;
 			NMI = false;
