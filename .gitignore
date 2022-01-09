@@ -1,6 +1,7 @@
 /Packaged/*
 /Content/StarterContent
 .DS_Store
+/Content/Data/*.nes 
 
 # Visual Studio 2015 user specific files
 .vs/
