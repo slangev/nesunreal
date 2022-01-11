@@ -1211,6 +1211,11 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
             LastCycleCount += 7;
             bInterrupted = false;
         }
+        if(M_Mmu->bOAMDMA) {
+            TotalCycles += 513;
+            LastCycleCount += 513;
+            M_Mmu->bOAMDMA = false;
+        }
         return LastCycleCount;
 }
 

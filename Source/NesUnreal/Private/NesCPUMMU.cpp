@@ -30,7 +30,7 @@ bool NesCPUMMU::RequestNMIInterrupt() {
     return m_ppu->GetNMIInterrupt();
 }
 
-void NesCPUMMU::Write(const unsigned short Address, const uint8 Data) const
+void NesCPUMMU::Write(const unsigned short Address, const uint8 Data)
 {
     //CPU RAM
     if(Address >= 0x0000 && Address < 0x2000) {
@@ -63,14 +63,11 @@ void NesCPUMMU::Write(const unsigned short Address, const uint8 Data) const
 
             // OAM DMA
             if (Address == 0x4014){
-                // int OAMDMAaddress = (Data << 8);
-                // int[] OAMData = new int[256];
-                // for (int i = 0; i < 256; i++){
-                //     OAMData[i] = readByte(OAMDMAaddress + i);
-                // }
-                // PPU.OAMDMA(OAMData);
-                // cycleAdditions += 513;  // 513 additional cpu cycles for a DMA
-                UE_LOG(LogNesCPUMMU,Warning, TEXT("Data: %X"), Data);
+                unsigned short OAMDMAaddress = (Data << 8);
+                for (int i = 0x00; i < 0xFF; i++){
+                   m_ppu->StartDMA(i, Read(OAMDMAaddress + i));
+                }
+                bOAMDMA = true;
             }
 
             // Controller
@@ -94,7 +91,7 @@ void NesCPUMMU::Write(const unsigned short Address, const uint8 Data) const
     }
 }
 
-uint8 NesCPUMMU::Read(const unsigned short Address) const {
+uint8 NesCPUMMU::Read(const unsigned short Address) {
     //CPU RAM
     if(Address >= 0x0000 && Address < 0x2000) {
         //Zero Page

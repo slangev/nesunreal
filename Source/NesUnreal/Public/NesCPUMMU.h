@@ -21,8 +21,10 @@ public:
 	void AttachPPU(shared_ptr<NesPPU> ppu);
 	void AttachController(shared_ptr<NesController> controller);
 	bool RequestNMIInterrupt();
-	uint8 Read(unsigned short Address) const;
-	void Write(unsigned short Address, uint8 Data) const;
+	uint8 Read(unsigned short Address);
+	void Write(unsigned short Address, uint8 Data);
+	bool bOAMDMA = false;
+ 
 private:
 	unique_ptr<vector<uint8>> m_cpuRam;
 	shared_ptr<NesPPU> m_ppu;

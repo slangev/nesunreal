@@ -68,6 +68,11 @@ NesPPU::~NesPPU()
 
 }
 
+void NesPPU::StartDMA(int Address, uint8 Data) {
+	int DMAAdress = (OAMADDR + Address) & 0xFF;
+    M_Mmu->oam->at(DMAAdress) = Data;
+}
+
 uint8 PPURegGetBit(const uint8 Pos, const uint8 Reg) {
     uint8 Result = static_cast<uint8>((Reg & (1 << Pos)));
     Result = static_cast<uint8>(Result >> Pos); 
