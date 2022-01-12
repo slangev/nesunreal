@@ -65,7 +65,7 @@ void NesCPUMMU::Write(const unsigned short Address, const uint8 Data)
             if (Address == 0x4014){
                 unsigned short OAMDMAaddress = (Data << 8);
                 for (int i = 0x00; i < 0xFF; i++){
-                   m_ppu->StartDMA(i, Read(OAMDMAaddress + i));
+                   m_ppu->ProcessDMA(i, Read(OAMDMAaddress + i));
                 }
                 bOAMDMA = true;
             }

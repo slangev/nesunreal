@@ -76,7 +76,6 @@ public:
 	NesPPU();
 	NesPPU(int CanvasWidth,int CanvasHeight, int BytesPerPixel);
 	~NesPPU();
-	void PrintStats(int32 x, int32 y);
 	void RenderStaticByMatrix();
 	void RenderScreen();
 	void SetNMIInterrupt(bool request);
@@ -87,8 +86,8 @@ public:
 	uint8 ReadRegister(unsigned short Address);
 	UTexture2D* GetScreen() {return DynamicCanvas;};
 	void drawBGScanLine(int x, int y, int screenY);
-	FColor GetPixelColor(int color);
-	void StartDMA(int Adderss, uint8 Data);
+	void drawSprites(int scanline);
+	void ProcessDMA(int Adderss, uint8 Data);
 
 
 private:

@@ -68,7 +68,7 @@ NesPPU::~NesPPU()
 
 }
 
-void NesPPU::StartDMA(int Address, uint8 Data) {
+void NesPPU::ProcessDMA(int Address, uint8 Data) {
 	int DMAAdress = (OAMADDR + Address) & 0xFF;
     M_Mmu->oam->at(DMAAdress) = Data;
 }
@@ -187,28 +187,6 @@ bool NesPPU::GetNMIInterrupt() {
 	return NMI;
 }
 
-FColor NesPPU::GetPixelColor(int colorData) {
-	FColor color;
-	uint8 red = (uint8)(colorData & 0x1F);
-	red = (uint8)((red * 255) / 31);
-	uint8 green = (uint8)((colorData >> 5) & 0x1F);
-	green = (uint8)((green * 255) / 31);
-	uint8 blue = (uint8)((colorData >> 10) & 0x1F);
-	blue = (uint8)((blue * 255) / 31);
-	//Color resultColor = new Color(red/255.0f, green/255.0f, blue/255.0f,1);
-	color.A = 255;
-	color.R = red;
-	color.G = green;
-	color.B = blue;
-	return color;
-}
-
-void NesPPU::PrintStats(int32 x, int32 y) {
-	FString xStr = FString::FromInt(x);
-	FString yStr = FString::FromInt(y);
-    UE_LOG(LogNesPPU, Warning, TEXT("%s %s"), *xStr, *yStr);
-}
-
 void NesPPU::RenderScreen()
 {
 	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
@@ -290,7 +268,32 @@ void NesPPU::incrementLoopyY() {
 	}
 }
 
-void NesPPU::drawBGScanLine(int x, int y, int screenY){
+void NesPPU::drawSprites(int scanline){
+	bool use8x16 = ppuctrl.tallSprite;
+	unsigned short patternTable = (ppuctrl.spriteTable) ? 0x1000 : 0x0000;
+	int ysize = (use8x16) ? 16 : 8;
+	uint8 LY = scanline;
+	int spritecount = 0;
+	for(int i = 0; i < 64 && spritecount < 8; i++) {
+		int PosY = M_Mmu->oam->at(i*4) + 1;
+		uint8 tileID = M_Mmu->oam->at(i*4 + 1);
+		uint8 attributes = M_Mmu->oam->at(i*4 + 2);
+		uint8 PosX = M_Mmu->oam->at(i*4 + 3);
+		if((LY >= PosY) && (LY < (PosY+ysize))) {
+            spritecount++;
+			uint8 spritePriorityBit = PPURegGetBit(5,attributes);
+			uint8 xFlipBit = PPURegGetBit(6,attributes);
+			uint8 yFlipBit = PPURegGetBit(7,attributes);
+			unsigned short tileLocation = patternTable + (tileID * 16) + (LY-1); //Maybe wrong?
+			// Read two bytes of data. These bytes determine the color of the pixel
+			uint8 data1 = M_Mmu->Read(tileLocation);
+			uint8 data2 = M_Mmu->Read(tileLocation + 8);
+		}
+	}
+	ysize = spritecount;
+}
+
+void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 	int baseX = x;
 	int baseY = y;
 	int patternTable = ppuctrl.backgroundTable ? 0x1000:0x0000;
@@ -383,6 +386,9 @@ void NesPPU::Step(uint Cycle) {
 					int loopyYscroll = (((loopyV >> 12) & 0x7)|(((loopyV >> 5) & 0x7) << 3)|
 							(((loopyV >> 8) & 0x3) << 6)) + (baseNameTableY ? 240:0);
 					drawBGScanLine(loopyXscroll, loopyYscroll, lineCount);
+				}
+				if (ppumask.showSprites) {
+					drawSprites(lineCount);
 				}
 			} 
 		}
