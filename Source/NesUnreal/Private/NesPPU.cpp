@@ -274,31 +274,57 @@ void NesPPU::drawSprites(int scanline){
 	int ysize = (use8x16) ? 16 : 8;
 	uint8 LY = scanline;
 	int spritecount = 0;
-	for(int i = 0; i < 64 && spritecount < 8; i++) {
+	for(int i = 0; i < 64 && spritecount < 9; i++) {
 		int PosY = M_Mmu->oam->at(i*4) + 1;
 		uint8 tileID = M_Mmu->oam->at(i*4 + 1);
 		uint8 attributes = M_Mmu->oam->at(i*4 + 2);
-		uint8 PosX = M_Mmu->oam->at(i*4 + 3);
+		int PosX = M_Mmu->oam->at(i*4 + 3);
 		if((LY >= PosY) && (LY < (PosY+ysize))) {
             spritecount++;
 			uint8 spritePriorityBit = PPURegGetBit(5,attributes);
 			uint8 xFlipBit = PPURegGetBit(6,attributes);
 			uint8 yFlipBit = PPURegGetBit(7,attributes);
 			int line = LY - PosY;
-			unsigned short tileLocation = patternTable + (tileID * 16) + (line); //Maybe wrong?
+			if(yFlipBit == 1) {
+				line = ysize - line - 1;
+			}
+			unsigned short tileLocation = patternTable + (tileID * 16) + (line);
 			// Read two bytes of data. These bytes determine the color of the pixel
-			uint8 data1 = M_Mmu->Read(tileLocation);
-			uint8 data2 = M_Mmu->Read(tileLocation + 8);
+			uint8 Data1 = M_Mmu->Read(tileLocation);
+			uint8 Data2 = M_Mmu->Read(tileLocation + 8);
 			 for (int tilePixel = 7; tilePixel >= 0; tilePixel--) {
-				int xPix = 0 - tilePixel;
-				xPix += 7 ;
-				uint8 pixel = (uint8)(PosX+xPix);
-				if ((LY<0)||(LY>239)||(pixel<0)||(pixel>255)) {
+				int colorBit = tilePixel;
+				if (xFlipBit == 1) {
+					colorBit -= 7;
+					colorBit *= -1;
+				}
+
+				uint8 bitFromData1 = PPURegGetBit(colorBit,Data1);
+				uint8 bitFromData2 = PPURegGetBit(colorBit,Data2);
+				uint8 colorNum = 0;
+				if(bitFromData1 == 1) {
+					colorNum = PPURegSetBit(0,colorNum);
+				}
+				if(bitFromData2 == 1) {
+					colorNum = PPURegSetBit(1,colorNum);
+				}
+				// If the pixel is 0 before template is applied, ignore it. White pixels(0) are transparent.
+				if(colorNum == 0) {
 					continue;
 				}
-				VideoMemory->at(pixel)->at(LY).pixel = FColor::Red;
+				int xPix = 0 - tilePixel;
+				xPix += 7;
+				uint8 pixelPos = (uint8)(PosX+xPix);
+				if ((LY<0)||(LY>239)||(pixelPos<0)||(pixelPos>255)) {
+					UE_LOG(LogNesPPU, Warning, TEXT("LY: %d pixelPos: %d"), LY, pixelPos);
+					continue;
+				}
+				VideoMemory->at(pixelPos)->at(LY).pixel = FColor::Red;
 			 }
 		}
+	}
+	if(spritecount >= 9) {
+		ppustatus.spriteOverflow = true;
 	}
 	ysize = spritecount;
 }
