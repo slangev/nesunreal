@@ -289,6 +289,15 @@ void NesPPU::drawSprites(int scanline){
 			// Read two bytes of data. These bytes determine the color of the pixel
 			uint8 data1 = M_Mmu->Read(tileLocation);
 			uint8 data2 = M_Mmu->Read(tileLocation + 8);
+			 for (int tilePixel = 7; tilePixel >= 0; tilePixel--) {
+				int xPix = 0 - tilePixel;
+				xPix += 7 ;
+				uint8 pixel = (uint8)(PosX+xPix);
+				if ((LY<0)||(LY>239)||(pixel<0)||(pixel>255)) {
+					continue;
+				}
+				VideoMemory->at(pixel)->at(LY).pixel = FColor::Red;
+			 }
 		}
 	}
 	ysize = spritecount;
