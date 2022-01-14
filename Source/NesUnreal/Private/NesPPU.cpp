@@ -308,10 +308,12 @@ void NesPPU::drawSprites(int scanline){
 				if(bitFromData2 == 1) {
 					colorNum = PPURegSetBit(1,colorNum);
 				}
-				// If the pixel is 0 before template is applied, ignore it. White pixels(0) are transparent.
+				// If the pixel is 0 before template is applied, ignore it.
 				if(colorNum == 0) {
 					continue;
 				}
+				uint8 msbits = attributes & 0x3;
+				int paletteIndex = (msbits << 2) | colorNum;
 				int xPix = 0 - tilePixel;
 				xPix += 7;
 				uint8 pixelPos = (uint8)(PosX+xPix);
@@ -319,7 +321,8 @@ void NesPPU::drawSprites(int scanline){
 					UE_LOG(LogNesPPU, Warning, TEXT("LY: %d pixelPos: %d"), LY, pixelPos);
 					continue;
 				}
-				VideoMemory->at(pixelPos)->at(LY).pixel = FColor::Red;
+				//0x3F10 is start of Sprite palette
+				VideoMemory->at(pixelPos)->at(LY).pixel = palettes.at(M_Mmu->Read(0x3F10 + paletteIndex) & 0x3F);
 			 }
 		}
 	}
