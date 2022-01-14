@@ -167,7 +167,6 @@ uint8 NesPPU::ReadRegister(unsigned short Address) {
 			// Buffer contains mirrored nametable byte instead
 			PPUDataReadBuffer = M_Mmu->Read(loopyV & 0x2F1F);
 		}
-		data = M_Mmu->Read(loopyV);
 		// Loopy Increment
 		loopyV = (loopyV + (ppuctrl.VRAMInc ? 32:1)) & 0xFFFF;
 	}
