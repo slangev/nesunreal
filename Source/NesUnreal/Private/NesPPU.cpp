@@ -370,7 +370,8 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 		if ((paletteIndex & 0x3) != 0 && !(!ppumask.showBGLeft && i < 8)){
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
 			VideoMemory->at(i)->at(lineCount).pixel = pixelColor;
-		} else {
+		} 
+		else {
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
 			VideoMemory->at(i)->at(lineCount).pixel = pixelColor;
 		}

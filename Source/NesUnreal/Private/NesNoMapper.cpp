@@ -43,8 +43,17 @@ uint8 NesNoMapper::Read(unsigned short Address) {
 }
 
 void NesNoMapper::Write(unsigned short Address, uint8 Data) {
-    // Cart Ram/SRAM
-    if (Address >= 0x6000 && Address <= 0x7FFF){
+    // Cart CHRRom/CHRRAM
+    if (Address >= 0x0000 && Address < 0x2000) {
+        // if we have chrRam, read from it.
+        if(ChrRamMemory) {
+            ChrRamMemory->at(Address) = Data;
+        } else {
+            ChrRomMemory->at(Address) = Data;
+        }
+    }
+    // Cart PRGRAM
+    else if (Address >= 0x6000 && Address <= 0x7FFF){
         PRGRamMemory->at(Address - 0x6000) = Data;
     }
 }
