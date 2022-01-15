@@ -316,6 +316,9 @@ void NesPPU::drawSprites(int scanline){
 				int xPix = 0 - tilePixel;
 				xPix += 7;
 				uint8 pixelPos = (uint8)(PosX+xPix);
+				if(i == 0 && ppumask.showBG) {
+					ppustatus.spriteZeroHit = true;
+				} 
 				if ((LY<0)||(LY>239)||(pixelPos<0)||(pixelPos>255)) {
 					UE_LOG(LogNesPPU, Warning, TEXT("LY: %d pixelPos: %d"), LY, pixelPos);
 					continue;
@@ -373,7 +376,7 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 		} 
 		else {
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
-			VideoMemory->at(i)->at(lineCount).pixel = pixelColor;
+			VideoMemory->at(i)->at(lineCount).pixel = pixelColor; //Transparent?
 		}
 	}
 }

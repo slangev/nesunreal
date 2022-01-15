@@ -37,8 +37,8 @@ class PPUCTRL {
 class PPUMASK {
 	public:
 		PPUMASK(){};
-		bool greyscale = false;          // false: normal, true: produce greyscale (how does this work??)
-		bool showBGLeft = false;         // true: show background in lefmost 8 pixels, false: don't (wat)
+		bool greyscale = false;          
+		bool showBGLeft = false;         // true: show background in lefmost 8 pixels
 		bool showSpriteLeft = false;     // ditto but for sprites
 		// If the following 2 are disabled, nothing will be rendered
 		bool showBG = false;             // Self explanatory
@@ -62,9 +62,9 @@ class PPUMASK {
 class PPUSTATUS {
 	public:
 		PPUSTATUS(){};
-		bool spriteOverflow = false;     // Set if more than 8 sprites on a line. Known to be glitchy as hell on console
+		bool spriteOverflow = false;     // Set if more than 8 sprites on a line.
      	bool spriteZeroHit = false;      // Set if nonzero pixel of bg overlaps with nonzero pixel of sprite
-    	bool vBlank = false;             // Set if  vblank has started. Cleared with status is read and during pre-render
+    	bool vBlank = false;             // Set if vblank has started. Cleared with status is read and during pre-render
 };
 
 class NESUNREAL_API NesPPU
