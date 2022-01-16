@@ -89,14 +89,22 @@ uint8 PPURegResetBit(const uint8 Pos, const uint8 Reg) {
     return Result;
 }
 
-bool NesPPU::checkPixelIsTransparent(FColor c) {
-	//The palette entry at $3F00 is the background colour and is used for transparency. 
-	FColor bgTransColor = palettes.at(M_Mmu->Read(0x3F00) & 0x3F);
-	//UE_LOG(LogTemp,Warning, TEXT("R: %d") , bgTransColor.R);
-	if(c.R == bgTransColor.R && c.G == bgTransColor.G && c.B == bgTransColor.B) {
-		return true;
+void NesPPU::checkSpriteOverflow(int LY) {
+	int spritecount = 0;
+	bool use8x16 = ppuctrl.tallSprite;
+	int ysize = (use8x16) ? 16 : 8;
+	for(int i = 0; i < 64 && spritecount < 9; i++) {
+		int PosY = M_Mmu->oam->at(i*4) + 1;
+		uint8 tileID = M_Mmu->oam->at(i*4 + 1);
+		uint8 attributes = M_Mmu->oam->at(i*4 + 2);
+		int PosX = M_Mmu->oam->at(i*4 + 3);
+		if((LY >= PosY) && (LY < (PosY+ysize))) {
+			spritecount++;
+		}
 	}
-	return false;
+	if(spritecount > 8) {
+		ppustatus.spriteOverflow = true;
+	}
 }
 
 //https://wiki.nesdev.org/w/index.php/PPU_scrolling#.242000_write
@@ -334,7 +342,7 @@ void NesPPU::drawSprites(int scanline){
 					ppustatus.spriteZeroHit = true;
 				}
 
-				if(colorNum == 0 || spritePriorityBit == 1) {
+				if(colorNum == 0 || (!VideoMemory->at(pixelPos)->at(LY).bIsTransparent && spritePriorityBit == 1)) {
 					continue;
 				}
 				//0x3F10 is start of Sprite palette
@@ -342,7 +350,7 @@ void NesPPU::drawSprites(int scanline){
 			 }
 		}
 	}
-	if(spritecount >= 9) {
+	if(spritecount > 8) {
 		ppustatus.spriteOverflow = true;
 	}
 	ysize = spritecount;
@@ -444,6 +452,7 @@ void NesPPU::Step(uint Cycle) {
 					int loopyYscroll = (((loopyV >> 12) & 0x7)|(((loopyV >> 5) & 0x7) << 3)|
 							(((loopyV >> 8) & 0x3) << 6)) + (baseNameTableY ? 240:0);
 					drawBGScanLine(loopyXscroll, loopyYscroll, lineCount);
+					checkSpriteOverflow(lineCount);
 				}
 				if (ppumask.showSprites) {
 					drawSprites(lineCount);

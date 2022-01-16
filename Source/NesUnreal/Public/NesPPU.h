@@ -131,5 +131,5 @@ private:
 
 	void incrementLoopyY();
 	void incrementLoopyX();
-	bool checkPixelIsTransparent(FColor c);
+	void checkSpriteOverflow(int lineCount);
 };
