@@ -13,4 +13,5 @@ public:
 	NesPixel();
 	~NesPixel();
 	FColor pixel;
+	bool bIsTransparent = false;
 };

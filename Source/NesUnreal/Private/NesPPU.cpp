@@ -89,6 +89,16 @@ uint8 PPURegResetBit(const uint8 Pos, const uint8 Reg) {
     return Result;
 }
 
+bool NesPPU::checkPixelIsTransparent(FColor c) {
+	//The palette entry at $3F00 is the background colour and is used for transparency. 
+	FColor bgTransColor = palettes.at(M_Mmu->Read(0x3F00) & 0x3F);
+	//UE_LOG(LogTemp,Warning, TEXT("R: %d") , bgTransColor.R);
+	if(c.R == bgTransColor.R && c.G == bgTransColor.G && c.B == bgTransColor.B) {
+		return true;
+	}
+	return false;
+}
+
 //https://wiki.nesdev.org/w/index.php/PPU_scrolling#.242000_write
 void NesPPU::WriteRegister(unsigned short Address, uint8 Data) {
 	//$2008-$3FFF Mirrors of $2000-2007 (repeats every 8 bytes) 
@@ -308,23 +318,27 @@ void NesPPU::drawSprites(int scanline){
 					colorNum = PPURegSetBit(1,colorNum);
 				}
 				// If the pixel is 0 before template is applied, ignore it.
-				if(colorNum == 0) {
-					continue;
-				}
+				
 				uint8 msbits = attributes & 0x3;
 				int paletteIndex = (msbits << 2) | colorNum;
 				int xPix = 0 - tilePixel;
 				xPix += 7;
 				uint8 pixelPos = (uint8)(PosX+xPix);
-				if(i == 0 && ppumask.showBG) {
-					ppustatus.spriteZeroHit = true;
-				} 
+
 				if ((LY<0)||(LY>239)||(pixelPos<0)||(pixelPos>255)) {
 					UE_LOG(LogNesPPU, Warning, TEXT("LY: %d pixelPos: %d"), LY, pixelPos);
 					continue;
 				}
+				FColor drawPixel = palettes.at(M_Mmu->Read(0x3F10 + paletteIndex) & 0x3F);
+				if(i == 0 && ppumask.showBG && !VideoMemory->at(pixelPos)->at(LY).bIsTransparent && colorNum != 0) {
+					ppustatus.spriteZeroHit = true;
+				}
+
+				if(colorNum == 0 || spritePriorityBit == 1) {
+					continue;
+				}
 				//0x3F10 is start of Sprite palette
-				VideoMemory->at(pixelPos)->at(LY).pixel = palettes.at(M_Mmu->Read(0x3F10 + paletteIndex) & 0x3F);
+				VideoMemory->at(pixelPos)->at(LY).pixel = drawPixel;
 			 }
 		}
 	}
@@ -373,10 +387,12 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 		if ((paletteIndex & 0x3) != 0 && !(!ppumask.showBGLeft && i < 8)){
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
 			VideoMemory->at(i)->at(lineCount).pixel = pixelColor;
+			VideoMemory->at(i)->at(lineCount).bIsTransparent = false;
 		} 
 		else {
 			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
-			VideoMemory->at(i)->at(lineCount).pixel = pixelColor; //Transparent?
+			VideoMemory->at(i)->at(lineCount).pixel = pixelColor; //The palette entry at $3F00 is the background colour and is used for transparency. 
+			VideoMemory->at(i)->at(lineCount).bIsTransparent = true;
 		}
 	}
 }
