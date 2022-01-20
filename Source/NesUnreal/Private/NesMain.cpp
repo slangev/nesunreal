@@ -31,6 +31,8 @@ ANesMain::ANesMain()
     m_camera->ProjectionMode = ECameraProjectionMode::Perspective;
 
 	M_Sound = CreateDefaultSubobject<UNesAPU>(TEXT("NesAPU"));
+	M_Sound->SetAutoActivate(true);
+	
 	M_Sound->SetupAttachment(m_springArm);
 	
     m_screen->SetupAttachment(m_springArm);
