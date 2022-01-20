@@ -30,6 +30,9 @@ ANesMain::ANesMain()
     m_camera->SetWorldRotation(FVector(0.0f, 0.0f, 0.0f).Rotation());
     m_camera->ProjectionMode = ECameraProjectionMode::Perspective;
 
+	M_Sound = CreateDefaultSubobject<UNesAPU>(TEXT("NesAPU"));
+	M_Sound->SetupAttachment(m_springArm);
+	
     m_screen->SetupAttachment(m_springArm);
     m_screen->SetStaticMesh(Asset);
     m_screen->SetMaterial(0,CanvasMaterial);

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NesAPU.h"
 #include "Components/ActorComponent.h"
 #include "Components/InputComponent.h"
 #include "Materials/Material.h"
@@ -73,6 +74,8 @@ public:
     UCameraComponent *m_camera;
     UPROPERTY(VisibleAnywhere)
     UStaticMeshComponent *m_screen;
+	UPROPERTY(VisibleAnywhere)
+	UNesAPU *M_Sound;
 
 
 protected:
