@@ -5,7 +5,14 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ *
+ * https://wiki.nesdev.org/w/index.php?title=APU
+ * https://wiki.nesdev.org/w/index.php?title=APU_Pulse
+ * https://wiki.nesdev.org/w/index.php?title=APU_Length_Counter
+ * https://wiki.nesdev.org/w/index.php?title=APU_Envelope
+ * https://wiki.nesdev.org/w/index.php?title=APU_Triangle
+ * https://wiki.nesdev.org/w/index.php?title=APU_Frame_Counter
+ * https://wiki.nesdev.org/w/index.php?title=APU_Mixer
  */
 class NESUNREAL_API FNesSoundChannel
 {

@@ -8,11 +8,11 @@
 /**
  * 
  */
-class NESUNREAL_API FNesPulse final: FNesSoundChannel
+class NESUNREAL_API FNesPulseOne final: FNesSoundChannel
 {
 public:
-	FNesPulse();
-	virtual ~FNesPulse() override;
+	FNesPulseOne();
+	virtual ~FNesPulseOne() override;
 	virtual void Tick() override;
 	virtual void HalfFrameTick() override;
 	virtual void QuarterFrameTick() override;
@@ -20,4 +20,12 @@ public:
 	virtual void Enabled(bool bEnabled) override;
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
+private:
+	uint8 Duty = 0;
+	bool bLengthCounterHalt;
+	bool bConstantVol;
+	unsigned short Volume;
+
+	// Sweep information
+	bool bSweepEnable;
 };

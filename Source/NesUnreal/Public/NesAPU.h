@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NesPulse.h"
+#include "NesPulseOne.h"
 #include <memory>
 #include "Components/SynthComponent.h"
 #include "DSP/Osc.h"
@@ -37,11 +37,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Synth|Components|Audio")
 	void SetFrequency(const float FrequencyHz = 440.0f);
 
+	// Length table constant
+	static constexpr uint LengthTable[] = {
+		10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14,
+		12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30}
+	;
 
 protected:
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.
 	Audio::FOsc Osc;
 	int Count = 0;
 
-	std::unique_ptr<FNesPulse> Pulse1;
+	std::unique_ptr<FNesPulseOne> Pulse1;
 };

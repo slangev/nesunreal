@@ -9,7 +9,7 @@ bool UNesApu::Init(int32& SampleRate)
 	// Initialize the DSP objects
 	SampleRate = 44100;
 
-	Pulse1 = std::make_unique<FNesPulse>();
+	Pulse1 = std::make_unique<FNesPulseOne>();
 	
 	UE_LOG(LogTemp,Warning, TEXT("SampleRate: %d"), SampleRate);
 	Osc.Init(SampleRate);
