@@ -26,7 +26,7 @@ void FNesTestSlo::Define()
 		CPU = make_unique<FNesCPU>();
 		mmu = make_shared<NesCPUMMU>();
 		ppu = make_shared<NesPPU>();
-		mmu->AttachPPU(ppu);
+		mmu->AttachPpu(ppu);
 		rom.clear();
 		rom.resize(0x8000, 0);
 		cart = make_unique<NesCart>(rom);

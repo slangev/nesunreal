@@ -17,27 +17,27 @@ ANesMain::ANesMain()
     static ConstructorHelpers::FObjectFinder<UMaterial>MaterialAsset(TEXT("Material'/Game/Materials/CanvasMaterial.CanvasMaterial'"));
     UMaterial* CanvasMaterial = MaterialAsset.Object; 
 
-    m_screen = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MyScreen"));
+    M_Screen = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MyScreen"));
     // Setup the spring arm that the camera will attach to.
-    m_springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("MySpringArm"));
-    SetRootComponent(m_springArm);
-    m_springArm->SetRelativeRotation(FVector(0.0f, 0.0f, 0.0f).Rotation());
-    m_springArm->SetAbsolute(false, false, false);
-    m_springArm->TargetArmLength = 100.f;
+    M_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("MySpringArm"));
+    SetRootComponent(M_SpringArm);
+    M_SpringArm->SetRelativeRotation(FVector(0.0f, 0.0f, 0.0f).Rotation());
+    M_SpringArm->SetAbsolute(false, false, false);
+    M_SpringArm->TargetArmLength = 100.f;
 
-    m_camera = CreateDefaultSubobject<UCameraComponent>(TEXT("MyCamera"));
-    m_camera->SetupAttachment(m_springArm);
-    m_camera->SetWorldRotation(FVector(0.0f, 0.0f, 0.0f).Rotation());
-    m_camera->ProjectionMode = ECameraProjectionMode::Perspective;
+    M_Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("MyCamera"));
+    M_Camera->SetupAttachment(M_SpringArm);
+    M_Camera->SetWorldRotation(FVector(0.0f, 0.0f, 0.0f).Rotation());
+    M_Camera->ProjectionMode = ECameraProjectionMode::Perspective;
 
-	M_Sound = CreateDefaultSubobject<UNesAPU>(TEXT("NesAPU"));
+	M_Sound = CreateDefaultSubobject<UNesApu>(TEXT("NesAPU"));
 	M_Sound->SetAutoActivate(true);
 	
-	M_Sound->SetupAttachment(m_springArm);
+	M_Sound->SetupAttachment(M_SpringArm);
 	
-    m_screen->SetupAttachment(m_springArm);
-    m_screen->SetStaticMesh(Asset);
-    m_screen->SetMaterial(0,CanvasMaterial);
+    M_Screen->SetupAttachment(M_SpringArm);
+    M_Screen->SetStaticMesh(Asset);
+    M_Screen->SetMaterial(0,CanvasMaterial);
 }
 
 void ANesMain::Log(FString msg) {
@@ -52,10 +52,10 @@ void ANesMain::BeginPlay()
 	M_Ppu = make_shared<NesPPU>(256, 240, 4);
 	M_Mmu = make_shared<NesCPUMMU>();
 	M_Controller = make_shared<NesController>();
-	M_CPU = make_unique<FNesCPU>(bTesting);
+	M_Cpu = make_unique<FNesCPU>(bTesting);
 	M_Cart = make_shared<NesCart>(pathToRom);
-	M_PPUMmu = make_shared<NesPPUMMU>(M_Cart);
-	UMaterialInstanceDynamic* Mat = m_screen->CreateDynamicMaterialInstance(
+	M_PpuMmu = make_shared<NesPPUMMU>(M_Cart);
+	UMaterialInstanceDynamic* Mat = M_Screen->CreateDynamicMaterialInstance(
             0, static_cast<UMaterialInterface*>(nullptr), FName(TEXT("Dynamic Mat")));
     if(Mat)
     {
@@ -68,10 +68,10 @@ void ANesMain::BeginPlay()
 
 	M_Mmu->AttachCart(M_Cart);
 	M_Mmu->AttachController(M_Controller);
-	M_Ppu->AttachPPUMUU(M_PPUMmu);
-	M_Mmu->AttachPPU(M_Ppu);
-	M_CPU->AttachMemory(M_Mmu);
-	UE_LOG(LogNesMain,Log, TEXT("Starting PC: 0x%X") ,M_CPU->PC);
+	M_Ppu->AttachPPUMUU(M_PpuMmu);
+	M_Mmu->AttachPpu(M_Ppu);
+	M_Cpu->AttachMemory(M_Mmu);
+	UE_LOG(LogNesMain,Log, TEXT("Starting PC: 0x%X") ,M_Cpu->PC);
 }
 
 // Called every frame
@@ -81,12 +81,12 @@ void ANesMain::Tick(float DeltaTime)
 
 	uint CyclesThisUpdate = 0 ; 
     while (CyclesThisUpdate < MAXCYCLES) {
-		const uint Cycles = M_CPU->Tick();
+		const uint Cycles = M_Cpu->Tick();
 		M_Ppu->Step(Cycles * 3);
 		/*gbAudio.UpdateAudioTimer(cycles);*/
 		CyclesThisUpdate+=Cycles;
 	}
-	if(M_CPU->bTesting)
+	if(M_Cpu->bTesting)
 	{
 		M_Ppu->RenderStaticByMatrix();
 	} else

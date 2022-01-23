@@ -110,7 +110,7 @@ void FNesCPU::HandleInterrupts()
         Reset();
         return;
     }
-    bool NMI = M_Mmu->RequestNMIInterrupt();
+    bool NMI = M_Mmu->RequestNmiInterrupt();
     //NMI -  However, triggering of a NMI can be prevented if bit 7 of PPU Control Register 1 ($2000) is clear. When a NMI occurs the system jumps to the address located at $FFFA and $FFFB
     if (NMI && !lastNMI){
         ServiceInterrupt(0xFFFA);

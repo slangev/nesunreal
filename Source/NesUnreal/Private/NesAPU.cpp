@@ -3,41 +3,44 @@
 
 #include "NesAPU.h"
 
-bool UNesAPU::Init(int32& SampleRate)
+bool UNesApu::Init(int32& SampleRate)
 {
 	NumChannels = 1;
-
-#if SYNTHCOMPONENT_EX_OSCILATOR_ENABLED
 	// Initialize the DSP objects
+	SampleRate = 44100;
+
+	Pulse1 = std::make_unique<FNesPulse>();
+	
+	UE_LOG(LogTemp,Warning, TEXT("SampleRate: %d"), SampleRate);
 	Osc.Init(SampleRate);
 	Osc.SetFrequency(440.0f);
 	Osc.Start();
-#endif // SYNTHCOMPONENT_EX_OSCILATOR_ENABLED
-
+	UE_LOG(LogTemp,Warning, TEXT("OscType: %d"), Osc.GetType());
+	Pulse1->Tick();
 	return true;
 }
 
-int32 UNesAPU::OnGenerateAudio(float* OutAudio, int32 NumSamples)
+int32 UNesApu::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
-#if SYNTHCOMPONENT_EX_OSCILATOR_ENABLED
 	// Perform DSP operations here
 	for (int32 Sample = 0; Sample < NumSamples; ++Sample)
 	{
 		OutAudio[Sample] = Osc.Generate();
 	}
-#endif // SYNTHCOMPONENT_EX_OSCILATOR_ENABLED
-
 	return NumSamples;
 }
 
-void UNesAPU::SetFrequency(const float InFrequencyHz)
+void UNesApu::SetFrequency(const float InFrequencyHz)
 {
-#if SYNTHCOMPONENT_EX_OSCILATOR_ENABLED
 	// Use this protected base class method to push a lambda function which will safely execute in the audio render thread.
 	SynthCommand([this, InFrequencyHz]()
 	{
 		Osc.SetFrequency(InFrequencyHz);
 		Osc.Update();
 	});
-#endif // SYNTHCOMPONENT_EX_OSCILATOR_ENABLED
+}
+
+void UNesApu::Step(uint Cycle)
+{
+	
 }

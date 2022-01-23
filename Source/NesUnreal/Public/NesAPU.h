@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NesPulse.h"
+#include <memory>
 #include "Components/SynthComponent.h"
 #include "DSP/Osc.h"
 #include "NesAPU.generated.h"
@@ -17,12 +19,13 @@
 // 2. Enable macro below that includes code utilizing SignalProcessing Oscilator
 // ========================================================================
 
-#define SYNTHCOMPONENT_EX_OSCILATOR_ENABLED 1
-
 UCLASS(ClassGroup = Synth, meta = (BlueprintSpawnableComponent))
-class NESUNREAL_API UNesAPU : public USynthComponent
+class NESUNREAL_API UNesApu : public USynthComponent
 {
 	GENERATED_BODY()
+
+public:
+	void Step(uint Cycle);
 	
 	// Called when synth is created
 	virtual bool Init(int32& SampleRate) override;
@@ -34,9 +37,11 @@ class NESUNREAL_API UNesAPU : public USynthComponent
 	UFUNCTION(BlueprintCallable, Category = "Synth|Components|Audio")
 	void SetFrequency(const float FrequencyHz = 440.0f);
 
+
 protected:
-#if SYNTHCOMPONENT_EX_OSCILATOR_ENABLED
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.
 	Audio::FOsc Osc;
-#endif // SYNTHCOMPONENT_EX_OSCILATOR_ENABLED
+	int Count = 0;
+
+	std::unique_ptr<FNesPulse> Pulse1;
 };

@@ -41,9 +41,10 @@ public:
 	std::shared_ptr<NesPPU> M_Ppu;
 	std::shared_ptr<NesCart> M_Cart;
 	std::shared_ptr<NesCPUMMU> M_Mmu;
-	std::shared_ptr<NesPPUMMU> M_PPUMmu;
-	std::unique_ptr<FNesCPU> M_CPU;
+	std::shared_ptr<NesPPUMMU> M_PpuMmu;
+	std::unique_ptr<FNesCPU> M_Cpu;
 	std::shared_ptr<NesController> M_Controller;
+	
 	static void Log(FString);
 	void PressedUp();
 	void ReleasedUp();
@@ -69,13 +70,14 @@ public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	UPROPERTY(VisibleAnywhere)
-    USpringArmComponent *m_springArm;
+    USpringArmComponent *M_SpringArm;
     UPROPERTY(VisibleAnywhere)
-    UCameraComponent *m_camera;
+    UCameraComponent *M_Camera;
     UPROPERTY(VisibleAnywhere)
-    UStaticMeshComponent *m_screen;
+    UStaticMeshComponent *M_Screen;
 	UPROPERTY(VisibleAnywhere)
-	UNesAPU *M_Sound;
+	UNesApu *M_Sound;
+
 
 
 protected:
