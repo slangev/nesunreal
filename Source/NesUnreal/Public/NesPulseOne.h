@@ -28,4 +28,5 @@ private:
 
 	// Sweep information
 	bool bSweepEnable;
+	bool bNegateFlag;
 };

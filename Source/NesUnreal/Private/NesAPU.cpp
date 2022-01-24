@@ -10,13 +10,12 @@ bool UNesApu::Init(int32& SampleRate)
 	SampleRate = 44100;
 
 	Pulse1 = std::make_unique<FNesPulseOne>();
+	Mixer = std::make_unique<FNesAudioMixer>();
 	
 	UE_LOG(LogTemp,Warning, TEXT("SampleRate: %d"), SampleRate);
 	Osc.Init(SampleRate);
 	Osc.SetFrequency(440.0f);
 	Osc.Start();
-	UE_LOG(LogTemp,Warning, TEXT("OscType: %d"), Osc.GetType());
-	Pulse1->Tick();
 	return true;
 }
 

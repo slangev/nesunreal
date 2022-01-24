@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "NesPulseOne.h"
 #include <memory>
+
+#include "FNesAudioMixer.h"
 #include "Components/SynthComponent.h"
 #include "DSP/Osc.h"
 #include "NesAPU.generated.h"
@@ -49,4 +51,5 @@ protected:
 	int Count = 0;
 
 	std::unique_ptr<FNesPulseOne> Pulse1;
+	std::unique_ptr<FNesAudioMixer> Mixer;
 };
