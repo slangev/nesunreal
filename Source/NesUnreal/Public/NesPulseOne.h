@@ -20,13 +20,67 @@ public:
 	virtual void Enabled(bool bEnabled) override;
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
+	bool bChannelEnabled = false;
+	
 private:
-	uint8 Duty = 0;
+
+	struct FDivider
+	{
+		uint16 Reload;
+		uint16 Counter;
+	};
+	
+	struct FSweep
+	{
+		// Sweep information
+		bool bSweepEnable;
+		bool bSweepNegate;
+		uint8 SweepDividerPeriod = 0;
+		bool bSweepReload = false;
+		uint8 SweepShiftCount = 0;
+	};
+
+	struct FEnvelope
+	{
+		bool bStart = false;
+		FDivider Timer;
+	};
+
+	struct FSequencer
+	{
+		uint8 Duty = 0; // Which current Duty we are on. 0-3
+		uint8 SequencePointer = 0; // values of 0-8
+		FDivider Timer;
+		uint16 TimerLow = 0;
+		uint16 TimerHigh = 0;
+	};
+
 	bool bLengthCounterHalt;
 	bool bConstantVol;
-	unsigned short Volume;
+	uint16 Volume; // values of 0-15 with 0 being muted
+	uint16 LengthCounter; // APU Length Counter
+	
+	FSweep Sweep;
+	FEnvelope Envelope;
+	FSequencer Sequencer;
+	
+	// Sequence lookup table - Thus it reads the sequence lookup table in the order 0, 7, 6, 5, 4, 3, 2, 1.
+	// Use Duty/Sequence Pointer as lookup indexes SequenceLookupTable[Duty][SeqPointer]
+	static constexpr uint8 SequenceLookupTable[4][8] = {
+		{0, 0, 0, 0, 0, 0, 0, 1},
+		{0, 0, 0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 0, 0}
+	};
 
-	// Sweep information
-	bool bSweepEnable;
-	bool bNegateFlag;
+	// Output waveform is used to determine if we need to output a sound at this point.
+	// Use Duty/result from SLT (The table above as indexes) 0,1,2,3,4,5,6,7
+	static constexpr uint8 OutputWaveformTable [4][8] = {
+		{0, 1, 0, 0, 0, 0, 0, 0},
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{0, 1, 1, 1, 1, 0, 0, 0},
+		{1, 0, 0, 1, 1, 1, 1, 1}
+	};
+
+	bool GateCheck();
 };
