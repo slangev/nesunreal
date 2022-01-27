@@ -1,16 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
+#include "NesApuSoundOutput.h"
 
-#include "NesAPU.h"
+#include "NesMain.h"
 
-bool UNesApu::Init(int32& SampleRate)
+bool UNesApuSoundOutput::Init(int32& SampleRate)
 {
 	NumChannels = 1;
 	// Initialize the DSP objects
 	SampleRate = 44100;
-
-	Pulse1 = std::make_unique<FNesPulseOne>();
-	Mixer = std::make_unique<FNesAudioMixer>();
+	Count = 0;
+	Main = Cast<ANesMain>(GetOwner());
 	
 	UE_LOG(LogTemp,Warning, TEXT("SampleRate: %d"), SampleRate);
 	Osc.Init(SampleRate);
@@ -19,8 +18,14 @@ bool UNesApu::Init(int32& SampleRate)
 	return true;
 }
 
-int32 UNesApu::OnGenerateAudio(float* OutAudio, int32 NumSamples)
+int32 UNesApuSoundOutput::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
+	if(Count == 0)
+	{
+		Main->Print();
+		Count++;
+	}
+	
 	// Perform DSP operations here
 	for (int32 Sample = 0; Sample < NumSamples; ++Sample)
 	{
@@ -29,7 +34,7 @@ int32 UNesApu::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 	return NumSamples;
 }
 
-void UNesApu::SetFrequency(const float InFrequencyHz)
+void UNesApuSoundOutput::SetFrequency(const float InFrequencyHz)
 {
 	// Use this protected base class method to push a lambda function which will safely execute in the audio render thread.
 	SynthCommand([this, InFrequencyHz]()
@@ -37,9 +42,4 @@ void UNesApu::SetFrequency(const float InFrequencyHz)
 		Osc.SetFrequency(InFrequencyHz);
 		Osc.Update();
 	});
-}
-
-void UNesApu::Step(uint Cycle)
-{
-	
 }

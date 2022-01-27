@@ -8,26 +8,29 @@
 /**
  * 
  */
-class NESUNREAL_API FNesPulseOne final: FNesSoundChannel
+class NESUNREAL_API FNesPulse final: FNesSoundChannel
 {
 public:
-	FNesPulseOne();
-	virtual ~FNesPulseOne() override;
+	FNesPulse();
+	virtual ~FNesPulse() override;
 	virtual void Tick() override;
 	virtual void HalfFrameTick() override;
 	virtual void QuarterFrameTick() override;
-	virtual void WriteData(int Address, int Data) override;
+	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual void Enabled(bool bEnabled) override;
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
+	void SetChannelId(const int Id) {this->ChannelId = Id;}
+	int GetChannel() const {return ChannelId;}
 	bool bChannelEnabled = false;
+	int ChannelId;
 	
 private:
 
 	struct FDivider
 	{
-		uint16 Reload;
-		uint16 Counter;
+		uint16 Reload; // timer load 
+		uint16 Counter; // Countdown timer
 	};
 	
 	struct FSweep

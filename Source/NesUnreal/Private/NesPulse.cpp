@@ -1,33 +1,34 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "NesPulseOne.h"
+#include "NesPulse.h"
 
-FNesPulseOne::FNesPulseOne(): bLengthCounterHalt(false), bConstantVol(false), Volume(0), LengthCounter(0), Sweep(),
-                              Envelope(), Sequencer()
+FNesPulse::FNesPulse(): ChannelId(1), bLengthCounterHalt(false), bConstantVol(false), Volume(0), LengthCounter(0),
+                        Sweep(),
+                        Envelope(), Sequencer()
 {
 }
 
-FNesPulseOne::~FNesPulseOne()
+FNesPulse::~FNesPulse()
 {
 	
 }
 
 // For Pulse, Tick are for the sequencer.
-void FNesPulseOne::Tick()
+void FNesPulse::Tick()
 {
-	
+	UE_LOG(LogTemp,Warning, TEXT("I'm being ticked."));
 }
 
-void FNesPulseOne::HalfFrameTick()
-{
-}
-
-void FNesPulseOne::QuarterFrameTick()
+void FNesPulse::HalfFrameTick()
 {
 }
 
-void FNesPulseOne::WriteData(const int Address, int Data)
+void FNesPulse::QuarterFrameTick()
+{
+}
+
+void FNesPulse::Write(unsigned short Address, uint8 Data)
 {
 	switch(Address)
 	{
@@ -72,22 +73,22 @@ void FNesPulseOne::WriteData(const int Address, int Data)
 	}
 }
 
-void FNesPulseOne::Enabled(const bool bEnabled)
+void FNesPulse::Enabled(const bool bEnabled)
 {
 	this->bChannelEnabled = bEnabled;
 }
 
-int FNesPulseOne::GetOutputVol()
+int FNesPulse::GetOutputVol()
 {
 	return 0;
 }
 
-bool FNesPulseOne::LengthAboveZero()
+bool FNesPulse::LengthAboveZero()
 {
 	return false;
 }
 
-bool FNesPulseOne::GateCheck()
+bool FNesPulse::GateCheck()
 {
 	return false;
 }

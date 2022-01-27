@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NesPulseOne.h"
+#include "NesPulse.h"
 #include <memory>
 
 #include "FNesAudioMixer.h"
 #include "Components/SynthComponent.h"
 #include "DSP/Osc.h"
-#include "NesAPU.generated.h"
+#include "NesApuSoundOutput.generated.h"
 
 // ========================================================================
 // UNesAPU
@@ -21,13 +21,18 @@
 // 2. Enable macro below that includes code utilizing SignalProcessing Oscilator
 // ========================================================================
 
+// Forward Declarations
+class ANesMain;
+
 UCLASS(ClassGroup = Synth, meta = (BlueprintSpawnableComponent))
-class NESUNREAL_API UNesApu : public USynthComponent
+class NESUNREAL_API UNesApuSoundOutput final : public USynthComponent
 {
 	GENERATED_BODY()
 
 public:
-	void Step(uint Cycle);
+
+	UPROPERTY()
+	int Count = 0;
 	
 	// Called when synth is created
 	virtual bool Init(int32& SampleRate) override;
@@ -45,11 +50,10 @@ public:
 		12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30}
 	;
 
+	UPROPERTY()
+	ANesMain* Main;
+
 protected:
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.
 	Audio::FOsc Osc;
-	int Count = 0;
-
-	std::unique_ptr<FNesPulseOne> Pulse1;
-	std::unique_ptr<FNesAudioMixer> Mixer;
 };

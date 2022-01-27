@@ -16,7 +16,7 @@ ANesMain::ANesMain()
 
     static ConstructorHelpers::FObjectFinder<UMaterial>MaterialAsset(TEXT("Material'/Game/Materials/CanvasMaterial.CanvasMaterial'"));
     UMaterial* CanvasMaterial = MaterialAsset.Object; 
-
+	
     M_Screen = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MyScreen"));
     // Setup the spring arm that the camera will attach to.
     M_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("MySpringArm"));
@@ -30,7 +30,7 @@ ANesMain::ANesMain()
     M_Camera->SetWorldRotation(FVector(0.0f, 0.0f, 0.0f).Rotation());
     M_Camera->ProjectionMode = ECameraProjectionMode::Perspective;
 
-	M_Sound = CreateDefaultSubobject<UNesApu>(TEXT("NesAPU"));
+	M_Sound = CreateDefaultSubobject<UNesApuSoundOutput>(TEXT("NesAPU"));
 	M_Sound->SetAutoActivate(true);
 	
 	M_Sound->SetupAttachment(M_SpringArm);
@@ -55,6 +55,7 @@ void ANesMain::BeginPlay()
 	M_Cpu = make_unique<FNesCPU>(bTesting);
 	M_Cart = make_shared<NesCart>(pathToRom);
 	M_PpuMmu = make_shared<NesPPUMMU>(M_Cart);
+	M_Apu = make_shared<FNesApu>();
 	UMaterialInstanceDynamic* Mat = M_Screen->CreateDynamicMaterialInstance(
             0, static_cast<UMaterialInterface*>(nullptr), FName(TEXT("Dynamic Mat")));
     if(Mat)
@@ -83,7 +84,6 @@ void ANesMain::Tick(float DeltaTime)
     while (CyclesThisUpdate < MAXCYCLES) {
 		const uint Cycles = M_Cpu->Tick();
 		M_Ppu->Step(Cycles * 3);
-		/*gbAudio.UpdateAudioTimer(cycles);*/
 		CyclesThisUpdate+=Cycles;
 	}
 	if(M_Cpu->bTesting)

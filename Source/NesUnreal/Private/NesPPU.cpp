@@ -353,7 +353,6 @@ void NesPPU::drawSprites(int scanline){
 	if(spritecount > 8) {
 		ppustatus.spriteOverflow = true;
 	}
-	ysize = spritecount;
 }
 
 void NesPPU::drawBGScanLine(int x, int y, int screenY) {

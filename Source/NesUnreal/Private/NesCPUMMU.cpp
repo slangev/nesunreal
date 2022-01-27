@@ -26,7 +26,7 @@ void NesCPUMMU::AttachController(shared_ptr<NesController> Controller) {
     this->M_Controller = Controller;
 }
 
-void NesCPUMMU::AttachApu(UNesApu* Apu)
+void NesCPUMMU::AttachApu(UNesApuSoundOutput* Apu)
 {
     this->M_Sound = Apu;
 }
@@ -64,8 +64,8 @@ void NesCPUMMU::Write(const unsigned short Address, const uint8 Data)
 
             // APU
             if (Address <= 0x4013 || Address == 0x4015 || Address == 0x4017){
-                //APU.writeData(address, data);
-                M_Sound->Step(1);
+                //M_Sound->Write(Address, Data)
+                
             }
 
             // OAM DMA
