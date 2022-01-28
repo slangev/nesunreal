@@ -9,7 +9,7 @@
 #include "FNesAudioMixer.h"
 #include "Components/SynthComponent.h"
 #include "DSP/Osc.h"
-#include "NesApuSoundOutput.generated.h"
+#include "NesApu.generated.h"
 
 // ========================================================================
 // UNesAPU
@@ -21,19 +21,29 @@
 // 2. Enable macro below that includes code utilizing SignalProcessing Oscilator
 // ========================================================================
 
-// Forward Declarations
-class ANesMain;
-
 UCLASS(ClassGroup = Synth, meta = (BlueprintSpawnableComponent))
-class NESUNREAL_API UNesApuSoundOutput final : public USynthComponent
+class NESUNREAL_API UNesApu final : public USynthComponent
 {
 	GENERATED_BODY()
 
 public:
+	virtual ~UNesApu() override;
+	void Step(uint Cycle);
+	void Write(const unsigned short Address, uint8 Data);
+	uint8 Read(unsigned short Address);
 
 	UPROPERTY()
 	int Count = 0;
-	
+	UPROPERTY()
+	bool bFiveStepMode = false; // 5-Step Sequence (bit 7 of $4017 set)
+	UPROPERTY()
+	bool bIRQInhibit = false; // Interrupt inhibit flag. If set, the frame interrupt flag is cleared, otherwise it is unaffected.
+
+	// Length table constant
+	static constexpr uint LengthTable[] = {
+		10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14,
+		12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30}
+	;
 	// Called when synth is created
 	virtual bool Init(int32& SampleRate) override;
 
@@ -44,16 +54,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Synth|Components|Audio")
 	void SetFrequency(const float FrequencyHz = 440.0f);
 
-	// Length table constant
-	static constexpr uint LengthTable[] = {
-		10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14,
-		12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30}
-	;
-
-	UPROPERTY()
-	ANesMain* Main;
-
 protected:
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.
 	Audio::FOsc Osc;
+	std::unique_ptr<FNesPulse> Pulse1;
+	std::unique_ptr<FNesPulse> Pulse2;
+	std::unique_ptr<FNesAudioMixer> Mixer;
 };

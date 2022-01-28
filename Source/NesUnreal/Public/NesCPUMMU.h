@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "NesCart.h"
 #include "NesPPU.h"
-#include "NesApuSoundOutput.h"
+#include "NesApu.h"
 #include "NesController.h"
 #include <memory>
 #include <vector>
+
 /**
  * 
  */
@@ -21,7 +22,7 @@ public:
 	void AttachCart(shared_ptr<NesCart> Cart);
 	void AttachPpu(shared_ptr<NesPPU> Ppu);
 	void AttachController(shared_ptr<NesController> Controller);
-	void AttachApu(UNesApuSoundOutput *Apu);
+	void AttachApu(UNesApu *Apu);
 	bool RequestNmiInterrupt() const;
 	uint8 Read(unsigned short Address);
 	void Write(unsigned short Address, uint8 Data);
@@ -32,6 +33,7 @@ private:
 	shared_ptr<NesPPU> M_Ppu;
 	shared_ptr<NesCart> M_Cart;
 	shared_ptr<NesController> M_Controller;
-	UNesApuSoundOutput *M_Sound;
+	UNesApu *M_Sound;
+	
     uint M_MemoryRamSize = 0x0800;
 };

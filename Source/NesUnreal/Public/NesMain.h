@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NesApuSoundOutput.h"
+#include "NesApu.h"
 #include "Components/ActorComponent.h"
 #include "Components/InputComponent.h"
 #include "Materials/Material.h"
@@ -17,7 +17,6 @@
 #include "NesCPU.h"
 #include <memory>
 
-#include "NesAPU.h"
 #include "Camera/CameraComponent.h"
 #include "Containers/UnrealString.h"
 #include "NesMain.generated.h"
@@ -45,8 +44,6 @@ public:
 	std::shared_ptr<NesPPUMMU> M_PpuMmu;
 	std::unique_ptr<FNesCPU> M_Cpu;
 	std::shared_ptr<NesController> M_Controller;
-	std::shared_ptr<FNesApu> M_Apu;
-
 	
 	static void Log(FString);
 	void PressedUp();
@@ -84,7 +81,7 @@ public:
     UPROPERTY(VisibleAnywhere)
     UStaticMeshComponent *M_Screen;
 	UPROPERTY(VisibleAnywhere)
-	UNesApuSoundOutput *M_Sound;
+	UNesApu *M_Sound;
 
 
 

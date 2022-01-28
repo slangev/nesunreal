@@ -30,7 +30,7 @@ ANesMain::ANesMain()
     M_Camera->SetWorldRotation(FVector(0.0f, 0.0f, 0.0f).Rotation());
     M_Camera->ProjectionMode = ECameraProjectionMode::Perspective;
 
-	M_Sound = CreateDefaultSubobject<UNesApuSoundOutput>(TEXT("NesAPU"));
+	M_Sound = CreateDefaultSubobject<UNesApu>(TEXT("NesAPU"));
 	M_Sound->SetAutoActivate(true);
 	
 	M_Sound->SetupAttachment(M_SpringArm);
@@ -55,7 +55,6 @@ void ANesMain::BeginPlay()
 	M_Cpu = make_unique<FNesCPU>(bTesting);
 	M_Cart = make_shared<NesCart>(pathToRom);
 	M_PpuMmu = make_shared<NesPPUMMU>(M_Cart);
-	M_Apu = make_shared<FNesApu>();
 	UMaterialInstanceDynamic* Mat = M_Screen->CreateDynamicMaterialInstance(
             0, static_cast<UMaterialInterface*>(nullptr), FName(TEXT("Dynamic Mat")));
     if(Mat)
@@ -72,6 +71,7 @@ void ANesMain::BeginPlay()
 	M_Ppu->AttachPPUMUU(M_PpuMmu);
 	M_Mmu->AttachPpu(M_Ppu);
 	M_Cpu->AttachMemory(M_Mmu);
+	M_Mmu->AttachApu(M_Sound);
 	UE_LOG(LogNesMain,Log, TEXT("Starting PC: 0x%X") ,M_Cpu->PC);
 }
 
