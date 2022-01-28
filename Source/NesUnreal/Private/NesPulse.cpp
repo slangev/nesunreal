@@ -33,6 +33,7 @@ void FNesPulse::Write(unsigned short Address, uint8 Data)
 	switch(Address)
 	{
 	case 0x4000:
+	case 0x4004:
 		{
 			Volume = Data & 0xF;
 			bConstantVol = (Data & 0x10) == 0x10;
@@ -41,6 +42,7 @@ void FNesPulse::Write(unsigned short Address, uint8 Data)
 			break;
 		}
 	case 0x4001:
+	case 0x4005:
 		{
 			Sweep.SweepShiftCount = Data & 0x7;
 			Sweep.bSweepNegate = (Data & 0x8) == 0x8;
@@ -50,12 +52,14 @@ void FNesPulse::Write(unsigned short Address, uint8 Data)
 			break;
 		}
 	case 0x4002:
+	case 0x4006:
 		{
 			Sequencer.TimerLow = Data & 0xFF;
 			Sequencer.Timer.Reload = (Sequencer.Timer.Reload & 0x700) | Sequencer.TimerLow;
 			break;
 		}
 	case 0x4003:
+	case 0x4007:
 		{
 			Sequencer.TimerHigh = Data & 0x07;
 			Sequencer.Timer.Reload = (Sequencer.TimerHigh << 8) | Sequencer.TimerLow;

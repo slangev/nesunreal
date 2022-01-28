@@ -50,8 +50,7 @@ UNesApu::~UNesApu()
 
 void UNesApu::Step(uint Cycle)
 {
-	Count = 10;
-	UE_LOG(LogTemp,Warning, TEXT("HERE %d"), Count);
+	
 }
 
 void UNesApu::Write(const unsigned short Address, uint8 Data)
