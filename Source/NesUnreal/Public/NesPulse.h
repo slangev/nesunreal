@@ -22,6 +22,7 @@ public:
 	virtual bool LengthAboveZero() override;
 	void SetChannelId(const int Id) {this->ChannelId = Id;}
 	int GetChannel() const {return ChannelId;}
+	bool IsMuted(uint TargetPeriod) const;
 	bool bChannelEnabled = false;
 	int ChannelId;
 	
@@ -41,12 +42,16 @@ private:
 		uint8 SweepDividerPeriod = 0;
 		bool bSweepReload = false;
 		uint8 SweepShiftCount = 0;
+		uint SweepDividerCounter;
+		bool bSweepMuting = false;
 	};
 
 	struct FEnvelope
 	{
 		bool bStart = false;
 		FDivider Timer;
+		uint16 DelayLevelCounter;
+		uint16 EnvelopeVol;
 	};
 
 	struct FSequencer
@@ -62,12 +67,13 @@ private:
 	bool bConstantVol;
 	uint16 Volume; // values of 0-15 with 0 being muted
 	uint16 LengthCounter; // APU Length Counter
+	uint16 LengthLoad;
 	
 	FSweep Sweep;
 	FEnvelope Envelope;
 	FSequencer Sequencer;
 	
-	// Sequence lookup table - Thus it reads the sequence lookup table in the order 0, 7, 6, 5, 4, 3, 2, 1.
+	// Sequence lookup table - it reads the sequence lookup table in the order 0, 7, 6, 5, 4, 3, 2, 1.
 	// Use Duty/Sequence Pointer as lookup indexes SequenceLookupTable[Duty][SeqPointer]
 	static constexpr uint8 SequenceLookupTable[4][8] = {
 		{0, 0, 0, 0, 0, 0, 0, 1},
@@ -85,5 +91,14 @@ private:
 		{1, 0, 0, 1, 1, 1, 1, 1}
 	};
 
+	// Length table constant
+	static constexpr uint LengthTable[] = {
+		10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14,
+		12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30}
+	;
+
 	bool GateCheck();
+	void EnvelopeTick();
+	void SweepTick();
+	void LengthTick();
 };

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "NesPulse.h"
 #include <memory>
+#include <vector>
 
 #include "FNesAudioMixer.h"
 #include "Components/SynthComponent.h"
@@ -20,7 +21,7 @@
 // 1. Ensure "SignalProcessing" is added to project's .Build.cs in PrivateDependencyModuleNames
 // 2. Enable macro below that includes code utilizing SignalProcessing Oscilator
 // ========================================================================
-
+using namespace std;
 UCLASS(ClassGroup = Synth, meta = (BlueprintSpawnableComponent))
 class NESUNREAL_API UNesApu final : public USynthComponent
 {
@@ -32,18 +33,24 @@ public:
 	void Write(const unsigned short Address, uint8 Data);
 	uint8 Read(unsigned short Address);
 
+	bool WriteBuffer = false;
+	bool StopFlag = false;
 	UPROPERTY()
 	int Count = 0;
 	UPROPERTY()
 	bool bFiveStepMode = false; // 5-Step Sequence (bit 7 of $4017 set)
 	UPROPERTY()
 	bool bIRQInhibit = false; // Interrupt inhibit flag. If set, the frame interrupt flag is cleared, otherwise it is unaffected.
-
-	// Length table constant
-	static constexpr uint LengthTable[] = {
-		10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14,
-		12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30}
-	;
+	UPROPERTY()
+	bool bOddCPUCycle = false;
+	UPROPERTY()
+	uint32 CPUCycleCount = 0;
+	UPROPERTY()
+	uint32 ApuCycleCount = 0;
+	UPROPERTY()
+	int APUBufferCount;
+	vector<float> SoundBuffer;
+	
 	// Called when synth is created
 	virtual bool Init(int32& SampleRate) override;
 

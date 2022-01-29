@@ -12,8 +12,14 @@ bool UNesApu::Init(int32& SampleRate)
 	SampleRate = 44100;
 	Count = 0;
 	Pulse1 = std::make_unique<FNesPulse>();
+	Pulse1->SetChannelId(1);
 	Pulse2 = std::make_unique<FNesPulse>();
+	Pulse2->SetChannelId(2);
 	Mixer = std::make_unique<FNesAudioMixer>();
+	for(int i = 0; i < 1024; i++)
+	{
+		SoundBuffer.push_back(0);
+	}
 	
 	UE_LOG(LogTemp,Warning, TEXT("SampleRate: %d"), SampleRate);
 	Osc.Init(SampleRate);
@@ -26,10 +32,15 @@ int32 UNesApu::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
 	
 	// Perform DSP operations here
-	for (int32 Sample = 0; Sample < NumSamples; ++Sample)
+	if(WriteBuffer)
 	{
-		OutAudio[Sample] = Osc.Generate();
+		for(int i = 0; i < SoundBuffer.size(); i++)
+		{
+			OutAudio[i] = SoundBuffer[i];
+		}
+		WriteBuffer = false;
 	}
+	
 	return NumSamples;
 }
 
@@ -48,9 +59,68 @@ UNesApu::~UNesApu()
 	
 }
 
-void UNesApu::Step(uint Cycle)
+void UNesApu::Step(uint32 Cycle)
 {
-	
+	while (Cycle-- > 0)
+	{
+		bOddCPUCycle = !bOddCPUCycle;
+		CPUCycleCount++;
+
+		if (bOddCPUCycle){
+			ApuCycleCount++;
+			Pulse1->Tick();
+			Pulse2->Tick();
+		}
+
+		// TODO: Need to tick Triangle
+
+		if(bFiveStepMode)
+		{
+			switch(ApuCycleCount)
+			{
+			case 3729:
+				{
+					Pulse1->QuarterFrameTick();
+					Pulse2->QuarterFrameTick();
+					break;
+				}
+			case 7457:
+				{
+					Pulse1->QuarterFrameTick();
+					Pulse2->QuarterFrameTick();
+					Pulse1->HalfFrameTick();
+					Pulse2->HalfFrameTick();
+					break;
+				}
+			case 11186:
+				{
+					Pulse1->QuarterFrameTick();
+					Pulse2->QuarterFrameTick();
+					break;
+				}
+			case 18641:
+				{
+					Pulse1->QuarterFrameTick();
+					Pulse2->QuarterFrameTick();
+					Pulse1->HalfFrameTick();
+					Pulse2->HalfFrameTick();
+					ApuCycleCount = 0;
+				}
+			}
+		}
+
+		// Add Sample to queue
+		int Speed = 40;
+		if (APUBufferCount/Speed >= SoundBuffer.size()){
+			APUBufferCount = 0;
+			WriteBuffer = true;
+		}
+		if (true) {
+			const float SampleOutput = Mixer->LookupPulseTable(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
+			SoundBuffer.at(APUBufferCount / Speed) = SampleOutput;
+		}
+		APUBufferCount++;
+	}
 }
 
 void UNesApu::Write(const unsigned short Address, uint8 Data)
@@ -77,12 +147,20 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	}
 	else if(Address == 0x4015)
 	{
-		UE_LOG(LogNesAPU,Warning,TEXT("Writing to Status. Address: %d Data: %d"), Address, Data);
-		bFiveStepMode = (Data & 0x80) == 0x80 ? true : false;
-		bIRQInhibit = (Data & 0x40) == 0x40;
+		Pulse1->Enabled(Data & 0x1);
+		Pulse2->Enabled((Data & 0x2) >> 1);
 	}
 	else if(Address == 0x4017)
-	{	
+	{
+		bFiveStepMode = (Data & 0x80) == 0x80 ? true : false;
+		bIRQInhibit = (Data & 0x40) == 0x40;
+		ApuCycleCount = 0;
+		if (bFiveStepMode){
+			Pulse1->QuarterFrameTick();
+			Pulse2->QuarterFrameTick();
+			Pulse1->HalfFrameTick();
+			Pulse2->HalfFrameTick();
+		}
 		UE_LOG(LogNesAPU,Warning,TEXT("Writing to Frame Counter. Address: %d Data: %d"), Address, Data);
 	}
 	else

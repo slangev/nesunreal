@@ -120,6 +120,10 @@ uint8 NesCPUMMU::Read(const unsigned short Address) {
         // with mirrors handling
         return M_Ppu->ReadRegister(Address & 0x2007);
     }
+    else if (Address == 0x4015)
+    {
+        M_Sound->Read(Address);
+    }
     // Controllers
     else if (Address >= 0x4016 && Address <= 0x4017) {
         return M_Controller->Read(0x4016);
