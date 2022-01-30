@@ -105,12 +105,47 @@ void UNesApu::Step(uint32 Cycle)
 					Pulse1->HalfFrameTick();
 					Pulse2->HalfFrameTick();
 					ApuCycleCount = 0;
+					break;
 				}
+			}
+		} else
+		{
+			switch(ApuCycleCount)
+			{
+				case 3729:
+					{
+						Pulse1->QuarterFrameTick();
+						Pulse2->QuarterFrameTick();
+						break;
+					}
+				case 7457:
+					{
+						Pulse1->QuarterFrameTick();
+						Pulse2->QuarterFrameTick();
+						Pulse1->HalfFrameTick();
+						Pulse2->HalfFrameTick();
+						break;
+					}
+				case 11186:
+					{
+						Pulse1->QuarterFrameTick();
+						Pulse2->QuarterFrameTick();
+						break;
+					}
+				case 14915:
+					{
+						Pulse1->QuarterFrameTick();
+						Pulse2->QuarterFrameTick();
+						Pulse1->HalfFrameTick();
+						Pulse2->HalfFrameTick();
+						ApuCycleCount = 0;
+						break;
+					}
 			}
 		}
 
 		// Add Sample to queue
-		int Speed = 40;
+		constexpr int Speed = 40;
 		if (APUBufferCount/Speed >= SoundBuffer.size()){
 			APUBufferCount = 0;
 			WriteBuffer = true;

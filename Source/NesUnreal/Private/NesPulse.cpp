@@ -56,10 +56,10 @@ void FNesPulse::Write(unsigned short Address, uint8 Data)
 	case 0x4001:
 	case 0x4005:
 		{
+			Sweep.SweepShiftCount = Data & 0x7;
 			Sweep.bSweepEnable = (Data & 0x80) == 0x80 && Sweep.SweepShiftCount != 0;
 			Sweep.SweepDividerPeriod = ((Data >> 4) & 0x7);
 			Sweep.bSweepNegate = (Data & 0x8) == 0x8;
-			Sweep.SweepShiftCount = Data & 0x7;
 			Sweep.bSweepReload = true;
 			break;
 		}
@@ -208,7 +208,7 @@ void FNesPulse::SweepTick()
 	}
 	TargetPeriod += ChangeAmount;
 	Sweep.bSweepMuting = IsMuted(TargetPeriod);
-	if(Sweep.SweepDividerCounter == 0 && Sweep.bSweepEnable && !Sweep.bSweepMuting && Sweep.SweepShiftCount > 0)
+	if(Sweep.SweepDividerCounter == 0 && Sweep.bSweepEnable && !Sweep.bSweepMuting)
 	{
 		Sequencer.Timer.Reload = TargetPeriod;
 		Sequencer.TimerHigh = (Sequencer.Timer.Reload & 0x700) >> 8;
