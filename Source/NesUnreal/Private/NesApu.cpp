@@ -10,6 +10,7 @@ bool UNesApu::Init(int32& SampleRate)
 	NumChannels = 1;
 	// Initialize the DSP objects
 	SampleRate = 44100;
+	
 	Count = 0;
 	Pulse1 = std::make_unique<FNesPulse>();
 	Pulse1->SetChannelId(1);
@@ -22,25 +23,21 @@ bool UNesApu::Init(int32& SampleRate)
 	}
 	
 	UE_LOG(LogTemp,Warning, TEXT("SampleRate: %d"), SampleRate);
+	
 	Osc.Init(SampleRate);
-	Osc.SetFrequency(440.0f);
+	Osc.SetFrequency(10.0f);
 	Osc.Start();
 	return true;
 }
 
 int32 UNesApu::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
-	
 	// Perform DSP operations here
-	if(WriteBuffer)
+	for(int i = 0; i < NumSamples; i++)
 	{
-		for(int i = 0; i < SoundBuffer.size(); i++)
-		{
-			OutAudio[i] = SoundBuffer[i];
-		}
-		WriteBuffer = false;
+		OutAudio[i] = SoundBuffer[i];
 	}
-	
+
 	return NumSamples;
 }
 
@@ -144,14 +141,12 @@ void UNesApu::Step(uint32 Cycle)
 			}
 		}
 
-		// Add Sample to queue
 		constexpr int Speed = 40;
 		if (APUBufferCount/Speed >= SoundBuffer.size()){
 			APUBufferCount = 0;
-			WriteBuffer = true;
 		}
-		if (true) {
-			const float SampleOutput = Mixer->LookupPulseTable(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
+		if (APUBufferCount % Speed == 0) {
+			const float SampleOutput = Mixer->LinearApproximationPulseOut(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
 			SoundBuffer.at(APUBufferCount / Speed) = SampleOutput;
 		}
 		APUBufferCount++;
