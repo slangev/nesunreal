@@ -3,7 +3,7 @@
 
 #include "NesMain.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogNesAPU,Log,All)
+DEFINE_LOG_CATEGORY_STATIC(LogNesApu,Log,All)
 
 bool UNesApu::Init(int32& SampleRate)
 {
@@ -11,42 +11,47 @@ bool UNesApu::Init(int32& SampleRate)
 	// Initialize the DSP objects
 	SampleRate = 44100;
 	
+	PreferredBufferLength = 1024;
+	
 	Count = 0;
 	Pulse1 = std::make_unique<FNesPulse>();
 	Pulse1->SetChannelId(1);
 	Pulse2 = std::make_unique<FNesPulse>();
 	Pulse2->SetChannelId(2);
 	Mixer = std::make_unique<FNesAudioMixer>();
-	for(int i = 0; i < 1024; i++)
+	Filter = std::make_unique<FNesApuFilters>();
+	for(int i = 0; i < PreferredBufferLength; i++)
 	{
 		SoundBuffer.push_back(0);
 	}
 	
 	UE_LOG(LogTemp,Warning, TEXT("SampleRate: %d"), SampleRate);
-	
+	UE_LOG(LogTemp,Warning, TEXT("SoundBuffer size: %d"), SoundBuffer.size());
+
 	Osc.Init(SampleRate);
-	Osc.SetFrequency(10.0f);
+	Osc.SetFrequency(4.0f);
 	Osc.Start();
 	return true;
 }
 
 int32 UNesApu::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
+
 	// Perform DSP operations here
 	for(int i = 0; i < NumSamples; i++)
 	{
-		OutAudio[i] = SoundBuffer[i];
+		OutAudio[i] = SoundBuffer.at(i);
 	}
-
+	
 	return NumSamples;
 }
 
-void UNesApu::SetFrequency(const float InFrequencyHz)
+void UNesApu::SetFrequency(const float FrequencyHz)
 {
 	// Use this protected base class method to push a lambda function which will safely execute in the audio render thread.
-	SynthCommand([this, InFrequencyHz]()
+	SynthCommand([this, FrequencyHz]()
 	{
-		Osc.SetFrequency(InFrequencyHz);
+		Osc.SetFrequency(FrequencyHz);
 		Osc.Update();
 	});
 }
@@ -56,9 +61,21 @@ UNesApu::~UNesApu()
 	
 }
 
-void UNesApu::Step(uint32 Cycle)
+void UNesApu::QuarterTick()
 {
-	while (Cycle-- > 0)
+	Pulse1->QuarterFrameTick();
+	Pulse2->QuarterFrameTick();
+}
+
+void UNesApu::HalfTick()
+{
+	Pulse1->HalfFrameTick();
+	Pulse2->HalfFrameTick();
+}
+
+void UNesApu::Step(uint32 CpuCycle)
+{
+	while (CpuCycle-- > 0)
 	{
 		bOddCPUCycle = !bOddCPUCycle;
 		CPUCycleCount++;
@@ -77,30 +94,24 @@ void UNesApu::Step(uint32 Cycle)
 			{
 			case 3729:
 				{
-					Pulse1->QuarterFrameTick();
-					Pulse2->QuarterFrameTick();
+					QuarterTick();
 					break;
 				}
 			case 7457:
 				{
-					Pulse1->QuarterFrameTick();
-					Pulse2->QuarterFrameTick();
-					Pulse1->HalfFrameTick();
-					Pulse2->HalfFrameTick();
+					QuarterTick();
+					HalfTick();
 					break;
 				}
 			case 11186:
 				{
-					Pulse1->QuarterFrameTick();
-					Pulse2->QuarterFrameTick();
+					QuarterTick();
 					break;
 				}
 			case 18641:
 				{
-					Pulse1->QuarterFrameTick();
-					Pulse2->QuarterFrameTick();
-					Pulse1->HalfFrameTick();
-					Pulse2->HalfFrameTick();
+					QuarterTick();
+					HalfTick();
 					ApuCycleCount = 0;
 					break;
 				}
@@ -111,30 +122,24 @@ void UNesApu::Step(uint32 Cycle)
 			{
 				case 3729:
 					{
-						Pulse1->QuarterFrameTick();
-						Pulse2->QuarterFrameTick();
+						QuarterTick();
 						break;
 					}
 				case 7457:
 					{
-						Pulse1->QuarterFrameTick();
-						Pulse2->QuarterFrameTick();
-						Pulse1->HalfFrameTick();
-						Pulse2->HalfFrameTick();
+						QuarterTick();
+						HalfTick();
 						break;
 					}
 				case 11186:
 					{
-						Pulse1->QuarterFrameTick();
-						Pulse2->QuarterFrameTick();
+						QuarterTick();
 						break;
 					}
 				case 14915:
 					{
-						Pulse1->QuarterFrameTick();
-						Pulse2->QuarterFrameTick();
-						Pulse1->HalfFrameTick();
-						Pulse2->HalfFrameTick();
+						QuarterTick();
+						HalfTick();
 						ApuCycleCount = 0;
 						break;
 					}
@@ -146,7 +151,19 @@ void UNesApu::Step(uint32 Cycle)
 			APUBufferCount = 0;
 		}
 		if (APUBufferCount % Speed == 0) {
-			const float SampleOutput = Mixer->LinearApproximationPulseOut(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
+			float SampleOutput = 0;
+			if(bOddCPUCycle)
+			{
+				const float SquareOutputVal = Mixer->LookupPulseTable(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
+				Filter->HighPassFilter(44100.0f,90.0f);
+				float Sample = Filter->Step(SquareOutputVal);
+				Filter->HighPassFilter(44100.0f,440.0f);
+				Sample = Filter->Step(Sample);
+				Filter->LowPassFilter(44100.0f,14000.0f);
+				Sample = Filter->Step(Sample);
+				Sample = FMath :: Clamp ( Sample, -1.0f, 1.0f) / 2.0f;
+				SampleOutput = Sample;
+			}
 			SoundBuffer.at(APUBufferCount / Speed) = SampleOutput;
 		}
 		APUBufferCount++;
@@ -165,15 +182,15 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	}
 	else if(Address >= 0x4008 && Address <= 0x400B)
 	{
-		UE_LOG(LogNesAPU,Warning,TEXT("Writing to Triangle. Address: %d Data: %d"), Address, Data);
+		//UE_LOG(LogNesAPU,Warning,TEXT("Writing to Triangle. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address >= 0x400C && Address <= 0x400F)
 	{
-		UE_LOG(LogNesAPU,Warning,TEXT("Writing to Noise. Address: %d Data: %d"), Address, Data);
+		//UE_LOG(LogNesAPU,Warning,TEXT("Writing to Noise. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address >= 0x4010 && Address <= 0x4013)
 	{
-		UE_LOG(LogNesAPU,Warning,TEXT("Writing to DMC. Address: %d Data: %d"), Address, Data);
+		//UE_LOG(LogNesAPU,Warning,TEXT("Writing to DMC. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address == 0x4015)
 	{
@@ -186,16 +203,14 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 		bIRQInhibit = (Data & 0x40) == 0x40;
 		ApuCycleCount = 0;
 		if (bFiveStepMode){
-			Pulse1->QuarterFrameTick();
-			Pulse2->QuarterFrameTick();
-			Pulse1->HalfFrameTick();
-			Pulse2->HalfFrameTick();
+			QuarterTick();
+			HalfTick();
 		}
-		UE_LOG(LogNesAPU,Warning,TEXT("Writing to Frame Counter. Address: %d Data: %d"), Address, Data);
+		//UE_LOG(LogNesAPU,Warning,TEXT("Writing to Frame Counter. Address: %d Data: %d"), Address, Data);
 	}
 	else
 	{
-		UE_LOG(LogNesAPU,Warning,TEXT("Bad Write. Address: %d Data: %d"), Address, Data);
+		//UE_LOG(LogNesAPU,Warning,TEXT("Bad Write. Address: %d Data: %d"), Address, Data);
 	}
 }
 
@@ -203,7 +218,7 @@ uint8 UNesApu::Read(const unsigned short Address)
 {
 	if(Address == 0x4015)
 	{
-		UE_LOG(LogNesAPU,Warning,TEXT("Reading to Status. Address: %d"), Address);
+		UE_LOG(LogNesApu,Warning,TEXT("Reading to Status. Address: %d"), Address);
 	}
 	return 0;
 }

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "FNesAudioMixer.h"
+#include "NesApuFilters.h"
 #include "Components/SynthComponent.h"
 #include "DSP/Osc.h"
 #include "NesApu.generated.h"
@@ -29,7 +30,9 @@ class NESUNREAL_API UNesApu final : public USynthComponent
 
 public:
 	virtual ~UNesApu() override;
-	void Step(uint Cycle);
+	void QuarterTick();
+	void HalfTick();
+	void Step(uint CpuCycle);
 	void Write(const unsigned short Address, uint8 Data);
 	uint8 Read(unsigned short Address);
 
@@ -67,4 +70,6 @@ protected:
 	std::unique_ptr<FNesPulse> Pulse1;
 	std::unique_ptr<FNesPulse> Pulse2;
 	std::unique_ptr<FNesAudioMixer> Mixer;
+	std::unique_ptr<FNesApuFilters> Filter;
+	
 };
