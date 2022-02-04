@@ -33,7 +33,7 @@ public:
 	ANesMain();
 	uint64 MAXCYCLES = 29781;
 	UPROPERTY(EditAnywhere,Meta = (Bitmask))
-	FString pathToRom;
+	FString pathToRom = "/Users/slangev/nesunreal/Content/Data/DK.nes";
 
 	UPROPERTY(EditAnywhere,Meta = (Bitmask))
     bool bTesting;

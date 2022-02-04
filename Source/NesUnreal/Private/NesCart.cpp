@@ -31,8 +31,9 @@ void NesCart::Log(const string Msg) {
 }
 
 void NesCart::LoadRom(FString PathToRom) {
-    FString projectDir = FPaths::ProjectDir();
-    projectDir += PathToRom;
+    FString projectDir = PathToRom;
+ //    projectDir += PathToRom;
+	// projectDir = PathToRom;
 	UE_LOG(LogNesCart, Log, TEXT("%s"), *PathToRom);
 	TArray<uint8> romData;
 	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*projectDir))

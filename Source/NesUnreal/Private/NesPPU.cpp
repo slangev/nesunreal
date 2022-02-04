@@ -13,7 +13,9 @@ NesPPU::NesPPU()
 	CanvasHeight = 240;
 
 	DynamicCanvas = UTexture2D::CreateTransient(CanvasWidth, CanvasHeight);
+	#if WITH_EDITORONLY_DATA
 	DynamicCanvas->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+	#endif
 	DynamicCanvas->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
 	DynamicCanvas->SRGB = false;
 	DynamicCanvas->AddToRoot();
@@ -42,7 +44,10 @@ NesPPU::NesPPU(int CanvasWidth, int CanvasHeight, int BytesPerPixel) {
     this->CanvasHeight = CanvasHeight;
     this->BytesPerPixel = BytesPerPixel;
 	DynamicCanvas = UTexture2D::CreateTransient(CanvasWidth, CanvasHeight);
+	#if WITH_EDITORONLY_DATA
 	DynamicCanvas->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+	#endif
+
 	DynamicCanvas->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
 	DynamicCanvas->SRGB = true;
 	DynamicCanvas->AddToRoot();
@@ -208,7 +213,7 @@ void NesPPU::RenderScreen()
 {
 	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
-	FColor* FormattedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
+	FColor* FormattedImageData = reinterpret_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 	for(int32 X = 0; X < MyMipMap->SizeX; X++)
 	{
 		for (int32 Y = 0; Y < MyMipMap->SizeY; Y++)
@@ -225,7 +230,7 @@ void NesPPU::RenderScreen()
 void NesPPU::RenderStaticByMatrix() {
 	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
-	FColor* FormattedImageData = static_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
+	FColor* FormattedImageData = reinterpret_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 
 	for(int32 X = 0; X < MyMipMap->SizeX; X++)
 	{
@@ -331,22 +336,22 @@ void NesPPU::drawSprites(int scanline){
 				int paletteIndex = (msbits << 2) | colorNum;
 				int xPix = 0 - tilePixel;
 				xPix += 7;
-				uint8 pixelPos = (uint8)(PosX+xPix);
+				uint8 PixelPos = static_cast<uint8>(PosX + xPix);
 
-				if ((LY<0)||(LY>239)||(pixelPos<0)||(pixelPos>255)) {
-					UE_LOG(LogNesPPU, Warning, TEXT("LY: %d pixelPos: %d"), LY, pixelPos);
+				if ((LY<0)||(LY>239)||(PixelPos<0)||(PixelPos>255)) {
+					UE_LOG(LogNesPPU, Warning, TEXT("LY: %d pixelPos: %d"), LY, PixelPos);
 					continue;
 				}
 				FColor drawPixel = palettes.at(M_Mmu->Read(0x3F10 + paletteIndex) & 0x3F);
-				if(i == 0 && ppumask.showBG && !VideoMemory->at(pixelPos)->at(LY).bIsTransparent && colorNum != 0) {
+				if(i == 0 && ppumask.showBG && !VideoMemory->at(PixelPos)->at(LY).bIsTransparent && colorNum != 0) {
 					ppustatus.spriteZeroHit = true;
 				}
 
-				if(colorNum == 0 || (!VideoMemory->at(pixelPos)->at(LY).bIsTransparent && spritePriorityBit == 1)) {
+				if(colorNum == 0 || (!VideoMemory->at(PixelPos)->at(LY).bIsTransparent && spritePriorityBit == 1)) {
 					continue;
 				}
 				//0x3F10 is start of Sprite palette
-				VideoMemory->at(pixelPos)->at(LY).pixel = drawPixel;
+				VideoMemory->at(PixelPos)->at(LY).pixel = drawPixel;
 			 }
 		}
 	}
@@ -390,15 +395,22 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 		int paletteIndex = (attribute << 2) | ((M_Mmu->Read(patternTable + (tilePointer << 4) + pixelY) >> (7 - pixelX)) & 0x1)|
 				((M_Mmu->Read(patternTable + (tilePointer << 4) + (pixelY + 8)) >> (7 - pixelX)) & 0x1) << 1;
 
-		FColor pixelColor;
+		FColor PixelColor;
 		if ((paletteIndex & 0x3) != 0 && !(!ppumask.showBGLeft && i < 8)){
-			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
-			VideoMemory->at(i)->at(lineCount).pixel = pixelColor;
+			PixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
+			VideoMemory->at(i)->at(lineCount).pixel = PixelColor;
 			VideoMemory->at(i)->at(lineCount).bIsTransparent = false;
 		} 
 		else {
-			pixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
-			VideoMemory->at(i)->at(lineCount).pixel = pixelColor; //The palette entry at $3F00 is the background colour and is used for transparency. 
+			PixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
+			if(i < 8 && !ppumask.showBGLeft)
+			{
+				VideoMemory->at(i)->at(lineCount).pixel = FColor::Black;
+			}
+			else
+			{
+				VideoMemory->at(i)->at(lineCount).pixel = PixelColor; //The palette entry at $3F00 is the background colour and is used for transparency. 
+			}
 			VideoMemory->at(i)->at(lineCount).bIsTransparent = true;
 		}
 	}
