@@ -80,15 +80,16 @@ void NesCart::LoadRom(FString PathToRom) {
 	if(Header->NumberOfRamBanks == 0) {
 		PRGRamMemory = make_shared<vector<uint8>>(0x2000);
 	} else {
-		uint ramMemorySize = 0x2000 * Header->NumberOfRamBanks;
-		PRGRamMemory = make_shared<vector<uint8>>(ramMemorySize);
+		uint RAMMemorySize = 0x2000 * Header->NumberOfRamBanks;
+		PRGRamMemory = make_shared<vector<uint8>>(RAMMemorySize);
 	}
-	Header->Mapper = (Header->RomControlByteTwo & 0xF0) | (Header->RomControlByteOne & 0xF0 >> 4);
-
+	Header->Mapper = (Header->RomControlByteTwo & 0xF0) | (Header->RomControlByteOne & 0xF0) >> 4;
     const uint8 Mirror = static_cast<uint8>(Header->RomControlByteOne & 0x1);
     const uint8 OverRide = static_cast<uint8>(Header->RomControlByteOne & 0x4 >> 3);
 	Header->Mirroring = static_cast<uint8>((OverRide == 1) ? 2 : Mirror);
 
+
+	UE_LOG(LogNesCart,Warning,TEXT("MAPPER: %d"),Header->Mapper);
 	switch(Header->Mapper) {
 		case 0:
 			Mbc = make_unique<NesNoMapper>(PRGRomMemory,PRGRamMemory,ChrRomMemory, ChrRamMemory);

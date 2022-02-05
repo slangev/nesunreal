@@ -38,10 +38,7 @@ uint8 NesPPUMMU::Read(unsigned short Address) const {
                 VRAMAddress |= 0x400;
             }
         }
-        else {
-            // four screen mirroring
-            UE_LOG(LogNesPPUMMU, Warning, TEXT("four screen mirroring not implemented."));
-        }
+
         return nameSpaceTable->at(VRAMAddress);
     } 
     // Palette Ram
@@ -49,6 +46,10 @@ uint8 NesPPUMMU::Read(unsigned short Address) const {
 
         if(Address >= 0x3F20 && Address < 0x4000) {
             return Read(Address & 0x3F1F);
+        }
+        // Palette Mirroring.
+        if ((Address & 0x3) == 0){
+            Address &= 0xFF0F;
         }
         return paletteRAM->at(Address & 0x1F); // 0x1F is (paletteRam->size() -1)
     }
@@ -89,6 +90,10 @@ void NesPPUMMU::Write(unsigned short Address, uint8 Data) const {
         if(Address >= 0x3F20 && Address < 0x4000) {
             Write((Address & 0x3F1F), Data);
             return;
+        }
+        // Palette Mirroring.
+        if ((Address & 0x3) == 0){
+            Address &= 0xFF0F;
         }
         paletteRAM->at(Address & 0x1F) = Data; // 0x1F is (paletteRam->size() -1)
     }

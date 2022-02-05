@@ -405,7 +405,8 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 			VideoMemory->at(i)->at(lineCount).bIsTransparent = false;
 		} 
 		else {
-            PixelColor = palettes.at(M_Mmu->Read(0x3F00) & 0x3F);
+			int index = M_Mmu->Read(0x3F00) & 0x3F;
+            PixelColor = palettes.at(index);
             VideoMemory->at(i)->at(lineCount).pixel = PixelColor; //The palette entry at $3F00 is the background colour and is used for transparency.
             VideoMemory->at(i)->at(lineCount).bIsTransparent = true;
 		}

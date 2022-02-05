@@ -17,29 +17,8 @@
 			"/Users/slangev/nesunreal/Intermediate/Build/Mac/x86_64/NesUnrealEditor/Development/Engine/SharedPCH.Engine.ShadowErrors.h"
 		],
 		"files.associations": {
-			"memory": "cpp",
-			"__hash_table": "cpp",
-			"__split_buffer": "cpp",
-			"__tree": "cpp",
-			"atomic": "cpp",
-			"deque": "cpp",
-			"hash_map": "cpp",
-			"filesystem": "cpp",
-			"forward_list": "cpp",
-			"ios": "cpp",
-			"list": "cpp",
-			"map": "cpp",
-			"set": "cpp",
-			"string": "cpp",
-			"system_error": "cpp",
-			"unordered_map": "cpp",
-			"unordered_set": "cpp",
-			"vector": "cpp",
 			"coroutine": "cpp",
-			"array": "cpp",
-			"iterator": "cpp",
-			"string_view": "cpp",
-			"cstddef": "cpp"
+			"memory": "cpp"
 		}
 	},
 	"extensions": {
