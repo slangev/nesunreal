@@ -290,11 +290,11 @@ void NesPPU::incrementLoopyY() {
 	}
 }
 
-void NesPPU::drawSprites(int scanline){
+void NesPPU::drawSprites(int Scanline){
 	bool use8x16 = ppuctrl.tallSprite;
 	unsigned short patternTable = (ppuctrl.spriteTable) ? 0x1000 : 0x0000;
 	int ysize = (use8x16) ? 16 : 8;
-	uint8 LY = scanline;
+	uint8 LY = Scanline;
 	int spritecount = 0;
 	for(int i = 0; i < 64 && spritecount < 9; i++) {
 		int PosY = M_Mmu->oam->at(i*4) + 1;
@@ -303,7 +303,7 @@ void NesPPU::drawSprites(int scanline){
 		int PosX = M_Mmu->oam->at(i*4 + 3);
 		if((LY >= PosY) && (LY < (PosY+ysize))) {
             spritecount++;
-			uint8 spritePriorityBit = PPURegGetBit(5,attributes);
+			uint8 SpritePriorityBit = PPURegGetBit(5,attributes);
 			uint8 xFlipBit = PPURegGetBit(6,attributes);
 			uint8 yFlipBit = PPURegGetBit(7,attributes);
 			int line = LY - PosY;
@@ -330,27 +330,30 @@ void NesPPU::drawSprites(int scanline){
 				if(bitFromData2 == 1) {
 					colorNum = PPURegSetBit(1,colorNum);
 				}
-				// If the pixel is 0 before template is applied, ignore it.
 				
 				uint8 msbits = attributes & 0x3;
 				int paletteIndex = (msbits << 2) | colorNum;
 				int xPix = 0 - tilePixel;
 				xPix += 7;
-				uint8 PixelPos = static_cast<uint8>(PosX + xPix);
+				uint16 PixelPos = static_cast<uint16>(PosX + xPix);
 
 				if ((LY<0)||(LY>239)||(PixelPos<0)||(PixelPos>255)) {
-					UE_LOG(LogNesPPU, Warning, TEXT("LY: %d pixelPos: %d"), LY, PixelPos);
 					continue;
 				}
+			 	//0x3F10 is start of Sprite palette
 				FColor drawPixel = palettes.at(M_Mmu->Read(0x3F10 + paletteIndex) & 0x3F);
 				if(i == 0 && ppumask.showBG && !VideoMemory->at(PixelPos)->at(LY).bIsTransparent && colorNum != 0) {
 					ppustatus.spriteZeroHit = true;
 				}
 
-				if(colorNum == 0 || (!VideoMemory->at(PixelPos)->at(LY).bIsTransparent && spritePriorityBit == 1)) {
+			 	if(!ppumask.showBGLeft && PixelPos < 8)
+			 	{
+			 		continue;
+			 	}
+			 	// If the pixel is 0 before template is applied, ignore it.
+				if(colorNum == 0 || (!VideoMemory->at(PixelPos)->at(LY).bIsTransparent && SpritePriorityBit == 1)) {
 					continue;
 				}
-				//0x3F10 is start of Sprite palette
 				VideoMemory->at(PixelPos)->at(LY).pixel = drawPixel;
 			 }
 		}
@@ -402,16 +405,9 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 			VideoMemory->at(i)->at(lineCount).bIsTransparent = false;
 		} 
 		else {
-			PixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
-			if(i < 8 && !ppumask.showBGLeft)
-			{
-				VideoMemory->at(i)->at(lineCount).pixel = FColor::Black;
-			}
-			else
-			{
-				VideoMemory->at(i)->at(lineCount).pixel = PixelColor; //The palette entry at $3F00 is the background colour and is used for transparency. 
-			}
-			VideoMemory->at(i)->at(lineCount).bIsTransparent = true;
+            PixelColor = palettes.at(M_Mmu->Read(0x3F00) & 0x3F);
+            VideoMemory->at(i)->at(lineCount).pixel = PixelColor; //The palette entry at $3F00 is the background colour and is used for transparency.
+            VideoMemory->at(i)->at(lineCount).bIsTransparent = true;
 		}
 	}
 }

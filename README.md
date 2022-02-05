@@ -4,7 +4,7 @@ A Nes emulator written using C++/Unreal game engine.
 
 # How to build
 
-Must be built using Unreal. The Unreal editor provides a buttons to build, compile, and run the emulator in the editor.
+Must be built using Unreal. The Unreal editor provides buttons to build, compile, and run the emulator in the editor.
 
 ![Unreal editor buttons](Images/UnrealEditorButtons.png)
 

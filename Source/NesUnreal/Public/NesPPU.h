@@ -86,7 +86,7 @@ public:
 	uint8 ReadRegister(unsigned short Address);
 	UTexture2D* GetScreen() {return DynamicCanvas;};
 	void drawBGScanLine(int x, int y, int screenY);
-	void drawSprites(int scanline);
+	void drawSprites(int Scanline);
 	void ProcessDMA(int Adderss, uint8 Data);
 
 
