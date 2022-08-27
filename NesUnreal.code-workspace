@@ -5,28 +5,20 @@
 			"path": "."
 		},
 		{
-			"name": "UE4",
-			"path": "/Users/Shared/Epic Games/UE_4.27"
+			"name": "UE5",
+			"path": "/Users/Shared/Epic Games/UE_5.0"
 		}
 	],
 	"settings": {
-		"typescript.tsc.autoDetect": "off",
-		"C_Cpp.default.forcedInclude": [
-			"${default}",
-			"/Users/slangev/nesunreal/Intermediate/Build/Mac/x86_64/UE4Editor/Development/NesUnreal/Definitions.NesUnreal.h",
-			"/Users/slangev/nesunreal/Intermediate/Build/Mac/x86_64/NesUnrealEditor/Development/Engine/SharedPCH.Engine.ShadowErrors.h"
-		],
-		"files.associations": {
-			"coroutine": "cpp",
-			"memory": "cpp"
-		}
+		"typescript.tsc.autoDetect": "off"
 	},
 	"extensions": {
 		"recommendations": [
 			"ms-vscode.cpptools",
 			"ms-dotnettools.csharp",
 			"vadimcn.vscode-lldb",
-			"ms-vscode.mono-debug"
+			"ms-vscode.mono-debug",
+			"dfarley1.file-picker"
 		]
 	}
 }
