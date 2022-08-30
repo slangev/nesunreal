@@ -71,5 +71,6 @@ protected:
 	std::unique_ptr<FNesPulse> Pulse2;
 	std::unique_ptr<FNesAudioMixer> Mixer;
 	std::unique_ptr<FNesApuFilters> Filter;
+	bool writeSamples = false;
 	
 };

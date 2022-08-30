@@ -1,7 +1,7 @@
-
 #include "NesApu.h"
 
 #include "NesMain.h"
+#include "GenericPlatform/GenericPlatformProcess.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogNesApu,Log,All)
 
@@ -11,7 +11,8 @@ bool UNesApu::Init(int32& SampleRate)
 	// Initialize the DSP objects
 	SampleRate = 44100;
 	
-	PreferredBufferLength = 1024;
+	PreferredBufferLength = 2048;
+	bAllowSpatialization = false;
 	
 	Count = 0;
 	Pulse1 = std::make_unique<FNesPulse>();
@@ -29,18 +30,20 @@ bool UNesApu::Init(int32& SampleRate)
 	UE_LOG(LogTemp,Warning, TEXT("SoundBuffer size: %d"), SoundBuffer.size());
 
 	Osc.Init(SampleRate);
+	Osc.SetFrequency(440.0f);
 	Osc.Start();
 	return true;
 }
 
 int32 UNesApu::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
-
-	// Perform DSP operations here
-	for(int i = 0; i < NumSamples; i++)
-	{
-		OutAudio[i] = SoundBuffer.at(i);
-	}
+	if(writeSamples) {
+		for(int i = 0; i < NumSamples; i++)
+		{
+			OutAudio[i] = SoundBuffer.at(i);
+		}
+		writeSamples = false;
+	} 
 	
 	return NumSamples;
 }
@@ -148,6 +151,10 @@ void UNesApu::Step(uint32 CpuCycle)
 		constexpr int Speed = 40;
 		if (APUBufferCount/Speed >= SoundBuffer.size()){
 			APUBufferCount = 0;
+			writeSamples = true;
+		}
+		while(writeSamples) {
+			 FPlatformProcess::Sleep(0);
 		}
 		if (APUBufferCount % Speed == 0) {
 			float SampleOutput = 0;
@@ -160,7 +167,7 @@ void UNesApu::Step(uint32 CpuCycle)
 				Sample = Filter->Step(Sample);
 				Filter->LowPassFilter(44100.0f,14000.0f);
 				Sample = Filter->Step(Sample);
-				Sample = FMath :: Clamp ( Sample, -1.0f, 1.0f) / 2.0f;
+				Sample = FMath :: Clamp ( Sample, -1.0f, 1.0f);
 				SampleOutput = Sample;
 			}
 			SoundBuffer.at(APUBufferCount / Speed) = SampleOutput;
