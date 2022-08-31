@@ -26,8 +26,8 @@ bool UNesApu::Init(int32& SampleRate)
 		SoundBuffer.push_back(0);
 	}
 	
-	UE_LOG(LogTemp,Warning, TEXT("SampleRate: %d"), SampleRate);
-	UE_LOG(LogTemp,Warning, TEXT("SoundBuffer size: %d"), SoundBuffer.size());
+	UE_LOG(LogNesApu, Display, TEXT("SampleRate: %d"), SampleRate);
+	UE_LOG(LogNesApu, Display, TEXT("SoundBuffer size: %d"), SoundBuffer.size());
 
 	Osc.Init(SampleRate);
 	Osc.SetFrequency(440.0f);
