@@ -9,9 +9,9 @@ bool UNesApu::Init(int32& SampleRate)
 {
 	NumChannels = 1;
 	// Initialize the DSP objects
-	SampleRate = 44100;
+	SampleRate = AudioSampleRate;
 	
-	PreferredBufferLength = 4096;
+	PreferredBufferLength = 2048;
 	bAllowSpatialization = false;
 	
 	Count = 0;
@@ -28,6 +28,7 @@ bool UNesApu::Init(int32& SampleRate)
 	
 	UE_LOG(LogNesApu, Display, TEXT("SampleRate: %d"), SampleRate);
 	UE_LOG(LogNesApu, Display, TEXT("SoundBuffer size: %d"), SoundBuffer.size());
+	UE_LOG(LogNesApu, Display, TEXT("Speed: %d"), Speed);
 
 	Osc.Init(SampleRate);
 	Osc.SetFrequency(440.0f);
@@ -37,12 +38,12 @@ bool UNesApu::Init(int32& SampleRate)
 
 int32 UNesApu::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
-	if(writeSamples) {
+	if(WriteSamples) {
 		for(int i = 0; i < NumSamples; i++)
 		{
 			OutAudio[i] = SoundBuffer.at(i);
 		}
-		writeSamples = false;
+		WriteSamples = false;
 	}
 	
 	return NumSamples;
@@ -148,24 +149,25 @@ void UNesApu::Step(uint32 CpuCycle)
 			}
 		}
 
-		constexpr int Speed = 40;
 		if (APUBufferCount/Speed >= SoundBuffer.size()){
 			APUBufferCount = 0;
-			writeSamples = true;
+			WriteSamples = true;
 		}
-		while(writeSamples) {
+		while(WriteSamples) {
 			 FPlatformProcess::Sleep(0);
 		}
 		if (APUBufferCount % Speed == 0) {
 			float SampleOutput = 0;
 			const float SquareOutputVal = Mixer->LookupPulseTable(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
-			Filter->HighPassFilter(44100.0f,90.0f);
+			//const float SquareOutputVal = Mixer->LinearApproximationPulseOut(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
+			//const float SquareOutputVal = Mixer->FasterLinearApproximationPulseOut(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
+			Filter->HighPassFilter(AudioSampleRate,90.0f);
 			float Sample = Filter->Step(SquareOutputVal);
-			Filter->HighPassFilter(44100.0f,440.0f);
+			Filter->HighPassFilter(AudioSampleRate,440.0f);
 			Sample = Filter->Step(Sample);
-			Filter->LowPassFilter(44100.0f,14000.0f);
+			Filter->LowPassFilter(AudioSampleRate,14000.0f);
 			Sample = Filter->Step(Sample);
-			Sample = FMath :: Clamp ( Sample, -1.0f, 1.0f);
+			Sample = FMath :: Clamp ( Sample, -1.0f, 1.0f) / 2;
 			SampleOutput = Sample;
 			SoundBuffer.at(APUBufferCount / Speed) = SampleOutput;
 		}

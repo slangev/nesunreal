@@ -32,8 +32,6 @@ void NesCart::Log(const string Msg) {
 
 void NesCart::LoadRom(FString PathToRom) {
     FString projectDir = PathToRom;
- //    projectDir += PathToRom;
-	// projectDir = PathToRom;
 	UE_LOG(LogNesCart, Log, TEXT("%s"), *PathToRom);
 	TArray<uint8> romData;
 	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*projectDir))
@@ -59,6 +57,7 @@ void NesCart::LoadRom(FString PathToRom) {
     }
 	Header->NumberOfPrgRoms = romData[4];
 	Header->NumberOfChrRoms = romData[5];
+	
     const int RomMemorySize = 0x4000 * Header->NumberOfPrgRoms; //16KB of banks
 	for(int i = 0x10; i < RomMemorySize+0x10; i++) {
 		PRGRomMemory->push_back(romData[i]);

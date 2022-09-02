@@ -36,8 +36,6 @@ public:
 	void Write(const unsigned short Address, uint8 Data);
 	uint8 Read(unsigned short Address);
 
-	bool WriteBuffer = false;
-	bool StopFlag = false;
 	UPROPERTY()
 	int Count = 0;
 	UPROPERTY()
@@ -71,6 +69,8 @@ protected:
 	std::unique_ptr<FNesPulse> Pulse2;
 	std::unique_ptr<FNesAudioMixer> Mixer;
 	std::unique_ptr<FNesApuFilters> Filter;
-	bool writeSamples = false;
-	
+	bool WriteSamples = false;
+	const float AudioSampleRate = 44100.0f;
+	const float CPUSpeed = 1790000.0f; //1.79MHz
+	const int Speed = CPUSpeed / AudioSampleRate;
 };
