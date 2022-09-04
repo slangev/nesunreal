@@ -23,3 +23,7 @@ void NesTestCart::Write(unsigned short addr, uint8 data) {
     if(addr >= 0x8000 && addr <= 0xFFFF)
         memory.at(addr-0x8000) = data;
 }
+
+uint8 NesTestCart::GetMirrorMode() {
+    return -1; // The mode is determine by the header
+}

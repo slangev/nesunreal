@@ -29,11 +29,12 @@ uint8 NesPPUMMU::Read(unsigned short Address) const {
         }
         int VRAMAddress = Address & 0x3FF; // (namespacetable.size() - 1);
         // Vertical mirroring
-        if(cart->Header->Mirroring == 1) {
+        uint8 mode = cart->GetMirrorMode();
+        if(mode == 1) {
             if(Address >= 0x2400 && Address < 0x3000) {
                 VRAMAddress |= 0x400;
             }
-        } else if (cart->Header->Mirroring == 0) {
+        } else if (mode == 0) {
             if(Address >= 0x2800 && Address < 0x3000) {
                 VRAMAddress |= 0x400;
             }
@@ -69,18 +70,15 @@ void NesPPUMMU::Write(unsigned short Address, uint8 Data) const {
             return;
         }
         int VRAMAddress = Address & 0x3FF; // (namespacetable.size() - 1);
-        if(cart->Header->Mirroring == 1) {
+        uint8 mode = cart->GetMirrorMode();
+        if(mode == 1) {
             if(Address >= 0x2400 && Address < 0x3000) {
                 VRAMAddress |= 0x400;
             }
-        } else if (cart->Header->Mirroring == 0) {
+        } else if (mode== 0) {
             if(Address >= 0x2800 && Address < 0x3000) {
                 VRAMAddress |= 0x400;
             }
-        }
-        else {
-            // four screen mirroring
-            UE_LOG(LogNesPPUMMU, Warning, TEXT("four screen mirroring not implemented."));
         }
         nameSpaceTable->at(VRAMAddress) = Data;
     } 

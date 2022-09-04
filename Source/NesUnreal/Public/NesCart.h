@@ -22,6 +22,7 @@ public:
 	uint8 Read(unsigned short Address);
 	void Write(unsigned short Address, uint8 Data);
 	unique_ptr<FNesHeader> Header;
+	uint8 GetMirrorMode();
 
 private:
 	void LoadRom(FString PathToRom);

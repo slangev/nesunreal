@@ -15,6 +15,11 @@ NesMMC1::NesMMC1(shared_ptr<vector<uint8>> PRGRomMemory, shared_ptr<vector<uint8
     this->ChrRamMemory = ChrRamMemory;
 }
 
+uint8 NesMMC1::GetMirrorMode() {
+    //TODO 
+    return -1; // The mode is determine by the header 
+}
+
 
 NesMMC1::~NesMMC1()
 {
@@ -67,7 +72,7 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
     else if(Address >= 0x8000 && Address <= 0xFFFF) {
         LoadRegister = Data;
         // Writing a value with bit 7 set ($80 through $FF) to any address in $8000-$FFFF clears the shift register to its initial state.
-        if((LoadRegister >> 7) & 0x1 == 0x1) {
+        if(((LoadRegister >> 7) & 0x1) == 0x1) {
             // Reset shift register and write Control with (Control OR $0C), locking PRG ROM at $C000-$FFFF to the last bank.
             ShiftRegister = 0x10;
             ControlRegister = ControlRegister | 0x0C;
@@ -75,7 +80,7 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
         // Only on the fifth write does the address matter, and even then, only bits 14 and 13 of the address matter
         else {
             // Once a 1 is shifted into the last position, the SR is full.
-            if(ShiftRegister & 0x1 == 0x1) {
+            if((ShiftRegister & 0x1) == 0x1) {
                 ShiftRegister = ShiftRegister >> 1;
                 uint8 bit = LoadRegister & 0x1;
                 if(bit == 0x1) {

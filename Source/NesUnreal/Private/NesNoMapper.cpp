@@ -18,6 +18,10 @@ NesNoMapper::~NesNoMapper()
 {
 }
 
+uint8 NesNoMapper::GetMirrorMode() {
+    return 0xFF; // The mode is determine by the header
+}
+
 uint8 NesNoMapper::Read(unsigned short Address) {
     uint8 returnData = 0xFF;
 

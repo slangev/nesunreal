@@ -17,6 +17,7 @@ public:
 	~NesTestCart();
 	uint8 Read(unsigned short addr);
 	void Write(unsigned short addr, uint8 data);
+	virtual uint8 GetMirrorMode() override;
 private:
 	vector<uint8> memory;
 };

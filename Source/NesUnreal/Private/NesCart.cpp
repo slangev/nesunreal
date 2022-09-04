@@ -114,3 +114,12 @@ void NesCart::Write(unsigned short Address, uint8 Data) {
 uint8 NesCart::Read(unsigned short Address) {
 	return Mbc->Read(Address);
 }
+
+uint8 NesCart::GetMirrorMode() {
+	// Return mirror mode
+	uint8 mode = Mbc->GetMirrorMode();
+	if(mode == 0xFF) {
+		return Header->Mirroring;
+	}
+	return mode;
+}
