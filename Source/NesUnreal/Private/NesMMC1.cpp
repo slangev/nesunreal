@@ -19,13 +19,14 @@ NesMMC1::NesMMC1(shared_ptr<vector<uint8>> PRGRomMemory, shared_ptr<vector<uint8
 NesMMC1::~NesMMC1()
 {
 }
-
+// uint32 index = (int)(((rom_lower | (uint)((Address & 0x3fff))) & (PRGRamMemory->size() - 1)));
 uint8 NesMMC1::Read(unsigned short Address) {
     uint8 returnData = 0xFF;
 
     // CPU $6000-$7FFF: 8 KB PRG RAM bank, (optional)
     if (Address >= 0x6000 && Address <= 0x7FFF) {
-        returnData = PRGRamMemory->at(Address - 0x6000);
+        uint Index = (Address & 0x1FFF) & PRGRamMemory->size() - 1;
+        returnData = PRGRamMemory->at(Index);
     }
     // CPU $8000-$BFFF: 16 KB PRG ROM bank, either switchable or fixed to the first bank
     else if (Address >= 0x8000 && Address <= 0xBFFF) {
@@ -49,7 +50,10 @@ uint8 NesMMC1::Read(unsigned short Address) {
 void NesMMC1::Write(unsigned short Address, uint8 Data) {
     // CPU $6000-$7FFF: 8 KB PRG RAM bank, (optional)
     if (Address >= 0x6000 && Address <= 0x7FFF) {
-        
+        // MMC1B and later: PRG RAM chip enable (0: enabled; 1: disabled; ignored on MMC1A)
+        uint8 bit = FNesCPU::GetBit(5,PrgBankRegister);
+
+        PRGRamMemory->at(Address - 0x6000) = Data;
     } 
     // PPU $0000-$0FFF: 4 KB switchable CHR bank
     else if (Address >= 0x0000 && Address <= 0x0FFF) {
@@ -74,9 +78,10 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
             if(ShiftRegister & 0x1 == 0x1) {
                 ShiftRegister = ShiftRegister >> 1;
                 uint8 bit = LoadRegister & 0x1;
-                if(bit == 1) {
+                if(bit == 0x1) {
                     ShiftRegister = FNesCPU::SetBit(5,ShiftRegister);
                 }
+                // only bits 14 and 13 of the address matter
                 uint8 registerSelector = (Address >> 13) & 0x3;
                 switch(registerSelector) {
                     case 0:
@@ -94,6 +99,7 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
                     default:
                         break;
                 }
+                // After the fifth write, the shift register is cleared automatically, so a write to the shift register with bit 7 on to reset it is not needed. 
                 ShiftRegister = 0x10; // SR gets cleared
             }
         }
