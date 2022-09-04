@@ -211,7 +211,7 @@ bool NesPPU::GetNMIInterrupt() {
 
 void NesPPU::RenderScreen()
 {
-	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
+	FTexture2DMipMap* MyMipMap = &DynamicCanvas->GetPlatformData()->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
 	FColor* FormattedImageData = reinterpret_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 	for(int32 X = 0; X < MyMipMap->SizeX; X++)
@@ -223,12 +223,12 @@ void NesPPU::RenderScreen()
 		}
 	}
 
-	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	DynamicCanvas->GetPlatformData()->Mips[0].BulkData.Unlock();
 	DynamicCanvas->UpdateResource();
 }
 
 void NesPPU::RenderStaticByMatrix() {
-	FTexture2DMipMap* MyMipMap = &DynamicCanvas->PlatformData->Mips[0];
+	FTexture2DMipMap* MyMipMap = &DynamicCanvas->GetPlatformData()->Mips[0];
 	FByteBulkData* RawImageData = &MyMipMap->BulkData;
 	FColor* FormattedImageData = reinterpret_cast<FColor*>( RawImageData->Lock( LOCK_READ_ONLY ) );
 
@@ -252,7 +252,7 @@ void NesPPU::RenderStaticByMatrix() {
 		}
 	}
 
-	DynamicCanvas->PlatformData->Mips[0].BulkData.Unlock();
+	DynamicCanvas->GetPlatformData()->Mips[0].BulkData.Unlock();
 	DynamicCanvas->UpdateResource();
 }
 
