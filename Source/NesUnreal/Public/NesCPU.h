@@ -29,6 +29,9 @@ public:
 	uint LastCycleCount = 0;
 	bool bTesting = false;
     bool lastNMI = false;
+    static uint8 GetBit(uint8 Pos, uint8 Reg);
+	static uint8 SetBit(uint8 Pos, uint8 Reg);
+	static uint8 ResetBit(uint8 Pos, uint8 Reg);
     
 private:
 	shared_ptr<NesCPUMMU> M_Mmu;
@@ -91,7 +94,4 @@ private:
     uint8 Lsr(uint8 Opcode, uint8 Data) const;
     uint8 Asl(uint8 Opcode, uint8 Reg) const;
     uint8 Ror(uint8 Opcode, uint8 Reg) const;
-	static uint8 GetBit(uint8 Pos, uint8 Reg);
-	static uint8 SetBit(uint8 Pos, uint8 Reg);
-	static uint8 ResetBit(uint8 Pos, uint8 Reg);
 };
