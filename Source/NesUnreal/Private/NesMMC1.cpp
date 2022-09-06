@@ -88,16 +88,16 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
                 // only bits 14 and 13 of the address matter
                 uint8 registerSelector = (Address >> 13) & 0x3;
                 switch(registerSelector) {
-                    case RegisterSelector::ControlRegister:
+                    case RegisterSelector::ControlRegisterEnum:
                         ControlRegister->Write(ShiftRegister & 0x1F); //Only the 5 bits.
                         break;
-                    case RegisterSelector::ChrBank0Register:
+                    case RegisterSelector::ChrBank0RegisterEnum:
                         ChrBank0Register = ShiftRegister & 0x1F; //Only the 5 bits.
                         break;
-                    case RegisterSelector::ChrBank1Register:
+                    case RegisterSelector::ChrBank1RegisterEnum:
                         ChrBank1Register = ShiftRegister & 0x1F; //Only the 5 bits.
                         break;
-                    case RegisterSelector::PrgBankRegister:
+                    case RegisterSelector::PrgBankRegisterEnum:
                         PrgBankRegister = ShiftRegister & 0x1F; //Only the 5 bits.
                         break;
                     default:
