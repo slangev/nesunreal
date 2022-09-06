@@ -20,7 +20,6 @@ uint8 NesMMC1::GetMirrorMode() {
     return ControlRegister->GetMirrorMode();
 }
 
-
 NesMMC1::~NesMMC1()
 {
 }
@@ -89,16 +88,16 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
                 // only bits 14 and 13 of the address matter
                 uint8 registerSelector = (Address >> 13) & 0x3;
                 switch(registerSelector) {
-                    case 0:
+                    case RegisterSelector::ControlRegister:
                         ControlRegister->Write(ShiftRegister & 0x1F); //Only the 5 bits.
                         break;
-                    case 1:
+                    case RegisterSelector::ChrBank0Register:
                         ChrBank0Register = ShiftRegister & 0x1F; //Only the 5 bits.
                         break;
-                    case 2:
+                    case RegisterSelector::ChrBank1Register:
                         ChrBank1Register = ShiftRegister & 0x1F; //Only the 5 bits.
                         break;
-                    case 3:
+                    case RegisterSelector::PrgBankRegister:
                         PrgBankRegister = ShiftRegister & 0x1F; //Only the 5 bits.
                         break;
                     default:

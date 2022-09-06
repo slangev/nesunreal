@@ -3,7 +3,6 @@
 #pragma once
 
 #include "NesCartController.h"
-#include "NesMMC1ControlRegister.h"
 #include <vector>
 #include <memory>
 #include "CoreMinimal.h"
@@ -11,6 +10,51 @@ using namespace std;
 /**
  * 
  */
+
+class NesMMC1ControlRegister
+{
+public:
+	NesMMC1ControlRegister(){};
+	~NesMMC1ControlRegister(){};
+	uint8 Read() { return M_Data; };
+	void Write(uint8 Data) { 
+		M_Data = Data;
+		M_MirrorMode = Data & 0x03;
+		M_PRGROMBankMode = Data & 0x0C;
+		M_CHRROMBankMode = Data & 0x10;
+	 };
+	uint8 GetMirrorMode() { return M_MirrorMode; };
+	uint8 GetPRGROMBankMode() { return M_PRGROMBankMode; };
+	uint8 GetCHRROMBankMode() { return M_CHRROMBankMode; };
+private:
+	uint8 M_Data = 0x00;
+	uint8 M_MirrorMode = 0x00;
+	uint8 M_PRGROMBankMode = 0x00;
+	uint8 M_CHRROMBankMode = 0x00;
+};
+
+class NesMMC1ControlRegister
+{
+public:
+	NesMMC1ControlRegister(){};
+	~NesMMC1ControlRegister(){};
+	uint8 Read() { return M_Data; };
+	void Write(uint8 Data) { 
+		M_Data = Data;
+		M_MirrorMode = Data & 0x03;
+		M_PRGROMBankMode = Data & 0x0C;
+		M_CHRROMBankMode = Data & 0x10;
+	 };
+	uint8 GetMirrorMode() { return M_MirrorMode; };
+	uint8 GetPRGROMBankMode() { return M_PRGROMBankMode; };
+	uint8 GetCHRROMBankMode() { return M_CHRROMBankMode; };
+private:
+	uint8 M_Data = 0x00;
+	uint8 M_MirrorMode = 0x00;
+	uint8 M_PRGROMBankMode = 0x00;
+	uint8 M_CHRROMBankMode = 0x00;
+};
+
 class NESUNREAL_API NesMMC1 : public NesCartController
 {
 public:
@@ -20,6 +64,12 @@ public:
 	virtual uint8 Read(unsigned short Address) override;
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual uint8 GetMirrorMode() override;
+	enum RegisterSelector : uint8 {
+		ControlRegister = 0,
+		ChrBank0Register,
+		ChrBank1Register,
+		PrgBankRegister
+	};
 private:
 	shared_ptr<vector<uint8>> PRGRomMemory;
     shared_ptr<vector<uint8>> PRGRamMemory;
