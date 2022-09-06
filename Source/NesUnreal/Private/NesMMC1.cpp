@@ -13,11 +13,11 @@ NesMMC1::NesMMC1(shared_ptr<vector<uint8>> PRGRomMemory, shared_ptr<vector<uint8
     this->PRGRamMemory = PRGRamMemory;
     this->ChrRomMemory = ChrRomMemory;
     this->ChrRamMemory = ChrRamMemory;
+    ControlRegister = make_unique<NesMMC1ControlRegister>();
 }
 
 uint8 NesMMC1::GetMirrorMode() {
-    //TODO 
-    return -1; // The mode is determine by the header 
+    return ControlRegister->GetMirrorMode();
 }
 
 
@@ -75,7 +75,7 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
         if(((LoadRegister >> 7) & 0x1) == 0x1) {
             // Reset shift register and write Control with (Control OR $0C), locking PRG ROM at $C000-$FFFF to the last bank.
             ShiftRegister = 0x10;
-            ControlRegister = ControlRegister | 0x0C;
+            ControlRegister->Write(ControlRegister->Read() | 0x0C);
         } 
         // Only on the fifth write does the address matter, and even then, only bits 14 and 13 of the address matter
         else {
@@ -90,7 +90,7 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
                 uint8 registerSelector = (Address >> 13) & 0x3;
                 switch(registerSelector) {
                     case 0:
-                        ControlRegister = ShiftRegister & 0x1F; //Only the 5 bits.
+                        ControlRegister->Write(ShiftRegister & 0x1F); //Only the 5 bits.
                         break;
                     case 1:
                         ChrBank0Register = ShiftRegister & 0x1F; //Only the 5 bits.
@@ -106,6 +106,14 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
                 }
                 // After the fifth write, the shift register is cleared automatically, so a write to the shift register with bit 7 on to reset it is not needed. 
                 ShiftRegister = 0x10; // SR gets cleared
+            }
+            // Write LSB from LR into SR. The Registers inside MMC1 are 5-bit wide. 
+            else {
+                ShiftRegister = ShiftRegister >> 1;
+                uint8 bit = LoadRegister & 0x1;
+                if(bit == 0x1) {
+                    ShiftRegister = FNesCPU::SetBit(5,ShiftRegister);
+                }
             }
         }
     }
