@@ -59,4 +59,8 @@ private:
 	uint8 ChrBank0Register = 0;
 	uint8 ChrBank1Register = 0;
 	uint8 PrgBankRegister = 0;
+	uint32 ROM_BANK_SIZE_32KB = 0x8000;
+	uint32 ROM_BANK_SIZE_16KB = 0x4000;
+	uint32 ROM_BANK_SIZE_8KB = 0x2000;
+	uint32 ROM_BANK_SIZE_4KB = 0x1000;
 };
