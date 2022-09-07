@@ -35,7 +35,7 @@ FNesCPU::FNesCPU()
     TotalCycles = 7;
 }
 
-FNesCPU::FNesCPU(bool bTesting)
+FNesCPU::FNesCPU(bool bTesting, bool bLoggingCPU)
 {
     P = make_unique<FNesPRegister>();
     PC = 0x8000;
@@ -45,6 +45,7 @@ FNesCPU::FNesCPU(bool bTesting)
     SP = 0xFD;
     TotalCycles = 7;
     this->bTesting = bTesting;
+    this->bLoggingCPU = bLoggingCPU;
 }
 
 FNesCPU::~FNesCPU()
@@ -52,7 +53,7 @@ FNesCPU::~FNesCPU()
 }
 
 void FNesCPU::PrintNesTestLogLine(uint8 Opcode) {
-    if(bTesting) {
+    if(bLoggingCPU) {
         string Result = to_string(LineNumber++) + " ";
         stringstream StreamPC;
         stringstream StreamOpCode;
@@ -61,7 +62,7 @@ void FNesCPU::PrintNesTestLogLine(uint8 Opcode) {
         stringstream StreamY;
         stringstream StreamP;
         stringstream StreamSP;
-        StreamPC << setfill ('0') << setw(sizeof(unsigned short)*2) << hex << PC-1;
+        StreamPC << setfill ('0') << setw(sizeof(unsigned short)*2) << hex << PC;
         StreamOpCode << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Opcode);
         StreamA << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(A);
         StreamX << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(X);

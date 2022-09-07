@@ -20,8 +20,8 @@ public:
 	void Write(uint8 Data) { 
 		M_Data = Data;
 		M_MirrorMode = Data & 0x03;
-		M_PRGROMBankMode = Data & 0x0C;
-		M_CHRROMBankMode = Data & 0x10;
+		M_PRGROMBankMode = (Data & 0x0C) >> 2;
+		M_CHRROMBankMode = (Data & 0x10) >> 4;
 	 };
 	uint8 GetMirrorMode() { return M_MirrorMode; };
 	uint8 GetPRGROMBankMode() { return M_PRGROMBankMode; };
@@ -37,7 +37,7 @@ class NESUNREAL_API NesMMC1 : public NesCartController
 {
 public:
 	NesMMC1();
-	NesMMC1(shared_ptr<vector<uint8>> PRGRomMemory, shared_ptr<vector<uint8>> PRGRamMemory, shared_ptr<vector<uint8>> ChrRomMemory, shared_ptr<vector<uint8>> ChrRamMemory);
+	NesMMC1(shared_ptr<vector<uint8>> PrgRomMemory, shared_ptr<vector<uint8>> PrgRamMemory, shared_ptr<vector<uint8>> ChrRomMemory, shared_ptr<vector<uint8>> ChrRamMemory);
 	~NesMMC1();
 	virtual uint8 Read(unsigned short Address) override;
 	virtual void Write(unsigned short Address, uint8 Data) override;
@@ -49,8 +49,8 @@ public:
 		PrgBankRegisterEnum
 	};
 private:
-	shared_ptr<vector<uint8>> PRGRomMemory;
-    shared_ptr<vector<uint8>> PRGRamMemory;
+	shared_ptr<vector<uint8>> PrgRomMemory;
+    shared_ptr<vector<uint8>> PrgRamMemory;
     shared_ptr<vector<uint8>> ChrRomMemory;
 	shared_ptr<vector<uint8>> ChrRamMemory;
 	uint8 LoadRegister = 0;

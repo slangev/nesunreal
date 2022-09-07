@@ -29,8 +29,8 @@ private:
 	void PrintRomData();
 	static void Log(string Msg);
 	unique_ptr<NesCartController> Mbc;
-	shared_ptr<vector<uint8>> PRGRomMemory;
-	shared_ptr<vector<uint8>> PRGRamMemory;
+	shared_ptr<vector<uint8>> PrgRomMemory;
+	shared_ptr<vector<uint8>> PrgRamMemory;
 	shared_ptr<vector<uint8>> ChrRomMemory;
 	shared_ptr<vector<uint8>> ChrRamMemory;
 };

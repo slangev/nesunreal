@@ -13,7 +13,7 @@ class NESUNREAL_API FNesCPU
 {
 public:
 	FNesCPU();
-    explicit FNesCPU(bool bTesting);
+    explicit FNesCPU(bool bTesting, bool bLoggingCPU);
 	~FNesCPU();
 	void AttachMemory(shared_ptr<NesCPUMMU> Mmu);
 	void HandleInterrupts();
@@ -28,6 +28,7 @@ public:
     uint8 Y;
 	uint LastCycleCount = 0;
 	bool bTesting = false;
+    bool bLoggingCPU = false;
     bool lastNMI = false;
     static uint8 GetBit(uint8 Pos, uint8 Reg);
 	static uint8 SetBit(uint8 Pos, uint8 Reg);

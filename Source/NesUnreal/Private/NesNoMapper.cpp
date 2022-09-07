@@ -7,9 +7,9 @@ NesNoMapper::NesNoMapper()
 {
 }
 
-NesNoMapper::NesNoMapper(shared_ptr<vector<uint8>> PRGRomMemory, shared_ptr<vector<uint8>> PRGRamMemory, shared_ptr<vector<uint8>> ChrRomMemory, shared_ptr<vector<uint8>> ChrRamMemory){
-    this->PRGRomMemory = PRGRomMemory;
-    this->PRGRamMemory = PRGRamMemory;
+NesNoMapper::NesNoMapper(shared_ptr<vector<uint8>> PrgRomMemory, shared_ptr<vector<uint8>> PrgRamMemory, shared_ptr<vector<uint8>> ChrRomMemory, shared_ptr<vector<uint8>> ChrRamMemory){
+    this->PrgRomMemory = PrgRomMemory;
+    this->PrgRamMemory = PrgRamMemory;
     this->ChrRomMemory = ChrRomMemory;
     this->ChrRamMemory = ChrRamMemory;
 }
@@ -36,12 +36,12 @@ uint8 NesNoMapper::Read(unsigned short Address) {
     }
     // Read from SRAM 
     else if (Address >= 0x6000 && Address <= 0x7FFF){
-        returnData = PRGRamMemory->at(Address - 0x6000);
+        returnData = PrgRamMemory->at(Address - 0x6000);
     }
     // Read from PRGROM
     else if (Address >= 0x8000 && Address <= 0xFFFF){
-        uint32 index = (Address - 0x8000) & (PRGRomMemory->size() - 1);
-        returnData = PRGRomMemory->at(index);
+        uint32 index = (Address - 0x8000) & (PrgRomMemory->size() - 1);
+        returnData = PrgRomMemory->at(index);
     }
     return returnData & 0xFF;
 }
@@ -58,6 +58,6 @@ void NesNoMapper::Write(unsigned short Address, uint8 Data) {
     }
     // Cart PRGRAM
     else if (Address >= 0x6000 && Address <= 0x7FFF){
-        PRGRamMemory->at(Address - 0x6000) = Data;
+        PrgRamMemory->at(Address - 0x6000) = Data;
     }
 }

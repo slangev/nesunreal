@@ -21,7 +21,7 @@ NesCart::NesCart(FString PathToRom) {
 }
 
 void NesCart::PrintRomData() {
-	for(const auto &s : *PRGRomMemory) {
+	for(const auto &s : *PrgRomMemory) {
 		UE_LOG(LogNesCart, Log, TEXT("%X"), s);
     }
 }
@@ -46,7 +46,7 @@ void NesCart::LoadRom(FString PathToRom) {
 		UE_LOG(LogNesCart, Log, TEXT("Found file."));
 	}
     Header = make_unique<FNesHeader>();
-	PRGRomMemory = make_shared<vector<uint8>>();
+	PrgRomMemory = make_shared<vector<uint8>>();
 	ChrRomMemory = make_shared<vector<uint8>>();
 	Header->Nes += static_cast<char>(romData[0]);
 	Header->Nes += static_cast<char>(romData[1]);
@@ -61,7 +61,7 @@ void NesCart::LoadRom(FString PathToRom) {
 	
     const int RomMemorySize = 0x4000 * Header->NumberOfPrgRoms; //16KB of banks
 	for(int i = 0x10; i < RomMemorySize+0x10; i++) {
-		PRGRomMemory->push_back(romData[i]);
+		PrgRomMemory->push_back(romData[i]);
 	}
 
     const int VRomMemorySize = 0x2000 * Header->NumberOfChrRoms; //8KB of banks
@@ -78,10 +78,10 @@ void NesCart::LoadRom(FString PathToRom) {
 	Header->RomControlByteTwo = romData[7];
 	Header->NumberOfRamBanks = romData[8];
 	if(Header->NumberOfRamBanks == 0) {
-		PRGRamMemory = make_shared<vector<uint8>>(0x2000);
+		PrgRamMemory = make_shared<vector<uint8>>(0x2000);
 	} else {
 		uint RAMMemorySize = 0x2000 * Header->NumberOfRamBanks;
-		PRGRamMemory = make_shared<vector<uint8>>(RAMMemorySize);
+		PrgRamMemory = make_shared<vector<uint8>>(RAMMemorySize);
 	}
 	Header->Mapper = (Header->RomControlByteTwo & 0xF0) | (Header->RomControlByteOne & 0xF0) >> 4;
     const uint8 Mirror = static_cast<uint8>(Header->RomControlByteOne & 0x1);
@@ -92,11 +92,11 @@ void NesCart::LoadRom(FString PathToRom) {
 	UE_LOG(LogNesCart,Warning,TEXT("MAPPER: %d"),Header->Mapper);
 	switch(Header->Mapper) {
 		case 0:
-			Mbc = make_unique<NesNoMapper>(PRGRomMemory,PRGRamMemory,ChrRomMemory, ChrRamMemory);
-			//Log(to_string(PRGRomMemory->size()));
+			Mbc = make_unique<NesNoMapper>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory);
+			//Log(to_string(PrgRomMemory->size()));
 			break;
 		case 1:
-			Mbc = make_unique<NesMMC1>(PRGRomMemory,PRGRamMemory,ChrRomMemory, ChrRamMemory);
+			Mbc = make_unique<NesMMC1>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory);
 			break;
 		default:
 			break;

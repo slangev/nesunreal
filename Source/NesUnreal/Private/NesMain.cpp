@@ -52,7 +52,7 @@ void ANesMain::BeginPlay()
 	M_Ppu = make_shared<NesPPU>(256, 240, 4);
 	M_Mmu = make_shared<NesCPUMMU>();
 	M_Controller = make_shared<NesController>();
-	M_Cpu = make_unique<FNesCPU>(bTesting);
+	M_Cpu = make_unique<FNesCPU>(bTesting, bLoggingCPU);
 	M_Cart = make_shared<NesCart>(pathToRom);
 	M_PpuMmu = make_shared<NesPPUMMU>(M_Cart);
 	UMaterialInstanceDynamic* Mat = M_Screen->CreateDynamicMaterialInstance(

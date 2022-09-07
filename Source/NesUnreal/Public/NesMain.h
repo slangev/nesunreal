@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditAnywhere,Meta = (Bitmask))
     bool bTesting;
 
+	UPROPERTY(EditAnywhere,Meta = (Bitmask))
+    bool bLoggingCPU;
+
 	std::shared_ptr<NesPPU> M_Ppu;
 	std::shared_ptr<NesCart> M_Cart;
 	std::shared_ptr<NesCPUMMU> M_Mmu;
