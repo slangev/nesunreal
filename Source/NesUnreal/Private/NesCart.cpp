@@ -93,7 +93,6 @@ void NesCart::LoadRom(FString PathToRom) {
 	switch(Header->Mapper) {
 		case 0:
 			Mbc = make_unique<NesNoMapper>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory);
-			//Log(to_string(PrgRomMemory->size()));
 			break;
 		case 1:
 			Mbc = make_unique<NesMMC1>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory);

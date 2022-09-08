@@ -14,6 +14,7 @@ NesMMC1::NesMMC1(shared_ptr<vector<uint8>> PrgRomMemory, shared_ptr<vector<uint8
     this->ChrRomMemory = ChrRomMemory;
     this->ChrRamMemory = ChrRamMemory;
     ControlRegister = make_unique<NesMMC1ControlRegister>();
+    ControlRegister->Write(0x0C);
 }
 
 uint8 NesMMC1::GetMirrorMode() {
@@ -80,23 +81,32 @@ uint8 NesMMC1::Read(unsigned short Address) {
 
         // switch 8 KB at a time
         if(ControlRegister->GetCHRROMBankMode() == 0) {
-            bankNumber = ChrBank0Register & 0x1E; // Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
-            uint32 index = ((ROM_BANK_SIZE_8KB * bankNumber | (Address & 0x1FFF))) & (ChrRomMemory->size() - 1);
-            returnData = ChrRomMemory->at(index);
+            if(ChrRamMemory) {
+                returnData = ChrRamMemory->at((Address & 0x1FFF) & (ChrRomMemory->size() - 1));
+            } else {
+                bankNumber = ChrBank0Register & 0x1E; // Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
+                uint32 index = ((ROM_BANK_SIZE_8KB * bankNumber | (Address & 0x1FFF))) & (ChrRomMemory->size() - 1);
+                returnData = ChrRomMemory->at(index);
+            }
         } 
         // switch two separate 4 KB banks
         else if(ControlRegister->GetCHRROMBankMode() == 1) {
-            // PPU $0000-$0FFF: 4 KB switchable CHR bank
-            if (Address >= 0x0000 && Address <= 0x0FFF) {
-                bankNumber = ChrBank0Register & 0x1F; // Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
-                uint32 index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x0FFF))) & (ChrRomMemory->size() - 1);
-                returnData = ChrRomMemory->at(index);
+            if(ChrRamMemory) {
+                returnData = ChrRamMemory->at((Address & 0x0FFF) & (ChrRomMemory->size() - 1));
             }
-            // PPU $1000-$1FFF: 4 KB switchable CHR bank
-            else if (Address >= 0x1000 && Address <= 0x1FFF) {
-                bankNumber = ChrBank1Register & 0x1F; // Select 4 KB CHR bank at PPU $1000 (ignored in 8 KB mode)
-                uint32 index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x0FFF))) & (ChrRomMemory->size() - 1);
-                returnData = ChrRomMemory->at(index);
+            // PPU $0000-$0FFF: 4 KB switchable CHR bank 
+            else {
+                if (Address >= 0x0000 && Address <= 0x0FFF) {
+                    bankNumber = ChrBank0Register & 0x1F; // Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
+                    uint32 index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x0FFF))) & (ChrRomMemory->size() - 1);
+                    returnData = ChrRomMemory->at(index);
+                }
+                // PPU $1000-$1FFF: 4 KB switchable CHR bank
+                else if (Address >= 0x1000 && Address <= 0x1FFF) {
+                    bankNumber = ChrBank1Register & 0x1F; // Select 4 KB CHR bank at PPU $1000 (ignored in 8 KB mode)
+                    uint32 index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x0FFF))) & (ChrRomMemory->size() - 1);
+                    returnData = ChrRomMemory->at(index);
+                }
             }
         }
     }
@@ -110,7 +120,7 @@ void NesMMC1::Write(unsigned short Address, uint8 Data) {
         // MMC1B and later: PRG RAM chip enable (0: enabled; 1: disabled; ignored on MMC1A)
         uint8 bit = FNesCPU::GetBit(5,PrgBankRegister);
 
-        PrgRamMemory->at(Address - 0x6000) = Data;
+        PrgRamMemory->at(Address & 0x1FFF) = Data;
     } 
     // CPU $8000-$FFFF is connected to a common shift register
     else if(Address >= 0x8000 && Address <= 0xFFFF) {
