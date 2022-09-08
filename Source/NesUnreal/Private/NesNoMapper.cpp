@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+//TODO: FIX MIRROR MODE
 
 
 #include "NesNoMapper.h"
