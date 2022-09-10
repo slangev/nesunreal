@@ -244,7 +244,7 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
                 break;
             case 0x16:
                 {
-                    const unsigned short Address = M_Mmu->Read(PC++) + X;
+                    const unsigned short Address = (M_Mmu->Read(PC++) + X) & 0xFF;
                     M_Mmu->Write(Address, Asl(Opcode,M_Mmu->Read(Address & 0xFF)));
                     break;
                 }
@@ -374,7 +374,7 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
                 }
             case 0x36:
                 {
-                    const unsigned short Address = M_Mmu->Read(PC++) + X;
+                    const unsigned short Address = (M_Mmu->Read(PC++) + X) & 0xFF;
                     M_Mmu->Write(Address, Rol(Opcode,M_Mmu->Read(Address & 0xFF)));
                     break;
                 }
@@ -508,13 +508,18 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
                 }
             case 0x56:
                 {
-                    const unsigned short Address = M_Mmu->Read(PC++) + X;
+                    const unsigned short Address = (M_Mmu->Read(PC++) + X) & 0xFF;
                     M_Mmu->Write(Address, Lsr(Opcode,M_Mmu->Read(Address & 0xFF)));
                     break;
                 }
             case 0x57:
                 {
                     Sre(Opcode);
+                    break;
+                }
+            case 0x58:
+                {
+                    Cli(Opcode);
                     break;
                 }
             case 0x59:
@@ -640,7 +645,7 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
                 }
             case 0x76:
                 {
-                    const unsigned short Address = M_Mmu->Read(PC++) + X;
+                    const unsigned short Address = (M_Mmu->Read(PC++) + X) & 0xFF;
                     M_Mmu->Write(Address, Ror(Opcode,M_Mmu->Read(Address & 0xFF)));
                     break;
                 }
@@ -1008,7 +1013,7 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
                 }
             case 0xD6:
                 {
-                    const unsigned short Address = M_Mmu->Read(PC++) + X;
+                    const unsigned short Address = (M_Mmu->Read(PC++) + X) & 0xFF;
                     M_Mmu->Write(Address, Dec(Opcode, M_Mmu->Read(Address & 0xFF)));
                     break;
                 }
@@ -1151,7 +1156,7 @@ uint FNesCPU::HandleInstructions(const uint8 Opcode) {
                 }
             case 0xF6:
                 {
-                    const unsigned short Address = M_Mmu->Read(PC++) + X;
+                    const unsigned short Address = (M_Mmu->Read(PC++) + X) & 0xFF;
                     M_Mmu->Write(Address, Inc(Opcode, M_Mmu->Read(Address & 0xFF)));
                     break;
                 }
@@ -1965,6 +1970,10 @@ void FNesCPU::Clc(uint8 Opcode) const {
     P->ResetFlag(P->CFlag);
 }
 
+void FNesCPU::Cli(uint8 Opcode) const {
+    P->ResetFlag(P->IFlag);
+}
+
 void FNesCPU::Cld(uint8 Opcode) const {
     P->ResetFlag(P->DFlag);
 }
@@ -2052,7 +2061,9 @@ void FNesCPU::Cmp(const uint8 Opcode) {
 }
 
 uint8 FNesCPU::Inc(const uint8 Opcode, uint8 Reg) {
+    uint8 input = Reg;
     Reg +=1;
+    Reg = Reg & 0xFF;
     (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
     (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
     return Reg;
@@ -2060,6 +2071,7 @@ uint8 FNesCPU::Inc(const uint8 Opcode, uint8 Reg) {
 
 uint8 FNesCPU::Dec(const uint8 Opcode, uint8 Reg) {
     Reg -=1;
+    Reg = Reg & 0xFF;
     (Reg == 0) ? P->SetFlag(P->ZFlag) : P->ResetFlag(P->ZFlag);
     (GetBit(7,Reg) == 1) ? P->SetFlag(P->NFlag) : P->ResetFlag(P->NFlag);
     return Reg;

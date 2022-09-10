@@ -18,35 +18,6 @@ NesPPUMMU::~NesPPUMMU()
 {
 }
 
-uint ReadNamespace() {
-        // int VRAMAddress = 0;
-        // int mirrorMode = cart->GetMirrorMode();
-        // switch (mirrorMode){
-        //     case 0:
-        //         // Single screen, lower bank
-        //         VRAMAddress = Address & 0x3FF;
-        //         break;
-        //     case 1:
-        //         // Single screen, upper bank
-        //         VRAMAddress = (Address & 0x3FF) | 0x400;
-        //         break;
-        //     case 2:
-        //         // Vertical
-        //         VRAMAddress = Address & 0x7FF;
-        //         break;
-        //     case 3:
-        //         // Horizontal
-        //         VRAMAddress = Address & 0x3FF;
-        //         if ((Address & 0x800) > 0){
-        //             VRAMAddress |= 0x400;
-        //         }
-        //         break;
-        // }
-
-        // return nameSpaceTable->at(VRAMAddress);
-        return 0;
-}
-
 uint8 NesPPUMMU::Read(unsigned short Address) const {
 
     //Read from pattern table/chrrom/chrram
@@ -76,6 +47,18 @@ uint8 NesPPUMMU::Read(unsigned short Address) const {
                 VRAMAddress = Address & 0x3FF;
                 if ((Address & 0x800) > 0){
                     VRAMAddress |= 0x400;
+                }
+                break;
+            case 0xFF:
+                VRAMAddress = Address & 0x3FF; // (namespacetable.size() - 1);
+                if(cart->Header->Mirroring == 1) {
+                    if(Address >= 0x2400 && Address < 0x3000) {
+                        VRAMAddress |= 0x400;
+                    }
+                } else if (cart->Header->Mirroring == 0) {
+                    if(Address >= 0x2800 && Address < 0x3000) {
+                        VRAMAddress |= 0x400;
+                    }
                 }
                 break;
         }
@@ -131,7 +114,20 @@ void NesPPUMMU::Write(unsigned short Address, uint8 Data) const {
                     VRAMAddress |= 0x400;
                 }
                 break;
+            case 0xFF:
+                VRAMAddress = Address & 0x3FF; // (namespacetable.size() - 1);
+                if(cart->Header->Mirroring == 1) {
+                    if(Address >= 0x2400 && Address < 0x3000) {
+                        VRAMAddress |= 0x400;
+                    }
+                } else if (cart->Header->Mirroring == 0) {
+                    if(Address >= 0x2800 && Address < 0x3000) {
+                        VRAMAddress |= 0x400;
+                    }
+                }
+                break;
         }
+
         nameSpaceTable->at(VRAMAddress) = Data;
     } 
     // Palette Ram

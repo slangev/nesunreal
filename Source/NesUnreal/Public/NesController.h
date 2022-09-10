@@ -32,6 +32,7 @@ private:
 
 	uint8 ControllerOneLatchedState = 0;
 	uint8 ControllerOneCurrentState = 0;
+	bool bIsLatched = false;
 
 	uint8 ControllerTwoLatchedState = 0;
 	uint8 ControllerTwoCurrentState = 0;

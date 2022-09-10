@@ -20,7 +20,12 @@ void NesController::Write(unsigned Address, uint8 Data)
 {
     if(Address == 0x4016) 
     {
-        ControllerOneLatchedState = ControllerOneCurrentState;
+        if((Data & 0x1) == 0x0) {
+            ControllerOneLatchedState = ControllerOneCurrentState;  
+            bIsLatched = true;
+        } else {
+            bIsLatched = false;
+        }
     }
 }
 
@@ -29,10 +34,12 @@ uint8 NesController::Read(unsigned Address)
     uint8 ReadBit = 0x0;
     if(Address == 0x4016) 
     {
-        ReadBit = (ControllerOneLatchedState & 0x80) >> 7; // get MOST significant bit.
-        ControllerOneLatchedState = ControllerOneLatchedState << 1;
+        if(bIsLatched) {
+            ReadBit = (ControllerOneLatchedState & 0x80) >> 7; // get MOST significant bit.
+            ControllerOneLatchedState = ControllerOneLatchedState << 1;
+        }
     }
-    return ReadBit;
+    return ReadBit | 0x40;
 }
 
 void NesController::Test() {

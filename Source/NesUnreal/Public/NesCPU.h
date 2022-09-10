@@ -88,6 +88,7 @@ private:
     void Sei(uint8 Opcode) const;
     void Sed(uint8 Opcode) const;
     void Clc(uint8 Opcode) const;
+    void Cli(uint8 Opcode) const;
     void Cld(uint8 Opcode) const;
     void Clv(uint8 Opcode) const;
     void Eor(uint8 Opcode);
