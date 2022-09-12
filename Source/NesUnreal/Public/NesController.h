@@ -27,7 +27,6 @@ public:
 	uint8 Read(unsigned Address); // return one bit at a time.
 	void SetKey(uint8 Key);
 	void ResetKey(uint8 Key);
-	void Test();
 private:
 
 	uint8 ControllerOneLatchedState = 0;

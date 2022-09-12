@@ -107,7 +107,7 @@ void NesPPU::checkSpriteOverflow(int LY) {
 			spritecount++;
 		}
 	}
-	if(spritecount > 8) {
+	if(spritecount >= 9) {
 		ppustatus.spriteOverflow = true;
 	}
 }
@@ -303,7 +303,7 @@ void NesPPU::drawSprites(int Scanline){
 		int PosX = M_Mmu->oam->at(i*4 + 3);
 		if((LY >= PosY) && (LY < (PosY+ysize))) {
             spritecount++;
-			if(spritecount < 8) {
+			if(spritecount < 9) {
 			uint8 SpritePriorityBit = PPURegGetBit(5,attributes);
 			uint8 xFlipBit = PPURegGetBit(6,attributes);
 			uint8 yFlipBit = PPURegGetBit(7,attributes);
@@ -360,7 +360,7 @@ void NesPPU::drawSprites(int Scanline){
 		}
 		}
 	}
-	if(spritecount > 8) {
+	if(spritecount >= 9) {
 		ppustatus.spriteOverflow = true;
 	}
 }

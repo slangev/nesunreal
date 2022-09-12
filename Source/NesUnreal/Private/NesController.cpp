@@ -42,10 +42,6 @@ uint8 NesController::Read(unsigned Address)
     return ReadBit | 0x40;
 }
 
-void NesController::Test() {
-    UE_LOG(LogTemp,Warning,TEXT("HEREController"));
-}
-
 void NesController::SetKey(uint8 Key) 
 {
    ControllerOneCurrentState = static_cast<uint8>(ControllerOneCurrentState | (1 << Key));
