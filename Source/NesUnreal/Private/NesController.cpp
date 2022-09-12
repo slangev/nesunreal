@@ -35,8 +35,10 @@ uint8 NesController::Read(unsigned Address)
     if(Address == 0x4016) 
     {
         if(bIsLatched) {
-            ReadBit = (ControllerOneLatchedState & 0x80) >> 7; // get MOST significant bit.
+            ReadBit = (ControllerOneLatchedState & 0x80) >> 7; // get MOST significant bit from latched state.
             ControllerOneLatchedState = ControllerOneLatchedState << 1;
+        } else {
+            ReadBit = (ControllerOneCurrentState & 0x80) >> 7; // get MOST significant bit from current state. 
         }
     }
     return ReadBit | 0x40;
