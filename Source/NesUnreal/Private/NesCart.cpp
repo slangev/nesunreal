@@ -73,6 +73,7 @@ void NesCart::LoadRom(FString PathToRom) {
 	//NumberOfChrRoms/romData[5]: Size of CHR ROM in 8 KB units (Value 0 means the board uses CHR RAM)
 	if(Header->NumberOfChrRoms == 0) {
 		ChrRamMemory = make_shared<vector<uint8>>(0x2000);
+		UE_LOG(LogNesCart, Warning, TEXT("ChrRamMemory in Use!"));
 	}
 
 	Header->RomControlByteOne = romData[6];

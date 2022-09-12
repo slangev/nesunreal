@@ -402,13 +402,7 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 				((M_Mmu->Read(patternTable + (tilePointer << 4) + (pixelY + 8)) >> (7 - pixelX)) & 0x1) << 1;
 
 		FColor PixelColor;
-		if(lineNumber == 116745) {
-			t1 = M_Mmu->Read(patternTable + (tilePointer << 4) + pixelY);
-			t2 = M_Mmu->Read(patternTable + (tilePointer << 4) + pixelY);
-			paletteIndex = (attribute << 2) | ((M_Mmu->Read(patternTable + (tilePointer << 4) + pixelY) >> (7 - pixelX)) & 0x1)|
-				((M_Mmu->Read(patternTable + (tilePointer << 4) + (pixelY + 8)) >> (7 - pixelX)) & 0x1) << 1;
-			UE_LOG(LogNesPPU,Warning,TEXT("%d paletteIndex: %d"),lineNumber++, paletteIndex);
-		}
+
 		if ((paletteIndex & 0x3) != 0 && !(!ppumask.showBGLeft && i < 8)){
 			PixelColor = palettes.at(M_Mmu->Read(0x3F00 + paletteIndex) & 0x3F);
 			VideoMemory->at(i)->at(lineCount).pixel = PixelColor;
@@ -472,7 +466,7 @@ void NesPPU::Step(uint Cycle) {
 					int loopyYscroll = (((loopyV >> 12) & 0x7)|(((loopyV >> 5) & 0x7) << 3)|
 							(((loopyV >> 8) & 0x3) << 6)) + (baseNameTableY ? 240:0);
 					drawBGScanLine(loopyXscroll, loopyYscroll, lineCount);
-					//checkSpriteOverflow(lineCount);
+					checkSpriteOverflow(lineCount);
 				}
 				if (ppumask.showSprites) {
 					drawSprites(lineCount);
