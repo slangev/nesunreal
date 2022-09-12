@@ -3,6 +3,7 @@
 #include "NesCart.h"
 #include "NesNoMapper.h"
 #include "NesTestCart.h"
+#include "NesCNROM.h"
 #include "NesMMC1.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogNesCart,Log,All)
@@ -96,6 +97,9 @@ void NesCart::LoadRom(FString PathToRom) {
 			break;
 		case 1:
 			Mbc = make_unique<NesMMC1>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory);
+			break;
+		case 3:
+			Mbc = make_unique<NesCNROM>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory);
 			break;
 		default:
 			break;

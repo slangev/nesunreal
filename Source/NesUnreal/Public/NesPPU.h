@@ -107,6 +107,7 @@ private:
     // Internal stuff
     int lineCount = -1;     // Tracking what line the PPU is apparently on
     int cycleCount = 0;     // Track amount of cycles we've gone through
+	int lineNumber = 1;
 
 	// PPUData read buffer
     uint8 PPUDataReadBuffer = 0x00;

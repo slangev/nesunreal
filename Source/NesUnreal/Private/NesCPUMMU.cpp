@@ -122,6 +122,7 @@ uint8 NesCPUMMU::Read(const unsigned short Address) {
     else if (Address == 0x4015)
     {
         M_Sound->Read(Address);
+        return 0x00;
     }
     // Controllers
     else if (Address >= 0x4016 && Address <= 0x4017) {

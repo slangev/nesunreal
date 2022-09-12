@@ -15,7 +15,8 @@
 			"coroutine": "cpp",
 			"memory": "cpp",
 			"*.ipp": "cpp",
-			"cstddef": "cpp"
+			"cstddef": "cpp",
+			"vector": "cpp"
 		}
 	},
 	"extensions": {

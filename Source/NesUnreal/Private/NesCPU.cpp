@@ -85,6 +85,8 @@ void FNesCPU::PrintNesTestLogLine(uint8 Opcode) {
         FString DebugResult(Result.c_str());
         DebugResult = DebugResult.ToUpper();
         UE_LOG(LogNesCPU, Log, TEXT("%s"), *DebugResult);
+    } else {
+        LineNumber++;
     }
 }
 
@@ -1540,7 +1542,7 @@ void FNesCPU::Store(const uint8 Opcode, const uint8 Reg) {
             break;
         }
         case 0x91: {
-            const unsigned short Address = GetIndirectIndexed(Y,true);
+            const unsigned short Address = GetIndirectIndexed(Y,false);
             M_Mmu->Write(Address,Reg);
             break;
         }
