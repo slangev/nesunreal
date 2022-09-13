@@ -304,60 +304,60 @@ void NesPPU::drawSprites(int Scanline){
 		if((LY >= PosY) && (LY < (PosY+ysize))) {
             spritecount++;
 			if(spritecount < 9) {
-			uint8 SpritePriorityBit = PPURegGetBit(5,attributes);
-			uint8 xFlipBit = PPURegGetBit(6,attributes);
-			uint8 yFlipBit = PPURegGetBit(7,attributes);
-			int line = LY - PosY;
-			if(yFlipBit == 1) {
-				line = ysize - line - 1;
+				uint8 SpritePriorityBit = PPURegGetBit(5,attributes);
+				uint8 xFlipBit = PPURegGetBit(6,attributes);
+				uint8 yFlipBit = PPURegGetBit(7,attributes);
+				int line = LY - PosY;
+				if(yFlipBit == 1) {
+					line = ysize - line - 1;
+				}
+				unsigned short tileLocation = patternTable + (tileID * 16) + (line);
+				// Read two bytes of data. These bytes determine the color of the pixel
+				uint8 Data1 = M_Mmu->Read(tileLocation);
+				uint8 Data2 = M_Mmu->Read(tileLocation + 8);
+				for (int tilePixel = 7; tilePixel >= 0; tilePixel--) {
+					int colorBit = tilePixel;
+					if (xFlipBit == 1) {
+						colorBit -= 7;
+						colorBit *= -1;
+					}
+
+					uint8 bitFromData1 = PPURegGetBit(colorBit,Data1);
+					uint8 bitFromData2 = PPURegGetBit(colorBit,Data2);
+					uint8 colorNum = 0;
+					if(bitFromData1 == 1) {
+						colorNum = PPURegSetBit(0,colorNum);
+					}
+					if(bitFromData2 == 1) {
+						colorNum = PPURegSetBit(1,colorNum);
+					}
+					
+					uint8 msbits = attributes & 0x3;
+					int paletteIndex = (msbits << 2) | colorNum;
+					int xPix = 0 - tilePixel;
+					xPix += 7;
+					uint16 PixelPos = static_cast<uint16>(PosX + xPix);
+
+					if ((LY<0)||(LY>239)||(PixelPos<0)||(PixelPos>255)) {
+						continue;
+					}
+					//0x3F10 is start of Sprite palette
+					FColor drawPixel = palettes.at(M_Mmu->Read(0x3F10 + paletteIndex) & 0x3F);
+					if(i == 0 && ppumask.showBG && !VideoMemory->at(PixelPos)->at(LY).bIsTransparent && colorNum != 0) {
+						ppustatus.spriteZeroHit = true;
+					}
+
+					if(!ppumask.showBGLeft && PixelPos < 8)
+					{
+						continue;
+					}
+					// If the pixel is 0 before template is applied, ignore it.
+					if(colorNum == 0 || (!VideoMemory->at(PixelPos)->at(LY).bIsTransparent && SpritePriorityBit == 1)) {
+						continue;
+					}
+					VideoMemory->at(PixelPos)->at(LY).pixel = drawPixel;
+				}
 			}
-			unsigned short tileLocation = patternTable + (tileID * 16) + (line);
-			// Read two bytes of data. These bytes determine the color of the pixel
-			uint8 Data1 = M_Mmu->Read(tileLocation);
-			uint8 Data2 = M_Mmu->Read(tileLocation + 8);
-			for (int tilePixel = 7; tilePixel >= 0; tilePixel--) {
-				int colorBit = tilePixel;
-				if (xFlipBit == 1) {
-					colorBit -= 7;
-					colorBit *= -1;
-				}
-
-				uint8 bitFromData1 = PPURegGetBit(colorBit,Data1);
-				uint8 bitFromData2 = PPURegGetBit(colorBit,Data2);
-				uint8 colorNum = 0;
-				if(bitFromData1 == 1) {
-					colorNum = PPURegSetBit(0,colorNum);
-				}
-				if(bitFromData2 == 1) {
-					colorNum = PPURegSetBit(1,colorNum);
-				}
-				
-				uint8 msbits = attributes & 0x3;
-				int paletteIndex = (msbits << 2) | colorNum;
-				int xPix = 0 - tilePixel;
-				xPix += 7;
-				uint16 PixelPos = static_cast<uint16>(PosX + xPix);
-
-				if ((LY<0)||(LY>239)||(PixelPos<0)||(PixelPos>255)) {
-					continue;
-				}
-				//0x3F10 is start of Sprite palette
-				FColor drawPixel = palettes.at(M_Mmu->Read(0x3F10 + paletteIndex) & 0x3F);
-				if(i == 0 && ppumask.showBG && !VideoMemory->at(PixelPos)->at(LY).bIsTransparent && colorNum != 0) {
-					ppustatus.spriteZeroHit = true;
-				}
-
-				if(!ppumask.showBGLeft && PixelPos < 8)
-				{
-					continue;
-				}
-				// If the pixel is 0 before template is applied, ignore it.
-				if(colorNum == 0 || (!VideoMemory->at(PixelPos)->at(LY).bIsTransparent && SpritePriorityBit == 1)) {
-					continue;
-				}
-				VideoMemory->at(PixelPos)->at(LY).pixel = drawPixel;
-			}
-		}
 		}
 	}
 	if(spritecount >= 9) {
