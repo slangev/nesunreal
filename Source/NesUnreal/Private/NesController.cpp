@@ -41,7 +41,7 @@ uint8 NesController::Read(unsigned Address)
             ReadBit = (ControllerOneCurrentState & 0x80) >> 7; // get MOST significant bit from current state. 
         }
     }
-    return ReadBit | 0x40;
+    return ReadBit | 0xE0;
 }
 
 void NesController::SetKey(uint8 Key) 

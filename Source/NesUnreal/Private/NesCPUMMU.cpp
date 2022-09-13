@@ -126,7 +126,7 @@ uint8 NesCPUMMU::Read(const unsigned short Address) {
     }
     // Controllers
     else if (Address >= 0x4016 && Address <= 0x4017) {
-        return M_Controller->Read(0x4016);
+        return M_Controller->Read(Address);
     }
     else if (Address >= 0x4020 && Address <= 0x5FFF) {
         // Cartridge expansion rom, not implemented

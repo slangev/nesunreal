@@ -59,7 +59,9 @@ uint8 NesPPUMMU::Read(unsigned short Address) const {
                 else{
                     VRAMAddress = Address & 0x3FF;
                     if (cart->Header->Mirroring == 0){
-                        VRAMAddress |= 0x400;
+                        if ((Address & 0x800) > 0){
+                            VRAMAddress |= 0x400;
+                        }
                     }
                 }
                 break;
@@ -126,12 +128,13 @@ void NesPPUMMU::Write(unsigned short Address, uint8 Data) const {
                 else{
                     VRAMAddress = Address & 0x3FF;
                     if (cart->Header->Mirroring == 0){
-                        VRAMAddress |= 0x400;
+                        if ((Address & 0x800) > 0){
+                            VRAMAddress |= 0x400;
+                        }
                     }
                 }
                 break;
         }
-
         nameSpaceTable->at(VRAMAddress) = Data;
     } 
     // Palette Ram
