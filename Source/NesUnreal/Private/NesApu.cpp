@@ -223,7 +223,7 @@ uint8 UNesApu::Read(const unsigned short Address)
 {
 	if(Address == 0x4015)
 	{
-		UE_LOG(LogNesApu,Warning,TEXT("Reading to Status. Address: %d"), Address);
+		//UE_LOG(LogNesApu,Warning,TEXT("Reading to Status. Address: %d"), Address);
 	}
 	return 0;
 }

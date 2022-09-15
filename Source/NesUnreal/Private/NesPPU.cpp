@@ -311,7 +311,16 @@ void NesPPU::drawSprites(int Scanline){
 				if(yFlipBit == 1) {
 					line = ysize - line - 1;
 				}
-				unsigned short tileLocation = patternTable + (tileID * 16) + (line);
+				unsigned short tileLocation = 0;
+				if(use8x16) {
+					patternTable = 0x1000 * (tileID & 0x1); // select 0x0000 or 0x1000 if bit 1 is 0/1
+					tileID = tileID & 0xFE; // remove last bit.
+					tileLocation = patternTable + (((tileID)|(line > 7 ? 1:0)) << 4);
+					line = line & 0x7;
+					tileLocation = tileLocation + line;
+				} else {
+					tileLocation = patternTable + (tileID * 16) + (line);
+				}
 				// Read two bytes of data. These bytes determine the color of the pixel
 				uint8 Data1 = M_Mmu->Read(tileLocation);
 				uint8 Data2 = M_Mmu->Read(tileLocation + 8);
