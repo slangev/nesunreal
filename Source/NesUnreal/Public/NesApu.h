@@ -72,5 +72,5 @@ protected:
 	bool WriteSamples = false;
 	const float AudioSampleRate = 44100.0f;
 	const float CPUSpeed = 1790000.0f; //1.79MHz
-	const int Speed = (CPUSpeed / AudioSampleRate) - 3;
+	const int Speed = (CPUSpeed / AudioSampleRate);
 };

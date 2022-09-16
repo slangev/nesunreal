@@ -202,7 +202,6 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	{
 		Pulse1->Enabled(Data & 0x1);
 		Pulse2->Enabled((Data & 0x2) >> 1);
-		UE_LOG(LogTemp,Warning,TEXT("DATA: %d"),Data);
 	}
 	else if(Address == 0x4017)
 	{
@@ -228,10 +227,8 @@ uint8 UNesApu::Read(const unsigned short Address)
 	{
 		bool pulse1 = Pulse1->LengthAboveZero();
 		bool pulse2 = Pulse2->LengthAboveZero();
-		UE_LOG(LogNesApu,Warning, TEXT("pulse1 %s pulse2 %s"),(pulse1)?TEXT("TRUE"):TEXT("FALSE"),(pulse2)?TEXT("TRUE"):TEXT("FALSE"));
 		status = (pulse1) ? FNesCPU::SetBit(0, status) : FNesCPU::ResetBit(0, status);
 		status = (pulse2) ? FNesCPU::SetBit(1, status) : FNesCPU::ResetBit(1, status);
-		UE_LOG(LogNesApu,Warning,TEXT("Reading to Status. Address: %d with status %d"), Address, status);
 	}
 	return status;
 }
