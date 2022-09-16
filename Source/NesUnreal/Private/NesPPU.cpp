@@ -315,9 +315,11 @@ void NesPPU::drawSprites(int Scanline){
 				if(use8x16) {
 					patternTable = 0x1000 * (tileID & 0x1); // select 0x0000 or 0x1000 if bit 1 is 0/1
 					tileID = tileID & 0xFE; // remove last bit.
-					tileLocation = patternTable + (((tileID)|(line > 7 ? 1:0)) << 4);
-					line = line & 0x7;
-					tileLocation = tileLocation + line;
+					tileLocation = patternTable + (tileID * 16);
+					if(line > 7) {
+						tileLocation = tileLocation + 16;
+					}
+					tileLocation += (line&0x7);
 				} else {
 					tileLocation = patternTable + (tileID * 16) + (line);
 				}
