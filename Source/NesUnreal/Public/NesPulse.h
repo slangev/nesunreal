@@ -12,7 +12,7 @@ class NESUNREAL_API FNesPulse final: FNesSoundChannel
 {
 public:
 	FNesPulse();
-	virtual ~FNesPulse() override;
+	~FNesPulse() override;
 	virtual void Tick() override;
 	virtual void HalfFrameTick() override;
 	virtual void QuarterFrameTick() override;
@@ -23,7 +23,6 @@ public:
 	void SetChannelId(const int Id) {this->ChannelId = Id;}
 	int GetChannel() const {return ChannelId;}
 	bool IsMuted(uint TargetPeriod) const;
-	bool bChannelEnabled = false;
 	int ChannelId;
 	
 private:
@@ -68,6 +67,8 @@ private:
 	uint16 Volume; // values of 0-15 with 0 being muted
 	uint16 LengthCounter; // APU Length Counter
 	uint16 LengthLoad;
+	bool bChannelEnabled = false;
+
 	
 	FSweep Sweep;
 	FEnvelope Envelope;
