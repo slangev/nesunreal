@@ -76,7 +76,8 @@ void FNesPulse::Write(unsigned short Address, uint8 Data)
 			Sequencer.TimerHigh = Data & 0x07;
 			Sequencer.Timer.Reload = (Sequencer.TimerHigh << 8) | Sequencer.TimerLow;
 			LengthLoad = (Data & 0xF8) >> 3;
-			if (bChannelEnabled) {
+			if (bChannelEnabled) 
+			{
 				LengthCounter = LengthTable[LengthLoad];
 			}
 			/* Side Effects */
@@ -105,10 +106,12 @@ int FNesPulse::GetOutputVol()
 {
 	int CurrVol;
 	// Check constant volume here
-	if (bConstantVol){
+	if (bConstantVol)
+	{
 		CurrVol = Volume;
 	}
-	else {
+	else 
+	{
 		CurrVol = Envelope.EnvelopeVol;
 	}
 	if(GateCheck())

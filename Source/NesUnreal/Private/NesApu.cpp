@@ -188,7 +188,8 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	}
 	else if(Address >= 0x4008 && Address <= 0x400B)
 	{
-		//UE_LOG(LogNesAPU,Warning,TEXT("Writing to Triangle. Address: %d Data: %d"), Address, Data);
+		Triangle->Write(Address, Data);
+		UE_LOG(LogNesApu,Warning,TEXT("Writing to Triangle. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address >= 0x400C && Address <= 0x400F)
 	{

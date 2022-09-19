@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "NesPulse.h"
+#include "NesTriangle.h"
 #include <memory>
 #include <vector>
 
@@ -67,6 +68,7 @@ protected:
 	Audio::FOsc Osc;
 	std::unique_ptr<FNesPulse> Pulse1;
 	std::unique_ptr<FNesPulse> Pulse2;
+	std::unique_ptr<NesTriangle> Triangle;
 	std::unique_ptr<FNesAudioMixer> Mixer;
 	std::unique_ptr<FNesApuFilters> Filter;
 	bool WriteSamples = false;

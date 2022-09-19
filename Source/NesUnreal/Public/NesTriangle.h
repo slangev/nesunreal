@@ -22,19 +22,31 @@ public:
 	virtual bool LengthAboveZero() override;
 private:
 	bool GateCheck();
-	// void EnvelopeTick();
-	// void SweepTick();
-	// void LengthTick();
 
 	bool bLengthCounterHalt;
-	bool bConstantVol;
-	uint16 Volume; // values of 0-15 with 0 being muted
 	uint16 LengthCounter; // APU Length Counter
 	uint16 LengthLoad;
 	bool bChannelEnabled = false;
+	bool bLinearCountReload = false;
+	uint8 CounterReloadValue = 0; 
 
+	struct FDivider
+	{
+		uint16 Reload; // timer load 
+		uint16 Counter; // Countdown timer
+	};
+
+	struct FSequencer
+	{
+		FDivider Timer;
+		uint16 TimerLow = 0;
+		uint16 TimerHigh = 0;
+	};
+
+	FSequencer Sequencer;
 
 	// Length table constant
-	static constexpr uint LengthTable[] = {10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14, 
-	12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30};
+	static constexpr uint LengthTable[] = {
+	15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1, 0, 
+	0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15};
 };
