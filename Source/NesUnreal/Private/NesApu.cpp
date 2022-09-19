@@ -20,6 +20,7 @@ bool UNesApu::Init(int32& SampleRate)
 	Pulse1->SetChannelId(1);
 	Pulse2 = std::make_unique<FNesPulse>();
 	Pulse2->SetChannelId(2);
+	Triangle = std::make_unique<NesTriangle>();
 	Mixer = std::make_unique<FNesAudioMixer>();
 	Filter = std::make_unique<FNesApuFilters>();
 	for(int i = 0; i < PreferredBufferLength; i++)
@@ -189,7 +190,7 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	else if(Address >= 0x4008 && Address <= 0x400B)
 	{
 		Triangle->Write(Address, Data);
-		UE_LOG(LogNesApu,Warning,TEXT("Writing to Triangle. Address: %d Data: %d"), Address, Data);
+		//UE_LOG(LogNesApu,Warning,TEXT("Writing to Triangle. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address >= 0x400C && Address <= 0x400F)
 	{
@@ -203,6 +204,7 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	{
 		Pulse1->Enabled(Data & 0x1);
 		Pulse2->Enabled((Data & 0x2) >> 1);
+		Triangle->Enabled((Data & 0x4) >> 2);
 	}
 	else if(Address == 0x4017)
 	{

@@ -5,6 +5,7 @@
 
 NesTriangle::NesTriangle()
 {
+    LengthCounter = 0;
 }
 
 NesTriangle::~NesTriangle()
@@ -26,16 +27,20 @@ void NesTriangle::Tick()
     }
 }
 
-void NesTriangle::QuarterFrameTick() {
+void NesTriangle::QuarterFrameTick() 
+{
 
 }
 
-void NesTriangle::HalfFrameTick() {
+void NesTriangle::HalfFrameTick() 
+{
 
 }
 
-void NesTriangle::Write(unsigned short Address, uint8 Data) {
-    switch(Address) {
+void NesTriangle::Write(unsigned short Address, uint8 Data) 
+{
+    switch(Address) 
+    {
         case 0x4008:
             CounterReloadValue = Data & 0x7F;
             bLengthCounterHalt = (Data & 0x80) == 0x80;
@@ -49,6 +54,10 @@ void NesTriangle::Write(unsigned short Address, uint8 Data) {
         case 0x400B:
             Sequencer.TimerHigh = Data & 0x07;
 			Sequencer.Timer.Reload = (Sequencer.TimerHigh << 8) | Sequencer.TimerLow;
+            if(bChannelEnabled) 
+			{
+			    LengthCounter = LengthTable[LengthLoad];
+			}
             bLinearCountReload = true;
             break;
         default:
@@ -56,18 +65,34 @@ void NesTriangle::Write(unsigned short Address, uint8 Data) {
     }
 }
 
-void NesTriangle::Enabled(bool bEnabled) {
+void NesTriangle::Enabled(bool bEnabled) 
+{
     this->bChannelEnabled = bEnabled;
+    if(!bChannelEnabled)
+	{
+		LengthCounter = 0;
+	}
 }
 
-bool NesTriangle::GateCheck() {
+bool NesTriangle::GateCheck() 
+{
     return true;
 }
 
-bool NesTriangle::LengthAboveZero() {
+bool NesTriangle::LengthAboveZero() 
+{
     return LengthCounter > 0;
 }
 
-int NesTriangle::GetOutputVol() {
+int NesTriangle::GetOutputVol() 
+{
     return 0;
+}
+
+void NesTriangle::LengthTick()
+{
+    if(!bLengthCounterHalt && LengthCounter > 0)
+	{
+		LengthCounter--;
+	} 
 }

@@ -11,34 +11,46 @@ NesNoise::~NesNoise()
 {
 }
 
-void NesNoise::Tick() {
+void NesNoise::Tick() 
+{
 
 }
 
-void NesNoise::HalfFrameTick() {
+void NesNoise::HalfFrameTick() 
+{
 
 }
 
-void NesNoise::QuarterFrameTick() {
+void NesNoise::QuarterFrameTick() 
+{
 
 }
 
-void NesNoise::Enabled(bool bEnabled) {
+void NesNoise::Enabled(bool bEnabled) 
+{
 
 }
 
-void NesNoise::Write(unsigned short Address, uint8 Data) {
+void NesNoise::Write(unsigned short Address, uint8 Data) 
+{
 
 }
 
-bool NesNoise::GateCheck() {
+bool NesNoise::GateCheck() 
+{
     return true;
 }
 
-bool NesNoise::LengthAboveZero() {
+bool NesNoise::LengthAboveZero() 
+{
     return true;
 }
 
-int NesNoise::GetOutputVol() {
+int NesNoise::GetOutputVol() 
+{
     return 0;
+}
+void NesNoise::LengthTick() 
+{
+    
 }

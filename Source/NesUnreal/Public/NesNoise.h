@@ -16,6 +16,7 @@ public:
 	virtual void Tick() override;
 	virtual void HalfFrameTick() override;
 	virtual void QuarterFrameTick() override;
+	virtual void LengthTick() override;
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual void Enabled(bool bEnabled) override;
 	virtual int GetOutputVol() override;

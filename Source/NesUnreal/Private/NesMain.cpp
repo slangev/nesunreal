@@ -1,7 +1,7 @@
 
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+// disable r.AntiAliasingMethod=0 for fps
 #include "NesMain.h"
 #include <iomanip>
 

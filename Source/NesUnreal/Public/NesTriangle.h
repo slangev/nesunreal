@@ -18,6 +18,7 @@ public:
 	virtual void QuarterFrameTick() override;
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual void Enabled(bool bEnabled) override;
+	virtual void LengthTick() override;
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
 private:
@@ -46,7 +47,7 @@ private:
 	FSequencer Sequencer;
 
 	// Length table constant
-	static constexpr uint LengthTable[] = {
+	static constexpr uint StepSequence[] = {
 	15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1, 0, 
 	0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15};
 };

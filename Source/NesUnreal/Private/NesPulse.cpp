@@ -3,11 +3,12 @@
 
 #include "NesPulse.h"
 
-FNesPulse::FNesPulse(): ChannelId(1), bLengthCounterHalt(false), bConstantVol(false), Volume(0), LengthCounter(0),
+FNesPulse::FNesPulse(): ChannelId(1), bLengthCounterHalt(false), bConstantVol(false), Volume(0),
                         LengthLoad(0),
                         Sweep(),
                         Envelope(), Sequencer()
 {
+	LengthCounter = 0;
 }
 
 FNesPulse::~FNesPulse()

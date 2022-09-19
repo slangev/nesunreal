@@ -20,6 +20,7 @@ public:
 	virtual void Enabled(bool bEnabled) override;
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
+	virtual void LengthTick() override;
 	void SetChannelId(const int Id) {this->ChannelId = Id;}
 	int GetChannel() const {return ChannelId;}
 	bool IsMuted(uint TargetPeriod) const;
@@ -65,7 +66,6 @@ private:
 	bool bLengthCounterHalt;
 	bool bConstantVol;
 	uint16 Volume; // values of 0-15 with 0 being muted
-	uint16 LengthCounter; // APU Length Counter
 	uint16 LengthLoad;
 	bool bChannelEnabled = false;
 
@@ -92,14 +92,7 @@ private:
 		{1, 0, 0, 1, 1, 1, 1, 1}
 	};
 
-	// Length table constant
-	static constexpr uint LengthTable[] = {
-		10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14,
-		12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30}
-	;
-
 	bool GateCheck();
 	void EnvelopeTick();
 	void SweepTick();
-	void LengthTick();
 };
