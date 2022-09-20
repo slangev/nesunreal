@@ -19,17 +19,16 @@ public:
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual void Enabled(bool bEnabled) override;
 	virtual void LengthTick() override;
+	void LinearTick();
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
+	bool LinearAboveZero() {return LinearCounter > 0;};
 private:
 	bool GateCheck();
 
-	bool bLengthCounterHalt;
-	uint16 LengthCounter; // APU Length Counter
-	uint16 LengthLoad;
-	bool bChannelEnabled = false;
 	bool bLinearCountReload = false;
 	uint8 CounterReloadValue = 0; 
+	uint8 LinearCounter = 0;
 
 	struct FDivider
 	{
@@ -39,6 +38,7 @@ private:
 
 	struct FSequencer
 	{
+		uint8 SequencePointer = 0; // index for StepSequence table
 		FDivider Timer;
 		uint16 TimerLow = 0;
 		uint16 TimerHigh = 0;
@@ -47,7 +47,9 @@ private:
 	FSequencer Sequencer;
 
 	// Length table constant
-	static constexpr uint StepSequence[] = {
-	15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1, 0, 
-	0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15};
+	static constexpr uint StepSequence[] = 
+	{
+		15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1, 0, 
+		0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15
+	};
 };

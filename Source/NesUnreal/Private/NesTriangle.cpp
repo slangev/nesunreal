@@ -16,25 +16,29 @@ void NesTriangle::Tick()
 {
     //The sequencer is clocked by the timer as long as both the linear counter and the length counter are nonzero. 
     //The sequencer is clocked by a timer whose period is the 11-bit value (%HHH.LLLLLLLL) formed by timer high and timer low, plus one
-    if(Sequencer.Timer.Counter+1 > 0 && LengthAboveZero())
+    if(LinearAboveZero() && LengthAboveZero())
     {
-        Sequencer.Timer.Counter--;
-    }
-    else
-    {
-        //Sequencer.SequencePointer = (Sequencer.SequencePointer+1) & 0x7;
-        Sequencer.Timer.Counter = Sequencer.Timer.Reload;
+        if(Sequencer.Timer.Counter+1 > 0) 
+        {
+            Sequencer.Timer.Counter--;
+        }
+        else
+        {
+            Sequencer.SequencePointer = (Sequencer.SequencePointer+1) & 0x1F;
+            Sequencer.Timer.Counter = Sequencer.Timer.Reload;
+        }
     }
 }
 
 void NesTriangle::QuarterFrameTick() 
 {
-
+    LinearTick();
 }
 
 void NesTriangle::HalfFrameTick() 
 {
-
+    LinearTick();
+    LengthTick();
 }
 
 void NesTriangle::Write(unsigned short Address, uint8 Data) 
@@ -95,4 +99,23 @@ void NesTriangle::LengthTick()
 	{
 		LengthCounter--;
 	} 
+}
+
+void NesTriangle::LinearTick() 
+{
+    //If the linear counter reload flag is set, the linear counter is reloaded with the counter reload value, otherwise if the linear counter is non-zero, it is decremented.
+    if(bLinearCountReload) 
+    {
+        LinearCounter = CounterReloadValue;
+    } 
+    else if(LinearCounter > 0) 
+    {
+        LinearCounter--;
+    }
+
+    //If the control flag is clear (Control flag (this bit is also the length counter halt flag)) , the linear counter reload flag is cleared.
+    if(!bLengthCounterHalt) 
+    {
+        bLinearCountReload = false;
+    }
 }

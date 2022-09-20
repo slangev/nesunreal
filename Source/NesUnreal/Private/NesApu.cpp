@@ -70,12 +70,14 @@ void UNesApu::QuarterTick()
 {
 	Pulse1->QuarterFrameTick();
 	Pulse2->QuarterFrameTick();
+	Triangle->QuarterFrameTick();
 }
 
 void UNesApu::HalfTick()
 {
 	Pulse1->HalfFrameTick();
 	Pulse2->HalfFrameTick();
+	Triangle->HalfFrameTick();
 }
 
 void UNesApu::Step(uint32 CpuCycle)
@@ -85,13 +87,14 @@ void UNesApu::Step(uint32 CpuCycle)
 		bOddCPUCycle = !bOddCPUCycle;
 		CPUCycleCount++;
 
-		if (bOddCPUCycle){
+		if (bOddCPUCycle)
+		{
 			ApuCycleCount++;
 			Pulse1->Tick();
 			Pulse2->Tick();
 		}
-
-		// TODO: Need to tick Triangle
+		// Triangle is tick every CPU cycle.
+		Triangle->Tick();
 
 		if(bFiveStepMode)
 		{
@@ -190,7 +193,6 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	else if(Address >= 0x4008 && Address <= 0x400B)
 	{
 		Triangle->Write(Address, Data);
-		//UE_LOG(LogNesApu,Warning,TEXT("Writing to Triangle. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address >= 0x400C && Address <= 0x400F)
 	{

@@ -76,7 +76,8 @@ private:
 	
 	// Sequence lookup table - it reads the sequence lookup table in the order 0, 7, 6, 5, 4, 3, 2, 1.
 	// Use Duty/Sequence Pointer as lookup indexes SequenceLookupTable[Duty][SeqPointer]
-	static constexpr uint8 SequenceLookupTable[4][8] = {
+	static constexpr uint8 SequenceLookupTable[4][8] = 
+	{
 		{0, 0, 0, 0, 0, 0, 0, 1},
 		{0, 0, 0, 0, 0, 0, 1, 1},
 		{0, 0, 0, 0, 1, 1, 1, 1},
@@ -85,7 +86,8 @@ private:
 
 	// Output waveform is used to determine if we need to output a sound at this point.
 	// Use Duty/result from SLT (The table above as indexes) 0,1,2,3,4,5,6,7
-	static constexpr uint8 OutputWaveformTable [4][8] = {
+	static constexpr uint8 OutputWaveformTable [4][8] = 
+	{
 		{0, 1, 0, 0, 0, 0, 0, 0},
 		{0, 1, 1, 0, 0, 0, 0, 0},
 		{0, 1, 1, 1, 1, 0, 0, 0},
