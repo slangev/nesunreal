@@ -27,13 +27,13 @@ private:
 	bool GateCheck();
 
 	bool bLinearCountReload = false;
-	uint8 CounterReloadValue = 0; 
-	uint8 LinearCounter = 0;
+	uint16 CounterReloadValue = 0; 
+	uint16 LinearCounter = 0;
 
 	struct FDivider
 	{
 		uint16 Reload; // timer load 
-		uint16 Counter; // Countdown timer
+		int16 Counter; // Countdown timer
 	};
 
 	struct FSequencer
@@ -46,7 +46,7 @@ private:
 
 	FSequencer Sequencer;
 
-	// Length table constant
+	// StepSequence
 	static constexpr uint StepSequence[] = 
 	{
 		15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1, 0, 

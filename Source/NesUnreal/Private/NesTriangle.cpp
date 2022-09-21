@@ -16,7 +16,7 @@ void NesTriangle::Tick()
 {
     //The sequencer is clocked by the timer as long as both the linear counter and the length counter are nonzero. 
     //The sequencer is clocked by a timer whose period is the 11-bit value (%HHH.LLLLLLLL) formed by timer high and timer low, plus one
-    if(LinearAboveZero() && LengthAboveZero())
+    if(GateCheck())
     {
         if(Sequencer.Timer.Counter+1 > 0) 
         {
@@ -80,7 +80,11 @@ void NesTriangle::Enabled(bool bEnabled)
 
 bool NesTriangle::GateCheck() 
 {
-    return true;
+    if(LengthAboveZero() && LinearAboveZero()) 
+    {
+        return true;
+    }
+    return false;
 }
 
 bool NesTriangle::LengthAboveZero() 
@@ -90,7 +94,8 @@ bool NesTriangle::LengthAboveZero()
 
 int NesTriangle::GetOutputVol() 
 {
-    return 0;
+    int CurrVol = StepSequence[Sequencer.SequencePointer];
+	return CurrVol;
 }
 
 void NesTriangle::LengthTick()

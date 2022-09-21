@@ -164,17 +164,15 @@ void UNesApu::Step(uint32 CpuCycle)
 		if (APUBufferCount % Speed == 0) {
 			float SampleOutput = 0;
 			const float SquareOutputVal = Mixer->LookupPulseTable(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
-			//const float SquareOutputVal = Mixer->LinearApproximationPulseOut(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
-			//const float SquareOutputVal = Mixer->FasterLinearApproximationPulseOut(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
+			const float TriangleOutputVal = Mixer->LookupTndTable(Triangle->GetOutputVol(),0,0);
 			Filter->HighPassFilter(AudioSampleRate,90.0f);
-			float Sample = Filter->Step(SquareOutputVal);
+			float Sample = Filter->Step(SquareOutputVal + TriangleOutputVal);
 			Filter->HighPassFilter(AudioSampleRate,440.0f);
 			Sample = Filter->Step(Sample);
 			Filter->LowPassFilter(AudioSampleRate,14000.0f);
 			Sample = Filter->Step(Sample);
-			Sample = FMath :: Clamp ( Sample, -1.0f, 1.0f) / 2;
-			SampleOutput = Sample;
-			SoundBuffer.at(APUBufferCount / Speed) = SampleOutput;
+			Sample = FMath :: Clamp ( Sample, -1.0f, 1.0f);
+			SoundBuffer.at(APUBufferCount / Speed) = Sample;
 		}
 		APUBufferCount++;
 	}
@@ -230,10 +228,12 @@ uint8 UNesApu::Read(const unsigned short Address)
 	uint8 status = 0;
 	if(Address == 0x4015)
 	{
-		bool pulse1 = Pulse1->LengthAboveZero();
-		bool pulse2 = Pulse2->LengthAboveZero();
-		status = (pulse1) ? FNesCPU::SetBit(0, status) : FNesCPU::ResetBit(0, status);
-		status = (pulse2) ? FNesCPU::SetBit(1, status) : FNesCPU::ResetBit(1, status);
+		bool bPulse1Enabled = Pulse1->LengthAboveZero();
+		bool bPulse2Enabled = Pulse2->LengthAboveZero();
+		bool bTriangle1Enabled = Triangle->LengthAboveZero();
+		status = (bPulse1Enabled) ? FNesCPU::SetBit(0, status) : FNesCPU::ResetBit(0, status);
+		status = (bPulse2Enabled) ? FNesCPU::SetBit(1, status) : FNesCPU::ResetBit(1, status);
+		status = (bTriangle1Enabled) ? FNesCPU::SetBit(2, status) : FNesCPU::ResetBit(2, status);
 	}
 	return status;
 }
