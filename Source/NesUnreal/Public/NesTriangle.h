@@ -19,12 +19,12 @@ public:
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual void Enabled(bool bEnabled) override;
 	virtual void LengthTick() override;
-	void LinearTick();
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
-	bool LinearAboveZero() {return LinearCounter > 0;};
 private:
 	bool GateCheck();
+	void LinearTick();
+	bool LinearAboveZero() {return LinearCounter > 0;};
 
 	bool bLinearCountReload = false;
 	uint16 CounterReloadValue = 0; 

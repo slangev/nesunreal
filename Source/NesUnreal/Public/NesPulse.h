@@ -12,7 +12,7 @@ class NESUNREAL_API FNesPulse final: FNesSoundChannel
 {
 public:
 	FNesPulse();
-	~FNesPulse() override;
+	~FNesPulse();
 	virtual void Tick() override;
 	virtual void HalfFrameTick() override;
 	virtual void QuarterFrameTick() override;

@@ -105,7 +105,7 @@ void FNesPulse::Enabled(const bool bEnabled)
 
 int FNesPulse::GetOutputVol()
 {
-	int CurrVol;
+	int CurrVol = 0;
 	// Check constant volume here
 	if (bConstantVol)
 	{

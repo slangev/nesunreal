@@ -22,11 +22,36 @@ public:
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
 private:
+
+	struct FDivider
+	{
+		uint16 Reload; // timer load 
+		uint16 Counter; // Countdown timer
+	};
+
+	struct FEnvelope
+	{
+		bool bStart = false;
+		FDivider Timer;
+		uint16 DelayLevelCounter;
+		uint16 EnvelopeVol;
+	};
+
 	bool GateCheck();
+	void EnvelopeTick();
 	bool bLengthCounterHalt;
 	bool bConstantVol;
+	bool bModeFlag;
+
+	uint16 ShiftRegister = 0x1; // On power-up, the shift register is loaded with the value 1. 
 	uint16 Volume; // values of 0-15 with 0 being muted
 	uint16 LengthCounter; // APU Length Counter
 	uint16 LengthLoad;
 	bool bChannelEnabled = false;
+	FEnvelope Envelope;
+	FDivider Timer;
+	static constexpr uint NoisePeriodTable[] = 
+	{
+		4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068
+	};
 };
