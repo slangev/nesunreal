@@ -22,6 +22,7 @@ bool UNesApu::Init(int32& SampleRate)
 	Pulse2->SetChannelId(2);
 	Triangle = std::make_unique<NesTriangle>();
 	Noise = std::make_unique<NesNoise>();
+	DMC = std::make_unique<NesDMC>();
 	Mixer = std::make_unique<FNesAudioMixer>();
 	Filter = std::make_unique<FNesApuFilters>();
 	for(int i = 0; i < PreferredBufferLength; i++)
@@ -96,6 +97,7 @@ void UNesApu::Step(uint32 CpuCycle)
 			Pulse1->Tick();
 			Pulse2->Tick();
 			Noise->Tick();
+			DMC->Tick();
 		}
 		// Triangle is tick every CPU cycle.
 		Triangle->Tick();
@@ -174,7 +176,7 @@ void UNesApu::Step(uint32 CpuCycle)
 		{
 			float SampleOutput = 0;
 			const float SquareOutputVal = Mixer->LookupPulseTable(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
-			const float TriangleOutputVal = Mixer->LookupTndTable(Triangle->GetOutputVol(),Noise->GetOutputVol(),0);
+			const float TriangleOutputVal = Mixer->LookupTndTable(Triangle->GetOutputVol(),Noise->GetOutputVol(),DMC->GetOutputVol());
 			Filter->HighPassFilter(AudioSampleRate,90.0f);
 			float Sample = Filter->Step(SquareOutputVal + TriangleOutputVal);
 			Filter->HighPassFilter(AudioSampleRate,440.0f);
@@ -209,7 +211,8 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	}
 	else if(Address >= 0x4010 && Address <= 0x4013)
 	{
-		//UE_LOG(LogNesApu,Warning,TEXT("Writing to DMC. Address: %d Data: %d"), Address, Data);
+		DMC->Write(Address, Data);
+		UE_LOG(LogNesApu,Warning,TEXT("Writing to DMC. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address == 0x4015)
 	{
@@ -217,6 +220,7 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 		Pulse2->Enabled((Data & 0x2) >> 1);
 		Triangle->Enabled((Data & 0x4) >> 2);
 		Noise->Enabled((Data & 0x8) >> 3);
+		DMC->Enabled((Data & 0x10) >> 4);
 	}
 	else if(Address == 0x4017)
 	{
@@ -244,10 +248,12 @@ uint8 UNesApu::Read(const unsigned short Address)
 		bool bPulse2Enabled = Pulse2->LengthAboveZero();
 		bool bTriangleEnabled = Triangle->LengthAboveZero();
 		bool bNoiseEnabled = Noise->LengthAboveZero();
+		bool bDMCEnabled = DMC->LengthAboveZero();
 		status = (bPulse1Enabled) ? FNesCPU::SetBit(0, status) : FNesCPU::ResetBit(0, status);
 		status = (bPulse2Enabled) ? FNesCPU::SetBit(1, status) : FNesCPU::ResetBit(1, status);
 		status = (bTriangleEnabled) ? FNesCPU::SetBit(2, status) : FNesCPU::ResetBit(2, status);
 		status = (bNoiseEnabled) ? FNesCPU::SetBit(3, status) : FNesCPU::ResetBit(3, status);
+		status = (bDMCEnabled) ? FNesCPU::SetBit(4, status) : FNesCPU::ResetBit(4, status);
 	}
 	return status;
 }

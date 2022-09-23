@@ -107,7 +107,7 @@ int FNesPulse::GetOutputVol()
 {
 	int CurrVol = 0;
 	// Check constant volume here
-	if (bConstantVol)
+	if(bConstantVol)
 	{
 		CurrVol = Volume;
 	}

@@ -6,6 +6,7 @@
 #include "NesPulse.h"
 #include "NesTriangle.h"
 #include "NesNoise.h"
+#include "NesDMC.h"
 #include <memory>
 #include <vector>
 
@@ -71,6 +72,7 @@ protected:
 	std::unique_ptr<FNesPulse> Pulse2;
 	std::unique_ptr<NesTriangle> Triangle;
 	std::unique_ptr<NesNoise> Noise;
+	std::unique_ptr<NesDMC> DMC;
 	std::unique_ptr<FNesAudioMixer> Mixer;
 	std::unique_ptr<FNesApuFilters> Filter;
 	bool WriteSamples = false;
