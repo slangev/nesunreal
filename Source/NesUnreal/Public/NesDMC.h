@@ -21,6 +21,7 @@ public:
 	virtual void LengthTick() override;
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
+	
 private:
 	struct FDivider
 	{
@@ -33,8 +34,13 @@ private:
 	{
 		428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54
 	};
+
 	uint8 RateIndex = 0;
 	FDivider Timer;
 	bool bLoopFlag = false;
 	bool bIRQEnabled = false;
+	uint8 Output = 0;
+	uint16 SampleAddress = 0x0000;
+	uint16 SampleLength = 0x0000;
+	uint8 SampleBuffer = 0x00;
 };

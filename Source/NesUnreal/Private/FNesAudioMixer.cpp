@@ -53,12 +53,12 @@ float FNesAudioMixer::FasterLinearApproximationTndOut(const uint8 Triangle, cons
 
 void FNesAudioMixer::GenerateLookupTable()
 {
-	for(float i = 0; i < PulseTableSize; i++)
+	for(float i = 0.0f; i < PulseTableSize; i++)
 	{
 		PulseTable.push_back(95.52f / (8128.0 / i + 100.0f));
 	}
 
-	for(int i = 0; i < TndTableSize; i++)
+	for(float i = 0.0f; i < TndTableSize; i++)
 	{
 		TndTable.push_back(163.67 / (24329.0 / i + 100.0f));
 	}

@@ -130,7 +130,8 @@ void UNesApu::Step(uint32 CpuCycle)
 					break;
 				}
 			}
-		} else
+		} 
+		else
 		{
 			switch(ApuCycleCount)
 			{
@@ -207,7 +208,6 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	else if(Address >= 0x400C && Address <= 0x400F)
 	{
 		Noise->Write(Address, Data);
-		//UE_LOG(LogNesApu,Warning,TEXT("Writing to Noise. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address >= 0x4010 && Address <= 0x4013)
 	{
@@ -248,7 +248,7 @@ uint8 UNesApu::Read(const unsigned short Address)
 		bool bPulse2Enabled = Pulse2->LengthAboveZero();
 		bool bTriangleEnabled = Triangle->LengthAboveZero();
 		bool bNoiseEnabled = Noise->LengthAboveZero();
-		bool bDMCEnabled = DMC->LengthAboveZero();
+		bool bDMCEnabled = DMC->LengthAboveZero(); //DMC doesn't use length counters. DMC sample bytes remaining > 0
 		status = (bPulse1Enabled) ? FNesCPU::SetBit(0, status) : FNesCPU::ResetBit(0, status);
 		status = (bPulse2Enabled) ? FNesCPU::SetBit(1, status) : FNesCPU::ResetBit(1, status);
 		status = (bTriangleEnabled) ? FNesCPU::SetBit(2, status) : FNesCPU::ResetBit(2, status);

@@ -22,27 +22,40 @@ void NesDMC::Tick()
 
 void NesDMC::HalfFrameTick()
 {
-
+    // Not used
 }
 
 void NesDMC::QuarterFrameTick()
 {
-
+    // Not used
 }
 
 void NesDMC::Write(unsigned short Address, uint8 Data) 
 {
-
+    switch(Address) 
+    {
+        case 0x4010:
+            bIRQEnabled = (Data & 0x80) == 0x80;
+            bLoopFlag = (Data & 0x40) == 0x40;
+            RateIndex = (Data & 0xF);
+            break;
+        case 0x4011:
+            Output = (Data & 0x7F);
+            break;
+        case 0x4012:
+            SampleAddress = 0xC000 + (Data * 64);
+			break;
+        case 0x4013:
+            SampleLength = (Data * 16) + 1; // bytes
+            break;
+        default:
+            break;
+    }
 }
 
 void NesDMC::Enabled(bool bEnabled)
 {
     this->bChannelEnabled = bEnabled;
-    if(!bChannelEnabled)
-	{
-		LengthCounter = 0;
-	}
-
 }
 
 void NesDMC::LengthTick()
@@ -52,10 +65,10 @@ void NesDMC::LengthTick()
 
 bool NesDMC::LengthAboveZero()
 {
-    return LengthCounter > 0;
+    return SampleBuffer > 0;
 }
 
 int NesDMC::GetOutputVol() 
 {
-    return 0;
+    return Output;
 }
