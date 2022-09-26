@@ -64,17 +64,18 @@ public:
 	// Sets the oscillator's frequency
 	UFUNCTION(BlueprintCallable, Category = "Synth|Components|Audio")
 	void SetFrequency(const float FrequencyHz = 440.0f);
+	void AttachCartToDMC(shared_ptr<NesCart> cart);
 
 protected:
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.
 	Audio::FOsc Osc;
-	std::unique_ptr<FNesPulse> Pulse1;
-	std::unique_ptr<FNesPulse> Pulse2;
-	std::unique_ptr<NesTriangle> Triangle;
-	std::unique_ptr<NesNoise> Noise;
-	std::unique_ptr<NesDMC> DMC;
-	std::unique_ptr<FNesAudioMixer> Mixer;
-	std::unique_ptr<FNesApuFilters> Filter;
+	unique_ptr<FNesPulse> Pulse1;
+	unique_ptr<FNesPulse> Pulse2;
+	unique_ptr<NesTriangle> Triangle;
+	unique_ptr<NesNoise> Noise;
+	unique_ptr<NesDMC> DMC;
+	unique_ptr<FNesAudioMixer> Mixer;
+	unique_ptr<FNesApuFilters> Filter;
 	bool WriteSamples = false;
 	const float AudioSampleRate = 44100.0f;
 	const float CPUSpeed = 1790000.0f; //1.79MHz

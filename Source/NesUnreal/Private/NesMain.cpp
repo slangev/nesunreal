@@ -72,6 +72,7 @@ void ANesMain::BeginPlay()
 	M_Mmu->AttachPpu(M_Ppu);
 	M_Cpu->AttachMemory(M_Mmu);
 	M_Mmu->AttachApu(M_Sound);
+	M_Sound->AttachCartToDMC(M_Cart);
 	UE_LOG(LogNesMain,Log, TEXT("Starting PC: 0x%X") ,M_Cpu->PC);
 }
 

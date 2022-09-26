@@ -63,6 +63,11 @@ void UNesApu::SetFrequency(const float FrequencyHz)
 	});
 }
 
+void UNesApu::AttachCartToDMC(shared_ptr<NesCart> cart) 
+{
+	DMC->AttachCart(cart);
+}
+
 UNesApu::~UNesApu()
 {
 	

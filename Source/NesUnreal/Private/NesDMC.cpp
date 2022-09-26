@@ -12,6 +12,11 @@ NesDMC::~NesDMC()
 {
 }
 
+void NesDMC::AttachCart(shared_ptr<NesCart> Cart) 
+{
+    this->M_Cart = Cart;
+}
+
 void NesDMC::Tick() 
 {
     if(Timer.Counter > 0)
@@ -56,6 +61,16 @@ void NesDMC::Write(unsigned short Address, uint8 Data)
 void NesDMC::Enabled(bool bEnabled)
 {
     this->bChannelEnabled = bEnabled;
+    // if (!this->bChannelEnabled){
+    //     sampleLength = 0;
+    // }
+    // else{
+    //     if (sampleLength == 0){
+    //         sampleLength = sampleLengthLoad;
+    //         sampleAddress = sampleAddressLoad;
+    //     }
+    // }
+    // IRQ = false;
 }
 
 void NesDMC::LengthTick()

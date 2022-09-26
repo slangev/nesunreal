@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "NesCart.h"
 #include "NesSoundChannel.h"
 #include "CoreMinimal.h"
 
@@ -21,6 +22,7 @@ public:
 	virtual void LengthTick() override;
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
+	void AttachCart(shared_ptr<NesCart> Cart);
 	
 private:
 	struct FDivider
@@ -39,8 +41,16 @@ private:
 	FDivider Timer;
 	bool bLoopFlag = false;
 	bool bIRQEnabled = false;
+
+	// Output unit
+	bool bSilence = false;
 	uint8 Output = 0;
+	uint8 ShiftRegister = 0;
+	uint8 BitRemaining = 0;
+
 	uint16 SampleAddress = 0x0000;
 	uint16 SampleLength = 0x0000;
 	uint8 SampleBuffer = 0x00;
+
+	std::shared_ptr<NesCart> M_Cart;
 };
