@@ -61,9 +61,9 @@ void NesDMC::Write(unsigned short Address, uint8 Data)
 void NesDMC::Enabled(bool bEnabled)
 {
     this->bChannelEnabled = bEnabled;
-    // if (!this->bChannelEnabled){
-    //     sampleLength = 0;
-    // }
+    if (!this->bChannelEnabled){
+        SampleLength = 0;
+    }
     // else{
     //     if (sampleLength == 0){
     //         sampleLength = sampleLengthLoad;
