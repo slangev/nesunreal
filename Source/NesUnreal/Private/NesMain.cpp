@@ -82,11 +82,13 @@ void ANesMain::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	uint CyclesThisUpdate = 0 ; 
-    while (CyclesThisUpdate < MAXCYCLES) {
+    while (CyclesThisUpdate < MAXCYCLES) 
+	{
 		const uint Cycles = M_Cpu->Tick();
 		M_Ppu->Step(Cycles * 3);
     	M_Sound->Step(Cycles);
 		CyclesThisUpdate+=Cycles;
+		CyclesThisUpdate+=M_Sound->DMCCycles();
 	}
 	if(M_Cpu->bTesting)
 	{

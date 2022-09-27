@@ -182,7 +182,7 @@ void UNesApu::Step(uint32 CpuCycle)
 		{
 			float SampleOutput = 0;
 			const float SquareOutputVal = Mixer->LookupPulseTable(Pulse1->GetOutputVol(), Pulse2->GetOutputVol());
-			const float TriangleOutputVal = Mixer->LookupTndTable(Triangle->GetOutputVol(),Noise->GetOutputVol(),DMC->GetOutputVol());
+			const float TriangleOutputVal = Mixer->LookupTndTable(Triangle->GetOutputVol(), Noise->GetOutputVol(), DMC->GetOutputVol());
 			Filter->HighPassFilter(AudioSampleRate,90.0f);
 			float Sample = Filter->Step(SquareOutputVal + TriangleOutputVal);
 			Filter->HighPassFilter(AudioSampleRate,440.0f);

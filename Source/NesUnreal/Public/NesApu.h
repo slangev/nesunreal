@@ -65,6 +65,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Synth|Components|Audio")
 	void SetFrequency(const float FrequencyHz = 440.0f);
 	void AttachCartToDMC(shared_ptr<NesCart> cart);
+	int DMCCycles() 
+	{
+		if(DMC->ExtraCycles()) {
+			return 4;
+		} 
+		return 0;
+	}
 
 protected:
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.

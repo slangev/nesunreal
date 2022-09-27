@@ -23,7 +23,12 @@ public:
 	virtual int GetOutputVol() override;
 	virtual bool LengthAboveZero() override;
 	void AttachCart(shared_ptr<NesCart> Cart);
-	
+	bool ExtraCycles() 
+	{
+		bool bCurrAccess = bAccessedMemory;
+		bAccessedMemory = !bAccessedMemory;
+		return bCurrAccess;
+	}
 private:
 	struct FDivider
 	{
@@ -41,6 +46,7 @@ private:
 	FDivider Timer;
 	bool bLoopFlag = false;
 	bool bIRQEnabled = false;
+	bool bAccessedMemory = false;
 
 	// Output unit
 	bool bSilence = false;
@@ -48,8 +54,11 @@ private:
 	uint8 ShiftRegister = 0;
 	uint8 BitRemaining = 0;
 
+	// Current variables are used to handle restarts. 
 	uint16 SampleAddress = 0x0000;
+	uint16 CurrentAddress = 0x0000; // AKA address counter
 	uint16 SampleLength = 0x0000;
+	uint16 CurrentLength = 0x0000; // AKA bytes remain counter
 	uint8 SampleBuffer = 0x00;
 
 	std::shared_ptr<NesCart> M_Cart;
