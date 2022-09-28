@@ -44,10 +44,11 @@ void NesDMC::Tick()
             cycles.
         */
        
-       if(SampleBuffer == 0 && CurrentLength > 0) 
-       {
+        if(SampleBuffer == 0 && CurrentLength > 0) 
+        {
             // When the DMA reader accesses a byte of memory, the CPU is suspended for 4 clock cycles. 
             SampleBuffer = M_Cart->Read(CurrentAddress);
+            UE_LOG(LogTemp,Warning,TEXT("SAMPLEBUFFER: %d"),SampleBuffer);
             bAccessedMemory = true;
             CurrentAddress++;
             if(CurrentAddress == 0) 
@@ -68,14 +69,25 @@ void NesDMC::Tick()
             {
                 // TODO: SET INTERRUPT FLAG
             }
-       }
+        }
+
+        if(BitRemaining == 0)
+        {
+            BitRemaining = 8;
+            if(SampleBuffer == 0) 
+            {
+                bSilence = true;
+            } 
+            else
+            {
+                bSilence = false;
+                ShiftRegister = SampleBuffer;
+                SampleBuffer = 0;
+            }
+        }
         /*
                         Output Unit
             
-            When an output cycle is started, the counter is loaded with 8 and if the sample
-            buffer is empty, the silence flag is set, otherwise the silence flag is cleared
-            and the sample buffer is emptied into the shift register.
-
             On the arrival of a clock from the timer, the following actions occur in order:
 
                 1. If the silence flag is clear, bit 0 of the shift register is applied to
@@ -87,7 +99,7 @@ void NesDMC::Tick()
                 
                 2) The counter is decremented. If it becomes zero, a new cycle is started.
         */
-       if(!bSilence) 
+       if(!bSilence) // check BitRemaining > 0 or ShiftRegister > 0?
        {
             uint8 bit0 = ShiftRegister & 0x1;
             if(bit0 == 0 && Output > 1) 
@@ -105,6 +117,11 @@ void NesDMC::Tick()
        }
 
        /*
+
+            When an output cycle is started, the counter is loaded with 8 and if the sample
+            buffer is empty, the silence flag is set, otherwise the silence flag is cleared
+            and the sample buffer is emptied into the shift register.
+
             When an output cycle ends, a new cycle is started as follows:
 
             The bits-remaining counter is loaded with 8.
@@ -116,21 +133,7 @@ void NesDMC::Tick()
             The right shift register is clocked.
             As stated above, the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
 
-        */
-       if(BitRemaining == 0)
-       {
-            BitRemaining = 8;
-            if(SampleBuffer == 0) 
-            {
-                bSilence = true;
-            } 
-            else
-            {
-                bSilence = false;
-                ShiftRegister = SampleBuffer;
-                SampleBuffer = 0;
-            }
-       }    
+        */    
     } 
 }
 
