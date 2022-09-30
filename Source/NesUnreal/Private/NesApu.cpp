@@ -217,7 +217,7 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 	else if(Address >= 0x4010 && Address <= 0x4013)
 	{
 		DMC->Write(Address, Data);
-		UE_LOG(LogNesApu,Warning,TEXT("Writing to DMC. Address: %d Data: %d"), Address, Data);
+		//UE_LOG(LogNesApu,Warning,TEXT("Writing to DMC. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address == 0x4015)
 	{
@@ -226,7 +226,7 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 		Triangle->Enabled((Data & 0x4) >> 2);
 		Noise->Enabled((Data & 0x8) >> 3);
 		DMC->Enabled((Data & 0x10) >> 4);
-		UE_LOG(LogNesApu,Warning,TEXT("Writing to Enable. Address: %d Data: %d"), Address, Data);
+		//UE_LOG(LogNesApu,Warning,TEXT("Writing to Enable. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address == 0x4017)
 	{

@@ -17,8 +17,55 @@ void NesDMC::AttachCart(shared_ptr<NesCart> Cart)
     this->M_Cart = Cart;
 }
 
+void NesDMC::DMAReader() 
+{
+    /*
+                    DMA Reader
+
+        When the sample buffer is in an empty state and the bytes counter is non-zero,
+        the following occur: The sample buffer is filled with the next sample byte read
+        from memory at the current address, subject to whatever mapping hardware is
+        present (the same as CPU memory accesses). The address is incremented; if it
+        exceeds $FFFF, it is wrapped around to $8000. The bytes counter is decremented;
+        if it becomes zero and the loop flag is set, the sample is restarted (see
+        above), otherwise if the bytes counter becomes zero and the interrupt enabled
+        flag is set, the interrupt flag is set.
+
+        When the DMA reader accesses a byte of memory, the CPU is suspended for 4 clock
+        cycles.
+    */
+       
+    if(SampleBuffer == 0 && CurrentLength > 0) 
+    {
+        // When the DMA reader accesses a byte of memory, the CPU is suspended for 4 clock cycles. 
+        SampleBuffer = M_Cart->Read(CurrentAddress);
+        bAccessedMemory = true;
+        CurrentAddress++;
+        if(CurrentAddress == 0) 
+        {
+            CurrentAddress = 0x8000;
+        }
+
+        // The bytes counter is decremented; if it becomes zero and the loop flag is set, the sample is restarted
+        CurrentLength--;
+        // When the DMC sample is restarted, the address counter is set to register $4012 * $40 + $C000 and the bytes counter is set to register $4013 * $10 + 1.
+        if(CurrentLength == 0 && bLoopFlag)
+        {
+            CurrentAddress = SampleAddress;
+            CurrentLength = SampleLength;
+        }
+        // otherwise if the bytes counter becomes zero and the interrupt enabled flag is set, the interrupt flag is set.
+        else if(CurrentLength == 0 && bIRQEnabled) 
+        {
+            // TODO: SET INTERRUPT FLAG
+        }
+    }
+}
+
 void NesDMC::Tick() 
 {
+
+    DMAReader();
     if(Timer.Counter > 0)
 	{
 		Timer.Counter--;
@@ -29,94 +76,6 @@ void NesDMC::Tick()
         Timer.Counter = Timer.Reload;
 
         /*
-                        DMA Reader
-
-            When the sample buffer is in an empty state and the bytes counter is non-zero,
-            the following occur: The sample buffer is filled with the next sample byte read
-            from memory at the current address, subject to whatever mapping hardware is
-            present (the same as CPU memory accesses). The address is incremented; if it
-            exceeds $FFFF, it is wrapped around to $8000. The bytes counter is decremented;
-            if it becomes zero and the loop flag is set, the sample is restarted (see
-            above), otherwise if the bytes counter becomes zero and the interrupt enabled
-            flag is set, the interrupt flag is set.
-
-            When the DMA reader accesses a byte of memory, the CPU is suspended for 4 clock
-            cycles.
-        */
-       
-        if(SampleBuffer == 0 && CurrentLength > 0) 
-        {
-            // When the DMA reader accesses a byte of memory, the CPU is suspended for 4 clock cycles. 
-            SampleBuffer = M_Cart->Read(CurrentAddress);
-            UE_LOG(LogTemp,Warning,TEXT("SAMPLEBUFFER: %d"),SampleBuffer);
-            bAccessedMemory = true;
-            CurrentAddress++;
-            if(CurrentAddress == 0) 
-            {
-                CurrentAddress = 0x8000;
-            }
-
-            // The bytes counter is decremented; if it becomes zero and the loop flag is set, the sample is restarted
-            CurrentLength--;
-            // When the DMC sample is restarted, the address counter is set to register $4012 * $40 + $C000 and the bytes counter is set to register $4013 * $10 + 1.
-            if(CurrentLength == 0 && bLoopFlag)
-            {
-                CurrentAddress = SampleAddress;
-                CurrentLength = SampleLength;
-            }
-            // otherwise if the bytes counter becomes zero and the interrupt enabled flag is set, the interrupt flag is set.
-            else if(CurrentLength == 0 && bIRQEnabled) 
-            {
-                // TODO: SET INTERRUPT FLAG
-            }
-        }
-
-        if(BitRemaining == 0)
-        {
-            BitRemaining = 8;
-            if(SampleBuffer == 0) 
-            {
-                bSilence = true;
-            } 
-            else
-            {
-                bSilence = false;
-                ShiftRegister = SampleBuffer;
-                SampleBuffer = 0;
-            }
-        }
-        /*
-                        Output Unit
-            
-            On the arrival of a clock from the timer, the following actions occur in order:
-
-                1. If the silence flag is clear, bit 0 of the shift register is applied to
-            the DAC counter: If bit 0 is clear and the counter is greater than 1, the
-            counter is decremented by 2, otherwise if bit 0 is set and the counter is less
-            than 126, the counter is incremented by 2.
-
-                1) The shift register is clocked.
-                
-                2) The counter is decremented. If it becomes zero, a new cycle is started.
-        */
-       if(!bSilence) // check BitRemaining > 0 or ShiftRegister > 0?
-       {
-            uint8 bit0 = ShiftRegister & 0x1;
-            if(bit0 == 0 && Output > 1) 
-            {
-                Output = Output - 2;
-            } 
-            else if(bit0 == 1 && Output < 126)
-            {
-                Output = Output + 2;
-            } 
-            // The shift register is clocked.
-            ShiftRegister = ShiftRegister >> 1;
-            // The counter is decremented. If it becomes zero, a new cycle is started.
-            BitRemaining--;
-       }
-
-       /*
 
             When an output cycle is started, the counter is loaded with 8 and if the sample
             buffer is empty, the silence flag is set, otherwise the silence flag is cleared
@@ -133,7 +92,56 @@ void NesDMC::Tick()
             The right shift register is clocked.
             As stated above, the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
 
-        */    
+        */   
+
+        if(BitRemaining == 0)
+        {
+            BitRemaining = 9;
+            if(SampleBuffer == 0) 
+            {
+                bSilence = true;
+            } 
+            else
+            {
+                bSilence = false;
+                ShiftRegister = SampleBuffer;
+                SampleBuffer = 0;
+            }
+        }
+
+
+        /*
+                        Output Unit
+            
+            On the arrival of a clock from the timer, the following actions occur in order:
+
+            1. If the silence flag is clear, bit 0 of the shift register is applied to
+        the DAC counter: If bit 0 is clear and the counter is greater than 1, the
+        counter is decremented by 2, otherwise if bit 0 is set and the counter is less
+        than 126, the counter is incremented by 2.
+
+            1) The shift register is clocked.
+            
+            2) The counter is decremented. If it becomes zero, a new cycle is started.
+        */
+
+
+       if(!bSilence)
+       {
+            uint8 bit0 = ShiftRegister & 0x1;
+            if(bit0 == 0 && Output > 1) 
+            {
+                Output = Output - 2;
+            } 
+            else if(bit0 == 1 && Output < 126)
+            {
+                Output = Output + 2;
+            } 
+            // The shift register is clocked.
+            ShiftRegister = ShiftRegister >> 1;
+       }
+        // The counter is decremented. If it becomes zero, a new cycle is started.
+        BitRemaining--; 
     } 
 }
 

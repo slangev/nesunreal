@@ -30,6 +30,7 @@ public:
 		return bCurrAccess;
 	}
 private:
+	void DMAReader();
 	struct FDivider
 	{
 		uint16 Reload; // timer load 
