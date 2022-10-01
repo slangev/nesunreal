@@ -31,6 +31,8 @@ public:
 	}
 private:
 	void DMAReader();
+	void TickShifter();
+	void UpdateBitRemaining();
 	struct FDivider
 	{
 		uint16 Reload; // timer load 
@@ -53,7 +55,7 @@ private:
 	bool bSilence = false;
 	uint8 Output = 0;
 	uint8 ShiftRegister = 0;
-	uint8 BitRemaining = 0;
+	uint8 BitRemaining = 8;
 
 	// Current variables are used to handle restarts. 
 	uint16 SampleAddress = 0x0000;

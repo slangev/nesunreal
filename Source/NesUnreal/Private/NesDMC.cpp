@@ -62,55 +62,40 @@ void NesDMC::DMAReader()
     }
 }
 
-void NesDMC::Tick() 
+void NesDMC::UpdateBitRemaining() 
 {
+    /*
 
-    DMAReader();
-    if(Timer.Counter > 0)
-	{
-		Timer.Counter--;
-	}
-    else 
+        When an output cycle is started, the counter is loaded with 8 and if the sample
+        buffer is empty, the silence flag is set, otherwise the silence flag is cleared
+        and the sample buffer is emptied into the shift register.
+
+        When an output cycle ends, a new cycle is started as follows:
+
+        The bits-remaining counter is loaded with 8.
+        If the sample buffer is empty, then the silence flag is set; otherwise, the silence flag is cleared and the sample buffer is emptied into the shift register.
+
+    */   
+
+    if(BitRemaining == 0)
     {
-        // Reload timer
-        Timer.Counter = Timer.Reload;
-
-        /*
-
-            When an output cycle is started, the counter is loaded with 8 and if the sample
-            buffer is empty, the silence flag is set, otherwise the silence flag is cleared
-            and the sample buffer is emptied into the shift register.
-
-            When an output cycle ends, a new cycle is started as follows:
-
-            The bits-remaining counter is loaded with 8.
-            If the sample buffer is empty, then the silence flag is set; otherwise, the silence flag is cleared and the sample buffer is emptied into the shift register.
-
-            When the timer outputs a clock, the following actions occur in order:
-
-            If the silence flag is clear, the output level changes based on bit 0 of the shift register. If the bit is 1, add 2; otherwise, subtract 2. But if adding or subtracting 2 would cause the output level to leave the 0-127 range, leave the output level unchanged. This means subtract 2 only if the current level is at least 2, or add 2 only if the current level is at most 125.
-            The right shift register is clocked.
-            As stated above, the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
-
-        */   
-
-        if(BitRemaining == 0)
+        BitRemaining = 8;
+        if(SampleBuffer == 0) 
         {
-            BitRemaining = 9;
-            if(SampleBuffer == 0) 
-            {
-                bSilence = true;
-            } 
-            else
-            {
-                bSilence = false;
-                ShiftRegister = SampleBuffer;
-                SampleBuffer = 0;
-            }
+            bSilence = true;
+        } 
+        else
+        {
+            bSilence = false;
+            ShiftRegister = SampleBuffer;
+            SampleBuffer = 0;
         }
+    }
+}
 
-
-        /*
+void NesDMC::TickShifter() 
+{
+     /*
                         Output Unit
             
             On the arrival of a clock from the timer, the following actions occur in order:
@@ -123,7 +108,14 @@ void NesDMC::Tick()
             1) The shift register is clocked.
             
             2) The counter is decremented. If it becomes zero, a new cycle is started.
-        */
+
+        More Information:
+            When the timer outputs a clock, the following actions occur in order:
+
+        1.) If the silence flag is clear, the output level changes based on bit 0 of the shift register. If the bit is 1, add 2; otherwise, subtract 2. But if adding or subtracting 2 would cause the output level to leave the 0-127 range, leave the output level unchanged. This means subtract 2 only if the current level is at least 2, or add 2 only if the current level is at most 125.
+        2.) The right shift register is clocked.
+        3.) As stated above, the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
+    */
 
 
        if(!bSilence)
@@ -137,11 +129,29 @@ void NesDMC::Tick()
             {
                 Output = Output + 2;
             } 
-            // The shift register is clocked.
-            ShiftRegister = ShiftRegister >> 1;
+
        }
+        // The shift register is clocked.
+        ShiftRegister = ShiftRegister >> 1;
+        
         // The counter is decremented. If it becomes zero, a new cycle is started.
         BitRemaining--; 
+}
+
+void NesDMC::Tick() 
+{
+
+    DMAReader();
+    if(Timer.Counter > 0)
+	{
+		Timer.Counter--;
+	}
+    else 
+    {
+        // Reload timer
+        Timer.Counter = Timer.Reload;
+        TickShifter();
+        UpdateBitRemaining();
     } 
 }
 
