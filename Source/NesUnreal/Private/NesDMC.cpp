@@ -58,7 +58,7 @@ void NesDMC::DMAReader()
         // otherwise if the bytes counter becomes zero and the interrupt enabled flag is set, the interrupt flag is set.
         else if(CurrentLength == 0 && bIRQEnabled) 
         {
-            // TODO: SET INTERRUPT FLAG
+            IRQRequest(true);
         }
     }
 }
@@ -226,4 +226,9 @@ bool NesDMC::LengthAboveZero()
 int NesDMC::GetOutputVol() 
 {
     return Output & 0x7F;
+}
+
+bool NesDMC::IRQInterruptRequested() 
+{
+    return bIRQ;
 }

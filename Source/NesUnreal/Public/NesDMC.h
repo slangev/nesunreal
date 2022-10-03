@@ -29,6 +29,8 @@ public:
 		bAccessedMemory = !bAccessedMemory;
 		return bCurrAccess;
 	}
+	bool IRQInterruptRequested();
+	void IRQRequest(bool Request) {bIRQ = Request;};
 private:
 	void DMAReader();
 	void TickShifter();
@@ -49,6 +51,7 @@ private:
 	FDivider Timer;
 	bool bLoopFlag = false;
 	bool bIRQEnabled = false;
+	bool bIRQ = false;
 	bool bAccessedMemory = false;
 	bool bSampleBufferFull = false;
 

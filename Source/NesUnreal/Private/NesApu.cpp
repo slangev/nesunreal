@@ -226,6 +226,7 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 		Triangle->Enabled((Data & 0x4) >> 2);
 		Noise->Enabled((Data & 0x8) >> 3);
 		DMC->Enabled((Data & 0x10) >> 4);
+		DMC->IRQRequest(false);
 		//UE_LOG(LogNesApu,Warning,TEXT("Writing to Enable. Address: %d Data: %d"), Address, Data);
 	}
 	else if(Address == 0x4017)
@@ -255,11 +256,13 @@ uint8 UNesApu::Read(const unsigned short Address)
 		bool bTriangleEnabled = Triangle->LengthAboveZero();
 		bool bNoiseEnabled = Noise->LengthAboveZero();
 		bool bDMCEnabled = DMC->LengthAboveZero(); //DMC doesn't use length counters. DMC sample bytes remaining > 0
+		bool bDMCIRQRequest = DMC->IRQInterruptRequested();
 		status = (bPulse1Enabled) ? FNesCPU::SetBit(0, status) : FNesCPU::ResetBit(0, status);
 		status = (bPulse2Enabled) ? FNesCPU::SetBit(1, status) : FNesCPU::ResetBit(1, status);
 		status = (bTriangleEnabled) ? FNesCPU::SetBit(2, status) : FNesCPU::ResetBit(2, status);
 		status = (bNoiseEnabled) ? FNesCPU::SetBit(3, status) : FNesCPU::ResetBit(3, status);
 		status = (bDMCEnabled) ? FNesCPU::SetBit(4, status) : FNesCPU::ResetBit(4, status);
+		status = (bDMCIRQRequest) ? FNesCPU::SetBit(7, status) : FNesCPU::ResetBit(7, status);
 	}
 	return status;
 }
