@@ -50,12 +50,13 @@ private:
 	bool bLoopFlag = false;
 	bool bIRQEnabled = false;
 	bool bAccessedMemory = false;
+	bool bSampleBufferFull = false;
 
 	// Output unit
 	bool bSilence = false;
 	uint8 Output = 0;
 	uint8 ShiftRegister = 0;
-	uint8 BitRemaining = 8;
+	uint8 BitRemaining = 0;
 
 	// Current variables are used to handle restarts. 
 	uint16 SampleAddress = 0x0000;

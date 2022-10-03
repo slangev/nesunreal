@@ -35,10 +35,11 @@ void NesDMC::DMAReader()
         cycles.
     */
        
-    if(SampleBuffer == 0 && CurrentLength > 0) 
+    if(CurrentLength > 0 && !bSampleBufferFull) 
     {
         // When the DMA reader accesses a byte of memory, the CPU is suspended for 4 clock cycles. 
-        SampleBuffer = M_Cart->Read(CurrentAddress);
+        ShiftRegister = M_Cart->Read(CurrentAddress);
+        bSampleBufferFull = true;
         bAccessedMemory = true;
         CurrentAddress++;
         if(CurrentAddress == 0) 
@@ -80,7 +81,7 @@ void NesDMC::UpdateBitRemaining()
     if(BitRemaining == 0)
     {
         BitRemaining = 8;
-        if(SampleBuffer == 0) 
+        if(!bSampleBufferFull) 
         {
             bSilence = true;
         } 
@@ -88,8 +89,8 @@ void NesDMC::UpdateBitRemaining()
         {
             bSilence = false;
             ShiftRegister = SampleBuffer;
-            SampleBuffer = 0;
         }
+        bSampleBufferFull = false;
     }
 }
 
@@ -116,10 +117,8 @@ void NesDMC::TickShifter()
         2.) The right shift register is clocked.
         3.) As stated above, the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
     */
-
-
-       if(!bSilence)
-       {
+        if(!bSilence)
+        {
             uint8 bit0 = ShiftRegister & 0x1;
             if(bit0 == 0 && Output > 1) 
             {
@@ -130,17 +129,16 @@ void NesDMC::TickShifter()
                 Output = Output + 2;
             } 
 
-       }
+        }
         // The shift register is clocked.
         ShiftRegister = ShiftRegister >> 1;
-        
+
         // The counter is decremented. If it becomes zero, a new cycle is started.
         BitRemaining--; 
 }
 
 void NesDMC::Tick() 
 {
-
     DMAReader();
     if(Timer.Counter > 0)
 	{
@@ -150,8 +148,8 @@ void NesDMC::Tick()
     {
         // Reload timer
         Timer.Counter = Timer.Reload;
-        TickShifter();
         UpdateBitRemaining();
+        TickShifter();
     } 
 }
 
@@ -173,19 +171,17 @@ void NesDMC::Write(unsigned short Address, uint8 Data)
             bIRQEnabled = (Data & 0x80) == 0x80;
             bLoopFlag = (Data & 0x40) == 0x40;
             RateIndex = (Data & 0xF);
-            Timer.Reload = RateIndexTable[RateIndex]; // Might be wrong.
-			Timer.Counter = RateIndexTable[RateIndex];
+            Timer.Reload = RateIndexTable[RateIndex]/2; // Might be wrong. A rate of 428 means the output level changes every 214 APU cycles. 
+			Timer.Counter = RateIndexTable[RateIndex]/2;
             break;
         case 0x4011:
             Output = (Data & 0x7F);
             break;
         case 0x4012:
             SampleAddress = 0xC000 + (Data * 64);
-            CurrentAddress = SampleAddress;
 			break;
         case 0x4013:
             SampleLength = (Data * 16) + 1; // bytes
-            CurrentLength = SampleLength;
             break;
         default:
             break;
@@ -210,6 +206,8 @@ void NesDMC::Enabled(bool bEnabled)
         {
             CurrentAddress = SampleAddress;
             CurrentLength = SampleLength;
+            DMAReader();
+            UpdateBitRemaining();
         }
     }
 
@@ -227,5 +225,5 @@ bool NesDMC::LengthAboveZero()
 
 int NesDMC::GetOutputVol() 
 {
-    return Output;
+    return Output & 0x7F;
 }
