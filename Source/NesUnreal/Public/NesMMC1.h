@@ -7,6 +7,7 @@
 #include <memory>
 #include "CoreMinimal.h"
 using namespace std;
+
 /**
  * 
  */
@@ -37,18 +38,21 @@ class NESUNREAL_API NesMMC1 : public NesCartController
 {
 public:
 	NesMMC1();
-	NesMMC1(shared_ptr<vector<uint8>> PrgRomMemory, shared_ptr<vector<uint8>> PrgRamMemory, shared_ptr<vector<uint8>> ChrRomMemory, shared_ptr<vector<uint8>> ChrRamMemory);
+	NesMMC1(shared_ptr<vector<uint8>> PrgRomMemory, shared_ptr<vector<uint8>> PrgRamMemory, shared_ptr<vector<uint8>> ChrRomMemory, shared_ptr<vector<uint8>> ChrRamMemory, bool bBatteryBacked);
 	~NesMMC1();
 	virtual uint8 Read(unsigned short Address) override;
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual uint8 GetMirrorMode() override;
-	enum RegisterSelector : uint8 {
+	enum RegisterSelector : uint8 
+	{
 		ControlRegisterEnum = 0,
 		ChrBank0RegisterEnum,
 		ChrBank1RegisterEnum,
 		PrgBankRegisterEnum
 	};
 private:
+	bool Load();
+	bool Save();
 	shared_ptr<vector<uint8>> PrgRomMemory;
     shared_ptr<vector<uint8>> PrgRamMemory;
     shared_ptr<vector<uint8>> ChrRomMemory;
@@ -63,4 +67,5 @@ private:
 	uint32 ROM_BANK_SIZE_16KB = 0x4000;
 	uint32 ROM_BANK_SIZE_8KB = 0x2000;
 	uint32 ROM_BANK_SIZE_4KB = 0x1000;
+	bool bBatteryBacked = false;
 };
