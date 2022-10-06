@@ -15,6 +15,7 @@ public:
 	FNesHeader();
 	~FNesHeader();
 	string Nes = "";
+	FString GameTitle = "";
 	uint8 OneA = 0;
 	uint8 NumberOfPrgRoms = 0;
 	uint8 NumberOfChrRoms = 0;

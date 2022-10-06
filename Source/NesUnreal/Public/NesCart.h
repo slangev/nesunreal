@@ -25,9 +25,13 @@ public:
 	uint8 GetMirrorMode();
 
 private:
+	bool Save();
+	bool Load();
 	void LoadRom(FString PathToRom);
 	void PrintRomData();
 	static void Log(string Msg);
+	bool bBatteryBacked = false;
+	FString projectDir = "";
 	unique_ptr<NesCartController> Mbc;
 	shared_ptr<vector<uint8>> PrgRomMemory;
 	shared_ptr<vector<uint8>> PrgRamMemory;

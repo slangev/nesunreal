@@ -39,8 +39,8 @@ void NesCart::Log(const string Msg)
 
 void NesCart::LoadRom(FString PathToRom) 
 {
-    FString projectDir = PathToRom;
-	UE_LOG(LogNesCart, Log, TEXT("%s"), *PathToRom);
+    projectDir = PathToRom;
+	UE_LOG(LogNesCart, Log, TEXT("%s"), *projectDir);
 	TArray<uint8> romData;
 	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*projectDir))
 	{
@@ -102,18 +102,27 @@ void NesCart::LoadRom(FString PathToRom)
     const uint8 Mirror = static_cast<uint8>(Header->RomControlByteOne & 0x1);
     const uint8 OverRide = static_cast<uint8>(Header->RomControlByteOne & 0x8 >> 3);
 	Header->Mirroring = static_cast<uint8>((OverRide == 1) ? 2 : Mirror);
-	const bool bBatteryBacked = (Header->RomControlByteOne & 0x2) == 0x2;
-	UE_LOG(LogNesCart,Warning,TEXT("bBatteryBacked %s"),(bBatteryBacked) ? TEXT("True") : TEXT("FALSE"));
-
-
+	this->bBatteryBacked = (Header->RomControlByteOne & 0x2) == 0x2;
+	UE_LOG(LogNesCart,Warning,TEXT("bBatteryBacked %s"),(this->bBatteryBacked) ? TEXT("True") : TEXT("False"));
 	UE_LOG(LogNesCart,Warning,TEXT("MAPPER: %d"),Header->Mapper);
+
+	//https://docs.unrealengine.com/5.0/en-US/API/Runtime/Core/Containers/FString/FindLastChar/
+	int index = 0;
+	bool bHasFound = projectDir.FindLastChar('/',index);
+	if(bHasFound) 
+	{
+		FString title = projectDir.Mid(index+1);
+		UE_LOG(LogNesCart,Warning,TEXT("Title: %s"),*title);
+		Header->GameTitle=title;
+	}
+	Load();
 	switch(Header->Mapper) 
 	{
 		case 0:
 			Mbc = make_unique<NesNoMapper>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory);
 			break;
 		case 1:
-			Mbc = make_unique<NesMMC1>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory, bBatteryBacked);
+			Mbc = make_unique<NesMMC1>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory, this->bBatteryBacked);
 			break;
 		case 3:
 			Mbc = make_unique<NesCNROM>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory);
@@ -125,6 +134,54 @@ void NesCart::LoadRom(FString PathToRom)
 
 NesCart::~NesCart()
 {
+	Save();
+}
+
+bool NesCart::Save()
+{
+	if(this->bBatteryBacked)
+	{
+		TArray<uint8> ramData;
+		for(int i = 0; i < this->PrgRamMemory->size(); i++) 
+		{
+			ramData.Add(this->PrgRamMemory->at(i));
+		}
+		FString SaveFile = projectDir + ".save";
+		if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*SaveFile))
+		{
+			UE_LOG(LogNesCart, Warning, TEXT("%s, file does not exist! Creating save file"), *SaveFile);
+		}
+		bool bResult = FFileHelper::SaveArrayToFile(ramData,*SaveFile);
+		return bResult;
+	}
+	return false;
+}
+
+bool NesCart::Load()
+{
+	if(this->bBatteryBacked)
+	{
+		FString SaveFile = projectDir + ".save";
+		if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*SaveFile))
+		{
+			UE_LOG(LogNesCart, Warning, TEXT("%s, file does not exist!"), *SaveFile);
+		}
+		else 
+		{
+			TArray<uint8> ramData;
+			const bool bResult = FFileHelper::LoadFileToArray(ramData,*SaveFile);
+			if(bResult)
+			{
+				UE_LOG(LogNesCart, Warning, TEXT("Successfully found save file"));
+				for(uint32 i = 0; i < ramData.Num(); i++) 
+				{
+					this->PrgRamMemory->at(i) = ramData[i];
+				}
+			}
+			return bResult;	
+		}
+	}
+	return false;
 }
 
 void NesCart::Write(unsigned short Address, uint8 Data) 

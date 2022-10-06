@@ -2,6 +2,7 @@
 /Content/StarterContent
 .DS_Store
 /Content/Data/*.nes 
+/Content/Data/*.nes.save
 
 # Visual Studio 2015 user specific files
 .vs/

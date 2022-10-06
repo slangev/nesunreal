@@ -10,7 +10,14 @@
 		}
 	],
 	"settings": {
-		"typescript.tsc.autoDetect": "off"
+		"typescript.tsc.autoDetect": "off",
+		"files.associations": {
+			"__config": "cpp",
+			"__nullptr": "cpp",
+			"*.ipp": "cpp",
+			"__locale": "cpp",
+			"vector": "cpp"
+		}
 	},
 	"extensions": {
 		"recommendations": [

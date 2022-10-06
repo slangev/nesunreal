@@ -19,7 +19,6 @@ NesMMC1::NesMMC1(shared_ptr<vector<uint8>> PrgRomMemory, shared_ptr<vector<uint8
     ControlRegister = make_unique<NesMMC1ControlRegister>();
     ControlRegister->Write(0x0C);
     this->bBatteryBacked = bBatteryBacked;
-    Load();
 }
 
 uint8 NesMMC1::GetMirrorMode() 
@@ -29,25 +28,6 @@ uint8 NesMMC1::GetMirrorMode()
 
 NesMMC1::~NesMMC1()
 {
-    Save();
-}
-
-bool NesMMC1::Save()
-{
-    if(bBatteryBacked) 
-    {
-
-    }
-    return false;
-}
-
-bool NesMMC1::Load()
-{
-    if(bBatteryBacked) 
-    {
-        
-    }
-    return false;
 }
 
 uint8 NesMMC1::Read(unsigned short Address) 
@@ -78,7 +58,7 @@ uint8 NesMMC1::Read(unsigned short Address)
         {
             if(ChrRamMemory) 
             {
-                returnData = ChrRamMemory->at((Address & 0x0FFF) & (ChrRomMemory->size() - 1));
+                returnData = ChrRamMemory->at((Address & 0x0FFF) & (ChrRamMemory->size() - 1));
             }
             // PPU $0000-$0FFF: 4 KB switchable CHR bank 
             else 
@@ -105,6 +85,7 @@ uint8 NesMMC1::Read(unsigned short Address)
     {
         uint Index = (Address & 0x1FFF) & PrgRamMemory->size() - 1;
         returnData = PrgRamMemory->at(Index);
+
     }
 
     // PRG ROM Address
@@ -180,7 +161,6 @@ void NesMMC1::Write(unsigned short Address, uint8 Data)
     {
         // MMC1B and later: PRG RAM chip enable (0: enabled; 1: disabled; ignored on MMC1A)
         uint8 bit = FNesCPU::GetBit(5,PrgBankRegister);
-
         PrgRamMemory->at(Address & 0x1FFF) = Data;
     } 
     // CPU $8000-$FFFF is connected to a common shift register

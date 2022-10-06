@@ -51,8 +51,6 @@ public:
 		PrgBankRegisterEnum
 	};
 private:
-	bool Load();
-	bool Save();
 	shared_ptr<vector<uint8>> PrgRomMemory;
     shared_ptr<vector<uint8>> PrgRamMemory;
     shared_ptr<vector<uint8>> ChrRomMemory;
