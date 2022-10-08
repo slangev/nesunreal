@@ -2,14 +2,43 @@
 
 #pragma once
 
+#include <vector>
+#include <memory>
+#include "NesCartController.h"
 #include "CoreMinimal.h"
 
 /**
  * 
  */
-class NESUNREAL_API NesMMC3
+class NESUNREAL_API NesMMC3 : public NesCartController
 {
 public:
 	NesMMC3();
+	NesMMC3(std::shared_ptr<std::vector<uint8>> PrgRomMemory, std::shared_ptr<std::vector<uint8>> PrgRamMemory, std::shared_ptr<std::vector<uint8>> ChrRomMemory, std::shared_ptr<std::vector<uint8>> ChrRamMemory, bool bBatteryBacked);
 	~NesMMC3();
+	virtual uint8 Read(unsigned short Address) override;
+	virtual void Write(unsigned short Address, uint8 Data) override;
+	virtual uint8 GetMirrorMode() override;
+private:
+	std::shared_ptr<std::vector<uint8>> PrgRomMemory;
+    std::shared_ptr<std::vector<uint8>> PrgRamMemory;
+    std::shared_ptr<std::vector<uint8>> ChrRomMemory;
+	std::shared_ptr<std::vector<uint8>> ChrRamMemory;
+	uint32 ROM_BANK_SIZE_32KB = 0x8000;
+	uint32 ROM_BANK_SIZE_16KB = 0x4000;
+	uint32 ROM_BANK_SIZE_8KB = 0x2000;
+	uint32 ROM_BANK_SIZE_4KB = 0x1000;
+	bool bBatteryBacked = false;
+
+	/*
+		The MMC3 has 4 pairs of registers at $8000-$9FFF, $A000-$BFFF, $C000-$DFFF, and $E000-$FFFF - even addresses ($8000, $8002, etc.) select the low register and odd addresses ($8001, $8003, etc.) select the high register in each pair. These can be broken into two independent functional units: memory mapping ($8000, $8001, $A000, $A001) and scanline counting ($C000, $C001, $E000, $E001). 
+	*/
+	uint8 BankSelect = 0;
+	uint8 BankData = 0;
+	uint8 MirrorMode = 0;
+	uint8 PrgRamProtect = 0;
+	uint8 IRQLatch = 0;
+	uint8 IRQReload = 0;
+	uint8 IRQDisabled = 0;
+	uint8 IRQEnabled = 0;
 };
