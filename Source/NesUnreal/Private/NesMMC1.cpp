@@ -37,7 +37,7 @@ uint8 NesMMC1::Read(unsigned short Address)
     // CHR ROM Address
     if (Address >= 0x0000 && Address <= 0x1FFF) 
     {
-        uint8 bankNumber = 0x00;
+        uint8 BankNumber = 0x00;
 
         // switch 8 KB at a time
         if(ControlRegister->GetCHRROMBankMode() == 0) 
@@ -48,9 +48,9 @@ uint8 NesMMC1::Read(unsigned short Address)
             } 
             else 
             {
-                bankNumber = ChrBank0Register & 0x1E; // Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
-                uint32 index = ((ROM_BANK_SIZE_8KB * bankNumber | (Address & 0x1FFF))) & (ChrRomMemory->size() - 1);
-                returnData = ChrRomMemory->at(index);
+                BankNumber = ChrBank0Register & 0x1E; // Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
+                uint32 Index = ((ROM_BANK_SIZE_8KB * BankNumber | (Address & 0x1FFF))) & (ChrRomMemory->size() - 1);
+                returnData = ChrRomMemory->at(Index);
             }
         } 
         // switch two separate 4 KB banks
@@ -65,16 +65,16 @@ uint8 NesMMC1::Read(unsigned short Address)
             {
                 if (Address >= 0x0000 && Address <= 0x0FFF) 
                 {
-                    bankNumber = ChrBank0Register & 0x1F; // Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
-                    uint32 index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x0FFF))) & (ChrRomMemory->size() - 1);
-                    returnData = ChrRomMemory->at(index);
+                    BankNumber = ChrBank0Register & 0x1F; // Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
+                    uint32 Index = ((ROM_BANK_SIZE_4KB * BankNumber | (Address & 0x0FFF))) & (ChrRomMemory->size() - 1);
+                    returnData = ChrRomMemory->at(Index);
                 }
                 // PPU $1000-$1FFF: 4 KB switchable CHR bank
                 else if (Address >= 0x1000 && Address <= 0x1FFF) 
                 {
-                    bankNumber = ChrBank1Register & 0x1F; // Select 4 KB CHR bank at PPU $1000 (ignored in 8 KB mode)
-                    uint32 index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x0FFF))) & (ChrRomMemory->size() - 1);
-                    returnData = ChrRomMemory->at(index);
+                    BankNumber = ChrBank1Register & 0x1F; // Select 4 KB CHR bank at PPU $1000 (ignored in 8 KB mode)
+                    uint32 Index = ((ROM_BANK_SIZE_4KB * BankNumber | (Address & 0x0FFF))) & (ChrRomMemory->size() - 1);
+                    returnData = ChrRomMemory->at(Index);
                 }
             }
         }
@@ -96,14 +96,14 @@ uint8 NesMMC1::Read(unsigned short Address)
         if(ControlRegister->GetPRGROMBankMode() == 0 || ControlRegister->GetPRGROMBankMode() == 1) 
         {
             bankNumber = PrgBankRegister & 0x1E; // Select 16 KB PRG ROM bank (low bit ignored in 32 KB mode)
-            uint32 index = ((ROM_BANK_SIZE_32KB * bankNumber | (Address & 0x7FFF))) & (PrgRomMemory->size() - 1);
-            returnData = PrgRomMemory->at(index);
+            uint32 Index = ((ROM_BANK_SIZE_32KB * bankNumber | (Address & 0x7FFF))) & (PrgRomMemory->size() - 1);
+            returnData = PrgRomMemory->at(Index);
         } 
         // 16kb bank mode
         else 
         {
             bankNumber = PrgBankRegister & 0x1F; // Select 16 KB PRG ROM bank (low bit ignored in 32 KB mode)
-            uint32 index = ((ROM_BANK_SIZE_16KB * bankNumber | (Address & 0x3FFF))) & (PrgRomMemory->size() - 1);
+            uint32 Index = ((ROM_BANK_SIZE_16KB * bankNumber | (Address & 0x3FFF))) & (PrgRomMemory->size() - 1);
 
             // fix first bank at $8000 and switch 16 KB bank at $C000;
             if(ControlRegister->GetPRGROMBankMode() == 2) 
@@ -111,13 +111,13 @@ uint8 NesMMC1::Read(unsigned short Address)
                 // CPU $8000-$BFFF: 16 KB PRG ROM bank, either switchable or fixed to the first bank
                 if (Address >= 0x8000 && Address <= 0xBFFF) 
                 {
-                    index = ((ROM_BANK_SIZE_16KB * 0 | (Address & 0x3FFF))) & (PrgRomMemory->size() - 1);
-                    returnData = PrgRomMemory->at(index);
+                    Index = ((ROM_BANK_SIZE_16KB * 0 | (Address & 0x3FFF))) & (PrgRomMemory->size() - 1);
+                    returnData = PrgRomMemory->at(Index);
                 }
                 // CPU $C000-$FFFF: 16 KB PRG ROM bank, either fixed to the last bank or switchable 
                 else if (Address >= 0xC000 && Address <= 0xFFFF) 
                 {
-                    returnData = PrgRomMemory->at(index);
+                    returnData = PrgRomMemory->at(Index);
                 }
             }
             // fix last bank at $C000 and switch 16 KB bank at $8000 
@@ -126,14 +126,14 @@ uint8 NesMMC1::Read(unsigned short Address)
                  // CPU $8000-$BFFF: 16 KB PRG ROM bank, either switchable or fixed to the first bank
                 if (Address >= 0x8000 && Address <= 0xBFFF) 
                 {
-                    returnData = PrgRomMemory->at(index);
+                    returnData = PrgRomMemory->at(Index);
                 }
                 // CPU $C000-$FFFF: 16 KB PRG ROM bank, either fixed to the last bank or switchable 
                 else if (Address >= 0xC000 && Address <= 0xFFFF) 
                 {
                     bankNumber = (PrgRomMemory->size() / ROM_BANK_SIZE_16KB) - 1; // last bank 
-                    index = ((ROM_BANK_SIZE_16KB * bankNumber | (Address & 0x3FFF))) & (PrgRomMemory->size() - 1);
-                    returnData = PrgRomMemory->at(index);
+                    Index = ((ROM_BANK_SIZE_16KB * bankNumber | (Address & 0x3FFF))) & (PrgRomMemory->size() - 1);
+                    returnData = PrgRomMemory->at(Index);
                 }
             }
         }
@@ -152,8 +152,8 @@ void NesMMC1::Write(unsigned short Address, uint8 Data)
         if(ChrRamMemory) 
         {
             uint8 bankNumber = 0x00; // Select 4 KB CHR bank at PPU $1000 (ignored in 8 KB mode)
-            uint32 index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x1FFF))) & (ChrRamMemory->size() - 1);
-            ChrRamMemory->at(index) = Data;
+            uint32 Index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x1FFF))) & (ChrRamMemory->size() - 1);
+            ChrRamMemory->at(Index) = Data;
         }
     }
     // CPU $6000-$7FFF: 8 KB PRG RAM bank, (optional)

@@ -50,7 +50,7 @@ private:
 	std::shared_ptr<std::vector<uint8>> ChrRamMemory;
 	uint32 BANK_SIZE_8KB = 0x2000;
 	uint32 BANK_SIZE_2KB = 0x800;
-	uint32 BANK_SUZE_1KB = 0x400;
+	uint32 BANK_SIZE_1KB = 0x400;
 
 	bool bBatteryBacked = false;
 
@@ -66,4 +66,5 @@ private:
 	uint8 IRQReload = 0;
 	uint8 OpenBusData = 0;
 	bool bIsIRQEnabled = false;
+	bool bIRQReloadRequest = false;
 };
