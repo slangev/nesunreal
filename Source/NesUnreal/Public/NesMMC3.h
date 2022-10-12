@@ -57,7 +57,7 @@ private:
 	/*
 		The MMC3 has 4 pairs of registers at $8000-$9FFF, $A000-$BFFF, $C000-$DFFF, and $E000-$FFFF - even addresses ($8000, $8002, etc.) select the low register and odd addresses ($8001, $8003, etc.) select the high register in each pair. These can be broken into two independent functional units: memory mapping ($8000, $8001, $A000, $A001) and scanline counting ($C000, $C001, $E000, $E001). 
 	*/
-	NesMMC3BankSelectRegister BankSelect;
+	std::unique_ptr<NesMMC3BankSelectRegister> BankSelect;
 	std::vector<uint8> ChrBankData; // R0-R5
 	std::vector<uint8> PrgBankData; // R6-R7
 	uint8 MirrorMode = 0;
