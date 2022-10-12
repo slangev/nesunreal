@@ -43,6 +43,7 @@ public:
 	virtual uint8 Read(unsigned short Address) override;
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual uint8 GetMirrorMode() override;
+	int lineCount = 0;
 private:
 	std::shared_ptr<std::vector<uint8>> PrgRomMemory;
     std::shared_ptr<std::vector<uint8>> PrgRamMemory;

@@ -18,7 +18,7 @@ NesPPUMMU::~NesPPUMMU()
 {
 }
 
-uint8 NesPPUMMU::Read(unsigned short Address) const {
+uint8 NesPPUMMU::Read(unsigned short Address) {
 
     //Read from pattern table/chrrom/chrram
     if(Address >= 0x0000 && Address < 0x2000) {
@@ -66,7 +66,6 @@ uint8 NesPPUMMU::Read(unsigned short Address) const {
                 }
                 break;
         }
-
         return nameSpaceTable->at(VRAMAddress);
     } 
     // Palette Ram
