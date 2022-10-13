@@ -101,8 +101,11 @@ void NesCart::LoadRom(FString PathToRom)
 	}
 	Header->Mapper = (Header->RomControlByteTwo & 0xF0) | (Header->RomControlByteOne & 0xF0) >> 4;
     const uint8 Mirror = static_cast<uint8>(Header->RomControlByteOne & 0x1);
-    const uint8 OverRide = static_cast<uint8>(Header->RomControlByteOne & 0x8 >> 3);
+	UE_LOG(LogNesCart,Warning,TEXT("Mirror: %d"),Header->Mirroring);
+    uint8 OverRide = static_cast<uint8>(Header->RomControlByteOne & 0x8 >> 3);
+	OverRide = 0;
 	Header->Mirroring = static_cast<uint8>((OverRide == 1) ? 2 : Mirror);
+	// UE_LOG(LogNesCart,Warning,TEXT("Mirror2: %d"),Header->Mirroring);
 	this->bBatteryBacked = (Header->RomControlByteOne & 0x2) == 0x2;
 	UE_LOG(LogNesCart,Warning,TEXT("bBatteryBacked %s"),(this->bBatteryBacked) ? TEXT("True") : TEXT("False"));
 	UE_LOG(LogNesCart,Warning,TEXT("MAPPER: %d"),Header->Mapper);

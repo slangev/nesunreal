@@ -16,7 +16,9 @@
 			"__nullptr": "cpp",
 			"*.ipp": "cpp",
 			"__locale": "cpp",
-			"vector": "cpp"
+			"vector": "cpp",
+			"coroutine": "cpp",
+			"memory": "cpp"
 		}
 	},
 	"extensions": {
