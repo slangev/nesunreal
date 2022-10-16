@@ -36,6 +36,11 @@ bool NesCPUMMU::RequestNmiInterrupt() const
     return M_Ppu->GetNMIInterrupt();
 }
 
+bool NesCPUMMU::RequestIrqInterrupt() const
+{
+    return M_Cart->GetIRQRequested();
+}
+
 void NesCPUMMU::Write(const unsigned short Address, const uint8 Data)
 {
     //CPU RAM

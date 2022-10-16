@@ -470,10 +470,12 @@ void NesPPU::Step(uint Cycle) {
 			lineCount++;
 			if (lineCount < 240) {
 				// Attempt with loopy's data
-				for (int i = 0; i < 256; i++) {
+				for (int i = 0; i < 256; i++) 
+				{
                     VideoMemory->at(i)->at(lineCount).pixel = palettes.at(M_Mmu->Read(0x3F00) & 0x3F);
                 }
-				if (ppumask.showBG) {
+				if (ppumask.showBG) 
+				{
 					bool baseNameTableX = (loopyV & 0x400) == 0x400;
 					bool baseNameTableY = (loopyV & 0x800) == 0x800;
 					int loopyXscroll = (((loopyV & 0x1F) << 3)|loopyX) + ((baseNameTableX) ? 256 : 0);
@@ -482,7 +484,8 @@ void NesPPU::Step(uint Cycle) {
 					drawBGScanLine(loopyXscroll, loopyYscroll, lineCount);
 					checkSpriteOverflow(lineCount);
 				}
-				if (ppumask.showSprites) {
+				if (ppumask.showSprites) 
+				{
 					drawSprites(lineCount);
 				}
 			} 

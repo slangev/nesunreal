@@ -43,6 +43,7 @@ public:
 	virtual uint8 Read(unsigned short Address) override;
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual uint8 GetMirrorMode() override;
+	virtual bool GetIRQRequested() override;
 	int lineCount = 0;
 private:
 	std::shared_ptr<std::vector<uint8>> PrgRomMemory;
@@ -65,7 +66,9 @@ private:
 	uint8 PrgRamProtect = 0;
 	uint8 IRQLatch = 0;
 	uint8 IRQReload = 0;
+	uint8 IRQCounter = 0;
 	uint8 OpenBusData = 0;
 	bool bIsIRQEnabled = false;
 	bool bIRQReloadRequest = false;
+	bool bIRQ = false;
 };

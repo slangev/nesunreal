@@ -52,8 +52,10 @@ FNesCPU::~FNesCPU()
 {
 }
 
-void FNesCPU::PrintNesTestLogLine(uint8 Opcode) {
-    if(bLoggingCPU) {
+void FNesCPU::PrintNesTestLogLine(uint8 Opcode) 
+{
+    if(bLoggingCPU) 
+    {
         string Result = to_string(LineNumber++) + " ";
         stringstream StreamPC;
         stringstream StreamOpCode;
@@ -85,12 +87,15 @@ void FNesCPU::PrintNesTestLogLine(uint8 Opcode) {
         FString DebugResult(Result.c_str());
         DebugResult = DebugResult.ToUpper();
         UE_LOG(LogNesCPU, Log, TEXT("%s"), *DebugResult);
-    } else {
+    } 
+    else 
+    {
         LineNumber++;
     }
 }
 
-void LogOpcode(const FString Msg, const uint8 Opcode) {
+void LogOpcode(const FString Msg, const uint8 Opcode) 
+{
     string Result = "";
     stringstream StreamOpCode;
     StreamOpCode << setfill ('0') << setw(sizeof(uint8)*2) << hex << static_cast<uint>(Opcode);
@@ -100,7 +105,8 @@ void LogOpcode(const FString Msg, const uint8 Opcode) {
     UE_LOG(LogNesCPU, Log, TEXT("%s %s"),*Msg, *DebugResult);
 }
 
-uint FNesCPU::Tick() {
+uint FNesCPU::Tick() 
+{
     HandleInterrupts();
     uint8 const Opcode = M_Mmu->Read(PC++ & 0xFFFF);
     PrintNesTestLogLine(Opcode);
@@ -109,27 +115,31 @@ uint FNesCPU::Tick() {
 
 void FNesCPU::HandleInterrupts()
 {
-    if(bReset) {
+    if(bReset) 
+    {
         Reset();
         return;
     }
     bool NMI = M_Mmu->RequestNmiInterrupt();
+    bool IRQ = M_Mmu->RequestIrqInterrupt();
     //NMI -  However, triggering of a NMI can be prevented if bit 7 of PPU Control Register 1 ($2000) is clear. When a NMI occurs the system jumps to the address located at $FFFA and $FFFB
     if (NMI && !lastNMI){
         ServiceInterrupt(0xFFFA);
         bInterrupted = true;
     }
-        //IRQ - Some memory mappers can set IRQ. The interrupt disable flag only disables IRQ interrupts.
-    // else if (IRQ && !flag_I){
-    //     // Vector
-    //     // Certain instructions can be delay the IRQ interrupt for some odd reason.
-    //     interruptPush(0xFFFE);
-    //     bInterrupted = true;
-    // }
+    //IRQ - Some memory mappers can set IRQ. The interrupt disable flag only disables IRQ interrupts.
+    else if (IRQ && !P->ReadFlag(P->IFlag))
+    {
+        // Vector
+        // Certain instructions can be delay the IRQ interrupt for some odd reason.
+        ServiceInterrupt(0xFFFE);
+        bInterrupted = true;
+    }
     lastNMI = NMI;  // Save the NMI state
 }
 
-void FNesCPU::ServiceInterrupt(unsigned short Address) {
+void FNesCPU::ServiceInterrupt(unsigned short Address) 
+{
     uint8 Result[2];
     SeparateWordToBytes(static_cast<unsigned short>(PC), Result);
     M_Mmu->Write(SP--|0x100,Result[0]);

@@ -28,6 +28,11 @@ NesMMC3::~NesMMC3()
 {
 }
 
+bool NesMMC3::GetIRQRequested()
+{
+    return bIRQ;
+}
+
 uint8 NesMMC3::Read(unsigned short Address)
 {
     uint8 returnData = OpenBusData;
@@ -271,6 +276,7 @@ void NesMMC3::Write(unsigned short Address, uint8 Data)
             } 
             else 
             {
+                IRQCounter = 0;
                 bIRQReloadRequest = true;
             }
         }

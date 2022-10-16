@@ -23,6 +23,7 @@ public:
 	void Write(unsigned short Address, uint8 Data);
 	unique_ptr<FNesHeader> Header;
 	uint8 GetMirrorMode();
+	bool GetIRQRequested();
 
 private:
 	bool Save();

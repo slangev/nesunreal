@@ -206,3 +206,8 @@ uint8 NesCart::GetMirrorMode()
 	uint8 mode = Mbc->GetMirrorMode();
 	return mode;
 }
+
+bool NesCart::GetIRQRequested()
+{
+	return Mbc->GetIRQRequested();
+}

@@ -7,7 +7,8 @@ NesTestCart::NesTestCart()
 {
 }
 
-NesTestCart::NesTestCart(vector<uint8> rom) {
+NesTestCart::NesTestCart(vector<uint8> rom) 
+{
     this->memory = rom;
 }
 
@@ -15,15 +16,23 @@ NesTestCart::~NesTestCart()
 {
 }
 
-uint8 NesTestCart::Read(unsigned short addr) {
+uint8 NesTestCart::Read(unsigned short addr) 
+{
     return memory.at(addr-0x8000) & 0xFF;
 }
 
-void NesTestCart::Write(unsigned short addr, uint8 data) {
+void NesTestCart::Write(unsigned short addr, uint8 data) 
+{
     if(addr >= 0x8000 && addr <= 0xFFFF)
         memory.at(addr-0x8000) = data;
 }
 
-uint8 NesTestCart::GetMirrorMode() {
-    return -1; // The mode is determine by the header
+uint8 NesTestCart::GetMirrorMode() 
+{
+    return 0xFF; // The mode is determine by the header
+}
+
+bool NesTestCart::GetIRQRequested()
+{
+    return false;
 }

@@ -24,6 +24,7 @@ public:
 	void AttachController(shared_ptr<NesController> Controller);
 	void AttachApu(UNesApu *Apu);
 	bool RequestNmiInterrupt() const;
+	bool RequestIrqInterrupt() const;
 	uint8 Read(unsigned short Address);
 	void Write(unsigned short Address, uint8 Data);
 	bool bOAMDMA = false;

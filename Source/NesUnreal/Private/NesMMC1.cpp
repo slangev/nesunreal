@@ -30,6 +30,11 @@ NesMMC1::~NesMMC1()
 {
 }
 
+bool NesMMC1::GetIRQRequested()
+{
+    return false;
+}
+
 uint8 NesMMC1::Read(unsigned short Address) 
 {
     uint8 returnData = 0xFF;
