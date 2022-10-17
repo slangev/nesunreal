@@ -37,6 +37,7 @@ public:
 	void HalfTick();
 	void Step(uint CpuCycle);
 	void Write(const unsigned short Address, uint8 Data);
+	bool FrameInterrupt();
 	uint8 Read(unsigned short Address);
 
 	UPROPERTY()
@@ -84,6 +85,7 @@ protected:
 	unique_ptr<FNesAudioMixer> Mixer;
 	unique_ptr<FNesApuFilters> Filter;
 	bool WriteSamples = false;
+	bool bFrameInterrupt = false;
 	const float AudioSampleRate = 44100.0f;
 	const float CPUSpeed = 1790000.0f; //1.79MHz
 	const int Speed = (CPUSpeed / AudioSampleRate);

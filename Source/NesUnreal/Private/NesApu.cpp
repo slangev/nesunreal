@@ -73,6 +73,11 @@ UNesApu::~UNesApu()
 	
 }
 
+bool UNesApu::FrameInterrupt()
+{
+	return bFrameInterrupt;
+}
+
 void UNesApu::QuarterTick()
 {
 	Pulse1->QuarterFrameTick();
@@ -161,6 +166,11 @@ void UNesApu::Step(uint32 CpuCycle)
 						QuarterTick();
 						HalfTick();
 						ApuCycleCount = 0;
+						// Set if interrupt inhibit is clear 
+						if(!bIRQInhibit)
+						{
+							bFrameInterrupt = true;
+						}
 						break;
 					}
 			}
@@ -239,6 +249,10 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 			QuarterTick();
 			HalfTick();
 		}
+		if(bIRQInhibit)
+		{
+			bFrameInterrupt = false;
+		}
 		//UE_LOG(LogNesAPU,Warning,TEXT("Writing to Frame Counter. Address: %d Data: %d"), Address, Data);
 	}
 	else
@@ -263,7 +277,9 @@ uint8 UNesApu::Read(const unsigned short Address)
 		status = (bTriangleEnabled) ? FNesCPU::SetBit(2, status) : FNesCPU::ResetBit(2, status);
 		status = (bNoiseEnabled) ? FNesCPU::SetBit(3, status) : FNesCPU::ResetBit(3, status);
 		status = (bDMCEnabled) ? FNesCPU::SetBit(4, status) : FNesCPU::ResetBit(4, status);
+		status = (bFrameInterrupt) ? FNesCPU::SetBit(6, status) : FNesCPU::ResetBit(6, status);
 		status = (bDMCIRQRequest) ? FNesCPU::SetBit(7, status) : FNesCPU::ResetBit(7, status);
+		bFrameInterrupt = false;
 	}
 	return status;
 }

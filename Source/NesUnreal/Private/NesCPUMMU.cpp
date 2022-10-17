@@ -41,6 +41,11 @@ bool NesCPUMMU::RequestIrqInterrupt() const
     return M_Cart->GetIRQRequested();
 }
 
+bool NesCPUMMU::RequestFrameInterrupt() const
+{
+    return M_Sound->FrameInterrupt();
+}
+
 void NesCPUMMU::Write(const unsigned short Address, const uint8 Data)
 {
     //CPU RAM

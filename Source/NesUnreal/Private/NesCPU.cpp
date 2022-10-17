@@ -122,13 +122,15 @@ void FNesCPU::HandleInterrupts()
     }
     bool NMI = M_Mmu->RequestNmiInterrupt();
     bool IRQ = M_Mmu->RequestIrqInterrupt();
+    bool FrameInterrupt = M_Mmu->RequestFrameInterrupt();
     //NMI -  However, triggering of a NMI can be prevented if bit 7 of PPU Control Register 1 ($2000) is clear. When a NMI occurs the system jumps to the address located at $FFFA and $FFFB
-    if (NMI && !lastNMI){
+    if (NMI && !lastNMI)
+    {
         ServiceInterrupt(0xFFFA);
         bInterrupted = true;
     }
     //IRQ - Some memory mappers can set IRQ. The interrupt disable flag only disables IRQ interrupts.
-    else if (IRQ && !P->ReadFlag(P->IFlag))
+    else if ((IRQ || FrameInterrupt) && !P->ReadFlag(P->IFlag))
     {
         // Vector
         // Certain instructions can be delay the IRQ interrupt for some odd reason.
