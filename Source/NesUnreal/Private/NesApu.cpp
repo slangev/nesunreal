@@ -234,7 +234,8 @@ void UNesApu::Write(const unsigned short Address, uint8 Data)
 		bFiveStepMode = (Data & 0x80) == 0x80 ? true : false;
 		bIRQInhibit = (Data & 0x40) == 0x40;
 		ApuCycleCount = 0;
-		if (bFiveStepMode){
+		if (bFiveStepMode) 
+		{
 			QuarterTick();
 			HalfTick();
 		}

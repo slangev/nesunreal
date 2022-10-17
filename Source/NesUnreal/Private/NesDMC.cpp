@@ -169,6 +169,10 @@ void NesDMC::Write(unsigned short Address, uint8 Data)
     {
         case 0x4010:
             bIRQEnabled = (Data & 0x80) == 0x80;
+            if(!bIRQEnabled)
+            {
+                bIRQ = false;
+            }
             bLoopFlag = (Data & 0x40) == 0x40;
             RateIndex = (Data & 0xF);
             Timer.Reload = RateIndexTable[RateIndex]/2; // Might be wrong. A rate of 428 means the output level changes every 214 APU cycles. 
