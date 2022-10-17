@@ -81,3 +81,8 @@ bool NesNoMapper::GetIRQRequested()
 {
     return false;
 }
+
+void NesNoMapper::UpdateIRQCounter()
+{
+    // Do nothing
+}

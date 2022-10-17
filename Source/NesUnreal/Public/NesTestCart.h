@@ -19,6 +19,7 @@ public:
 	void Write(unsigned short addr, uint8 data);
 	virtual uint8 GetMirrorMode() override;
 	virtual bool GetIRQRequested() override;
+	virtual void UpdateIRQCounter() override;
 private:
 	vector<uint8> memory;
 };

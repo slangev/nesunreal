@@ -36,3 +36,8 @@ bool NesTestCart::GetIRQRequested()
 {
     return false;
 }
+
+void NesTestCart::UpdateIRQCounter()
+{
+    // Do nothing
+}

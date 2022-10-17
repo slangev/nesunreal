@@ -490,5 +490,12 @@ void NesPPU::Step(uint Cycle) {
 				}
 			} 
 		}
+		if(ppumask.showBG || ppumask.showSprites)
+		{
+			if (cycleCount == 260 && lineCount < 240)
+			{
+				M_Mmu->cart->CheckIRQUpdate();
+			}
+		}
 	}
 }

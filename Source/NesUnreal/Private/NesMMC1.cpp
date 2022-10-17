@@ -227,3 +227,8 @@ void NesMMC1::Write(unsigned short Address, uint8 Data)
         }
     }
 }
+
+void NesMMC1::UpdateIRQCounter()
+{
+    // Do nothing
+}

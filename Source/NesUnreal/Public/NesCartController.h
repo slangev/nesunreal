@@ -15,4 +15,5 @@ public:
 	virtual void Write(unsigned short Address, uint8 Data) = 0;
 	virtual uint8 GetMirrorMode() = 0;
 	virtual bool GetIRQRequested() = 0;
+	virtual void UpdateIRQCounter() = 0;
 };

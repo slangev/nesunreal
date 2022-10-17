@@ -6,6 +6,11 @@
 #include <memory>
 #include <vector>
 #include "NesHeader.h"
+#include "NesNoMapper.h"
+#include "NesTestCart.h"
+#include "NesCNROM.h"
+#include "NesMMC1.h"
+#include "NesMMC3.h"
 #include "NesCartController.h"
 
 using namespace std;
@@ -24,6 +29,7 @@ public:
 	unique_ptr<FNesHeader> Header;
 	uint8 GetMirrorMode();
 	bool GetIRQRequested();
+	void CheckIRQUpdate();
 
 private:
 	bool Save();

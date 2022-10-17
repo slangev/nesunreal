@@ -88,3 +88,8 @@ bool NesCNROM::GetIRQRequested()
 {
     return false;
 }
+
+void NesCNROM::UpdateIRQCounter()
+{
+    // Do nothing
+}

@@ -1,11 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NesCart.h"
-#include "NesNoMapper.h"
-#include "NesTestCart.h"
-#include "NesCNROM.h"
-#include "NesMMC1.h"
-#include "NesMMC3.h"
+
 
 DEFINE_LOG_CATEGORY_STATIC(LogNesCart,Log,All)
 
@@ -211,3 +207,8 @@ bool NesCart::GetIRQRequested()
 {
 	return Mbc->GetIRQRequested();
 }
+
+void NesCart::CheckIRQUpdate()
+{
+	Mbc->UpdateIRQCounter();
+}	

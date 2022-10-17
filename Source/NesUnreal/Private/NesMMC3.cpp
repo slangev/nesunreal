@@ -287,6 +287,7 @@ void NesMMC3::Write(unsigned short Address, uint8 Data)
             if(bIsEvenAddress) 
             {
                 bIsIRQEnabled = false;
+                bIRQ = false;
             } 
             else 
             {
@@ -299,4 +300,30 @@ void NesMMC3::Write(unsigned short Address, uint8 Data)
 uint8 NesMMC3::GetMirrorMode()
 {
     return MirrorMode+2; // The caller(NesPPUMMU) is expecting vertical to be 2 or horizontal to by 3
+}
+
+/*
+Counter operation:
+
+    When the IRQ is clocked (filtered A12 0→1), the counter value is checked - if zero or the reload flag is true, it's reloaded with the IRQ latched value at $C000; otherwise, it decrements.
+    If the IRQ counter is zero and IRQs are enabled ($E001), an IRQ is triggered. The "alternate revision" checks the IRQ counter transition 1→0, whether from decrementing or reloading.
+*/
+
+void NesMMC3::UpdateIRQCounter()
+{
+    if (IRQCounter == 0 || bIRQReloadRequest)
+	{		
+		IRQCounter = IRQLatch;
+        //UE_LOG(LogTemp,Warning,TEXT("IRQCounter: %d IRQLatch :%d"),IRQCounter,IRQLatch);
+        bIRQReloadRequest = false;
+	}
+	else
+    {
+		IRQCounter--;
+    }
+
+	if (IRQCounter == 0 && bIsIRQEnabled)
+	{
+		bIRQ = true;
+	}
 }

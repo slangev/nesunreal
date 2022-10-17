@@ -44,6 +44,7 @@ public:
 	virtual void Write(unsigned short Address, uint8 Data) override;
 	virtual uint8 GetMirrorMode() override;
 	virtual bool GetIRQRequested() override;
+	virtual void UpdateIRQCounter() override;
 	enum RegisterSelector : uint8 
 	{
 		ControlRegisterEnum = 0,

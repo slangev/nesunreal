@@ -20,6 +20,7 @@ public:
 	virtual void Write(unsigned short address, uint8 data) override;
 	virtual uint8 GetMirrorMode() override;
 	virtual bool GetIRQRequested() override;
+	virtual void UpdateIRQCounter() override;
 private:
 	shared_ptr<vector<uint8>> PrgRomMemory;
     shared_ptr<vector<uint8>> PrgRamMemory;
