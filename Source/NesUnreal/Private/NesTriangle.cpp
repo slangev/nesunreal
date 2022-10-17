@@ -58,6 +58,7 @@ void NesTriangle::Write(unsigned short Address, uint8 Data)
         case 0x400B:
             Sequencer.TimerHigh = Data & 0x07;
 			Sequencer.Timer.Reload = (Sequencer.TimerHigh << 8) | Sequencer.TimerLow;
+            LengthLoad = (Data & 0xF8) >> 3;
             if(bChannelEnabled) 
 			{
 			    LengthCounter = LengthTable[LengthLoad];
