@@ -277,7 +277,6 @@ void NesMMC3::Write(unsigned short Address, uint8 Data)
             else 
             {
                 IRQCounter = 0;
-                bIRQReloadRequest = true;
             }
         }
 
@@ -309,21 +308,36 @@ Counter operation:
     If the IRQ counter is zero and IRQs are enabled ($E001), an IRQ is triggered. The "alternate revision" checks the IRQ counter transition 1→0, whether from decrementing or reloading.
 */
 
+// void NesMMC3::UpdateIRQCounter()
+// {
+//     if(IRQCounter == 0 || bIRQReloadRequest)
+// 	{	
+//         IRQCounter = IRQLatch;
+//         bIRQReloadRequest = false;
+// 	}
+// 	else
+//     {
+// 		IRQCounter--;
+//     }
+
+// 	if (IRQCounter == 0 && bIsIRQEnabled)
+// 	{
+// 		bIRQ = true;
+// 	}
+// }
+
 void NesMMC3::UpdateIRQCounter()
 {
-    if (IRQCounter == 0 || bIRQReloadRequest)
-	{		
+    if (IRQCounter == 0) 
+    {
 		IRQCounter = IRQLatch;
-        //UE_LOG(LogTemp,Warning,TEXT("IRQCounter: %d IRQLatch :%d"),IRQCounter,IRQLatch);
-        bIRQReloadRequest = false;
-	}
-	else
+	} 
+    else 
     {
 		IRQCounter--;
-    }
-
-	if (IRQCounter == 0 && bIsIRQEnabled)
-	{
-		bIRQ = true;
+        if (IRQCounter == 0 && bIsIRQEnabled)
+        {
+            bIRQ = true;
+        }
 	}
 }

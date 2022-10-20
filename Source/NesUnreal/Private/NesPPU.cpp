@@ -155,6 +155,7 @@ void NesPPU::WriteRegister(unsigned short Address, uint8 Data) {
 		if(!loopyW) {
 			int sixBitsForLoopyT = (Data & 0x3F) << 8;
 			loopyT = (loopyT & 0x00FF) | sixBitsForLoopyT;
+			//M_Mmu->cart->CheckIRQUpdate();
 		} else {
 			loopyT = (loopyT & 0xFF00) | (Data & 0xFF);
 			loopyV = loopyT;
@@ -492,7 +493,7 @@ void NesPPU::Step(uint Cycle) {
 		}
 		if(ppumask.showBG || ppumask.showSprites)
 		{
-			if (cycleCount == 260 && lineCount < 240)
+			if(cycleCount == 340 && lineCount < 240)
 			{
 				M_Mmu->cart->CheckIRQUpdate();
 			}
