@@ -56,40 +56,47 @@ uint8 NesMMC3::Read(unsigned short Address)
             if(Address >= 0x0000 && Address <= 0x07FF)
             {
                 BankNumber = ChrBankData.at(0);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x07FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x07FF)));
             }
             // 001: R1: Select 2 KB CHR bank at PPU $0800-$0FFF
             else if(Address >= 0x0800 && Address <= 0x0FFF)
             {
                 BankNumber = ChrBankData.at(1);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x07FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x07FF)));
             }
             // 010: R2: Select 1 KB CHR bank at PPU $1000-$13FF
             else if(Address >= 0x1000 && Address <= 0x13FF)
             {
                 BankNumber = ChrBankData.at(2);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF)));
             }
             // 011: R3: Select 1 KB CHR bank at PPU $1400-$17FF
             else if(Address >= 0x1400 && Address <= 0x17FF)
             {
                 BankNumber = ChrBankData.at(3);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF)));
             }
             // 100: R4: Select 1 KB CHR bank at PPU $1800-$1BFF
             else if(Address >= 0x1800 && Address <= 0x1BFF)
             {
                 BankNumber = ChrBankData.at(4);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF)));
             }
             // 101: R5: Select 1 KB CHR bank at PPU $1C00-$1FFF
             else if(Address >= 0x1C00 && Address <= 0x1FFF)
             {
                 BankNumber = ChrBankData.at(5);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF)));
             }
-
-            returnData = ChrRomMemory->at(Index);
+            
+            if(ChrRamMemory) 
+            {
+                returnData = ChrRamMemory->at(Index) & (ChrRamMemory->size() - 1);
+            }
+            else
+            {
+                returnData = ChrRomMemory->at(Index) & (ChrRomMemory->size() - 1);
+            }
         } 
         else if(BankSelect->GetCHRROMBankMode() == 1)
         {
@@ -99,39 +106,47 @@ uint8 NesMMC3::Read(unsigned short Address)
             if(Address >= 0x0000 && Address <= 0x03FF)
             {
                 BankNumber = ChrBankData.at(2);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF)));
             }
             // 011: R3: Select 1 KB CHR bank at PPU $0400-$07FF
             else if(Address >= 0x0400 && Address <= 0x07FF)
             {
                 BankNumber = ChrBankData.at(3);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF)));
             }
             // 100: R4: Select 1 KB CHR bank at PPU $1800-$1BFF (or $0800-$0BFF)
             else if(Address >= 0x0800 && Address <= 0x0BFF)
             {
                 BankNumber = ChrBankData.at(4);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF)));
             }
             // 101: R5: Select 1 KB CHR bank at PPU $1C00-$1FFF (or $0C00-$0FFF)
             else if(Address >= 0x0C00 && Address <= 0x0FFF)
             {
                 BankNumber = ChrBankData.at(5);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x03FF)));
             }
             // 000: R0: Select 2 KB CHR bank at PPU $0000-$07FF (or $1000-$17FF)
             else if(Address >= 0x1000 && Address <= 0x17FF)
             {
                 BankNumber = ChrBankData.at(0);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x07FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x07FF)));
             }
             // 001: R1: Select 2 KB CHR bank at PPU $0800-$0FFF (or $1800-$1FFF)
             else if(Address >= 0x1800 && Address <= 0x1FFF)
             {
                 BankNumber = ChrBankData.at(1);
-                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x07FF))) & (ChrRomMemory->size() - 1);
+                Index = ((BANK_SIZE_1KB * BankNumber | (Address & 0x07FF)));
             }
-            returnData = ChrRomMemory->at(Index);
+            
+            if(ChrRamMemory) 
+            {
+                returnData = ChrRamMemory->at(Index) & (ChrRamMemory->size() - 1);
+            }
+            else
+            {
+                returnData = ChrRomMemory->at(Index) & (ChrRomMemory->size() - 1);
+            }
         }
     }
 
@@ -208,8 +223,19 @@ void NesMMC3::Write(unsigned short Address, uint8 Data)
 {
     OpenBusData = Data;
 
+    //ChrRam is located here if present.
+    if(Address >= 0x0000 && Address < 0x2000) 
+    {
+        if(ChrRamMemory) 
+        {
+            uint8 bankNumber = 0x00;
+            uint32 Index = ((BANK_SIZE_8KB * bankNumber | (Address & 0x1FFF))) & (ChrRamMemory->size() - 1);
+            ChrRamMemory->at(Index) = Data;
+        }
+    }
+
     // CPU $6000-$7FFF: 8 KB PRG RAM bank, (optional)
-    if (Address >= 0x6000 && Address <= 0x7FFF) 
+    else if (Address >= 0x6000 && Address <= 0x7FFF) 
     {
         PrgRamMemory->at(Address & 0x1FFF) = Data;
     }

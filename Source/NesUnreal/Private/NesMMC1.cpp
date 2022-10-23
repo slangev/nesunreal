@@ -156,8 +156,8 @@ void NesMMC1::Write(unsigned short Address, uint8 Data)
     {
         if(ChrRamMemory) 
         {
-            uint8 bankNumber = 0x00; // Select 4 KB CHR bank at PPU $1000 (ignored in 8 KB mode)
-            uint32 Index = ((ROM_BANK_SIZE_4KB * bankNumber | (Address & 0x1FFF))) & (ChrRamMemory->size() - 1);
+            uint8 bankNumber = 0x00;
+            uint32 Index = ((ROM_BANK_SIZE_8KB * bankNumber | (Address & 0x1FFF))) & (ChrRamMemory->size() - 1);
             ChrRamMemory->at(Index) = Data;
         }
     }
