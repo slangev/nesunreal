@@ -27,14 +27,15 @@ private:
     shared_ptr<vector<uint8>> PrgRamMemory;
     shared_ptr<vector<uint8>> ChrRomMemory;
 	shared_ptr<vector<uint8>> ChrRamMemory;
-	uint8 LoadRegister = 0;
-	uint8 ShiftRegister = 0x10; // the 1 bit will be used to detech if SR full
-	uint8 ChrBank0Register = 0;
-	uint8 ChrBank1Register = 0;
-	uint8 PrgBankRegister = 0;
-	uint32 ROM_BANK_SIZE_32KB = 0x8000;
-	uint32 ROM_BANK_SIZE_16KB = 0x4000;
 	uint32 ROM_BANK_SIZE_8KB = 0x2000;
 	uint32 ROM_BANK_SIZE_4KB = 0x1000;
+	uint8 PRGROMBankSelect = 0x00;
+	uint8 CHRROMFD0000 = 0x00;
+	uint8 CHRROMFE0000 = 0x00;
+	uint8 CHRROMFD1000 = 0x00;
+	uint8 CHRROMFE1000 = 0x00;
+	uint8 Latch0 = 0x00;
+	uint8 Latch1 = 0x00;
+	uint8 MirrorMode = 0;
 	bool bBatteryBacked = false;
 };
