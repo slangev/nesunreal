@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "NesCartController.h"
 #include <vector>
 #include <memory>
+#include "NesCartController.h"
 #include "NesCPU.h"
 #include "CoreMinimal.h"
 using namespace std;

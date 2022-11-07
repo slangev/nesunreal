@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NesCart.h"
+#include "NesMMC2.h"
 
 
 DEFINE_LOG_CATEGORY_STATIC(LogNesCart,Log,All)
@@ -129,6 +130,10 @@ void NesCart::LoadRom(FString PathToRom)
 			break;
 		case 4:
 			Mbc = make_unique<NesMMC3>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory, this->bBatteryBacked);
+			break;
+		case 9:
+			Mbc = make_unique<NesMMC2>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory, this->bBatteryBacked);
+			break;
 		default:
 			break;
 	}
