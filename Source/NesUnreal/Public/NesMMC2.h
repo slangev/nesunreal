@@ -34,8 +34,8 @@ private:
 	uint8 CHRROMFE0000 = 0x00;
 	uint8 CHRROMFD1000 = 0x00;
 	uint8 CHRROMFE1000 = 0x00;
-	uint8 Latch0 = 0x00;
-	uint8 Latch1 = 0x00;
+	uint8 Latch0 = 0xFE;
+	uint8 Latch1 = 0xFE;
 	uint8 MirrorMode = 0;
 	bool bBatteryBacked = false;
 };

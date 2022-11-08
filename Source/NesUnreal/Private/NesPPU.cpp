@@ -381,7 +381,7 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 	int baseX = x;
 	int baseY = y;
 	int patternTable = ppuctrl.backgroundTable ? 0x1000:0x0000;
-	for (int i = 0; i < 256; i++){
+	for (int i = 0; i < 257; i++){
 		int drawX = (baseX + i) & 0x1FF;
 		int drawY = baseY % 480;
 
@@ -412,6 +412,13 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 		int t2 = M_Mmu->Read(patternTable + (tilePointer << 4) + pixelY);
 		int paletteIndex = (attribute << 2) | ((M_Mmu->Read(patternTable + (tilePointer << 4) + pixelY) >> (7 - pixelX)) & 0x1)|
 				((M_Mmu->Read(patternTable + (tilePointer << 4) + (pixelY + 8)) >> (7 - pixelX)) & 0x1) << 1;
+		
+		// Fetch, but don't render tiles offscreen.
+		// This is needed to make MMC2 Mike Tyson's Punch-Out!! to work.
+		if(i == 256)
+		{
+			continue;
+		}
 
 		FColor PixelColor;
 
