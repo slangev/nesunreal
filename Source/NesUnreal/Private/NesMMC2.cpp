@@ -61,7 +61,7 @@ uint8 NesMMC2::Read(unsigned short Address)
             {
                 BankNumber = CHRROMFD0000;
             } 
-            else
+            else if(Latch0 == 0xFE)
             {
                 BankNumber = CHRROMFE0000;
             }
@@ -82,7 +82,7 @@ uint8 NesMMC2::Read(unsigned short Address)
             {
                 BankNumber = CHRROMFD1000;
             } 
-            else
+            else if(Latch1 == 0xFE)
             {
                 BankNumber = CHRROMFE1000;
             }
