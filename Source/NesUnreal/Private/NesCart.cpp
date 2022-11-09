@@ -2,6 +2,7 @@
 
 #include "NesCart.h"
 #include "NesMMC2.h"
+#include "NesMMC4.h"
 
 
 DEFINE_LOG_CATEGORY_STATIC(LogNesCart,Log,All)
@@ -133,6 +134,9 @@ void NesCart::LoadRom(FString PathToRom)
 			break;
 		case 9:
 			Mbc = make_unique<NesMMC2>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory, this->bBatteryBacked);
+			break;
+		case 10:
+			Mbc = make_unique<NesMMC4>(PrgRomMemory,PrgRamMemory,ChrRomMemory, ChrRamMemory, this->bBatteryBacked);
 			break;
 		default:
 			break;

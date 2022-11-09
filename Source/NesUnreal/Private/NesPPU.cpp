@@ -415,7 +415,7 @@ void NesPPU::drawBGScanLine(int x, int y, int screenY) {
 		
 		// Fetch, but don't render tiles offscreen.
 		// This is needed to make MMC2 Mike Tyson's Punch-Out!! to work.
-		if(i == 256)
+		if(i >= 256)
 		{
 			continue;
 		}
