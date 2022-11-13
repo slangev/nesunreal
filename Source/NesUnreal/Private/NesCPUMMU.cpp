@@ -97,6 +97,7 @@ void NesCPUMMU::Write(const unsigned short Address, const uint8 Data)
     {
         // Cartridge expansion rom, not implemented
         UE_LOG(LogNesCPUMMU, Warning, TEXT("Write Cartridge expansion rom, not implemented"));
+        M_Cart->Write(Address, Data);
     }
     // Cart SRam
     else if (Address >= 0x6000 && Address <= 0x7FFF){
@@ -140,6 +141,7 @@ uint8 NesCPUMMU::Read(const unsigned short Address) {
     else if (Address >= 0x4020 && Address <= 0x5FFF) {
         // Cartridge expansion rom, not implemented
         UE_LOG(LogNesCPUMMU, Log, TEXT("Read Cartridge expansion rom, not implemented"));
+        return M_Cart->Read(Address);
     }
     // Cart SRam
     else if (Address >= 0x6000 && Address <= 0x7FFF){
